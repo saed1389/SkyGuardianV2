@@ -29644,80 +29644,33 @@ footer {
     background-color: rgba(43, 94, 94, .1)
 }
 
-.progress-striped-primary .progress-bar {
-    background-image: linear-gradient(120deg, #2b5e5e 25%, transparent 0, transparent 50%, #2b5e5e 0, #2b5e5e 75%, transparent 0, transparent);
-    background-size: 16px 30px;
-    --bs-progress-bar-bg: rgba($val, 0.1)
-}
-
 .progress-striped-secondary {
     background-color: rgba(192, 98, 64, .1)
-}
-
-.progress-striped-secondary .progress-bar {
-    background-image: linear-gradient(120deg, #c06240 25%, transparent 0, transparent 50%, #c06240 0, #c06240 75%, transparent 0, transparent);
-    background-size: 16px 30px;
-    --bs-progress-bar-bg: rgba($val, 0.1)
 }
 
 .progress-striped-warning {
     background-color: rgba(238, 180, 7, .1)
 }
 
-.progress-striped-warning .progress-bar {
-    background-image: linear-gradient(120deg, #eeb407 25%, transparent 0, transparent 50%, #eeb407 0, #eeb407 75%, transparent 0, transparent);
-    background-size: 16px 30px;
-    --bs-progress-bar-bg: rgba($val, 0.1)
-}
-
 .progress-striped-info {
     background-color: rgba(23, 162, 184, .1)
-}
-
-.progress-striped-info .progress-bar {
-    background-image: linear-gradient(120deg, #17a2b8 25%, transparent 0, transparent 50%, #17a2b8 0, #17a2b8 75%, transparent 0, transparent);
-    background-size: 16px 30px;
-    --bs-progress-bar-bg: rgba($val, 0.1)
 }
 
 .progress-striped-success {
     background-color: rgba(40, 167, 69, .1)
 }
 
-.progress-striped-success .progress-bar {
-    background-image: linear-gradient(120deg, #28a745 25%, transparent 0, transparent 50%, #28a745 0, #28a745 75%, transparent 0, transparent);
-    background-size: 16px 30px;
-    --bs-progress-bar-bg: rgba($val, 0.1)
-}
-
 .progress-striped-danger {
     background-color: rgba(220, 53, 69, .1)
 }
 
-.progress-striped-danger .progress-bar {
-    background-image: linear-gradient(120deg, #dc3545 25%, transparent 0, transparent 50%, #dc3545 0, #dc3545 75%, transparent 0, transparent);
-    background-size: 16px 30px;
-    --bs-progress-bar-bg: rgba($val, 0.1)
-}
 
 .progress-striped-light {
     background-color: hsla(0, 0%, 96%, .1)
 }
 
-.progress-striped-light .progress-bar {
-    background-image: linear-gradient(120deg, #f5f5f5 25%, transparent 0, transparent 50%, #f5f5f5 0, #f5f5f5 75%, transparent 0, transparent);
-    background-size: 16px 30px;
-    --bs-progress-bar-bg: rgba($val, 0.1)
-}
-
 .progress-striped-dark {
     background-color: rgba(18, 19, 19, .1)
-}
-
-.progress-striped-dark .progress-bar {
-    background-image: linear-gradient(120deg, #121313 25%, transparent 0, transparent 50%, #121313 0, #121313 75%, transparent 0, transparent);
-    background-size: 16px 30px;
-    --bs-progress-bar-bg: rgba($val, 0.1)
 }
 
 .project-list .row {
@@ -32550,12 +32503,12 @@ body.dark-only .treejs .treejs-switcher:before {
 }
 
 body.dark-only .sidebar-body.advance-options .product-tag .tagify__tag {
-    --tag-bg: $dark-card-background !important;
+    --tag-bg: dark-card-background !important;
     background-color: #121313 !important
 }
 
 body.dark-only .sidebar-body.advance-options .product-tag .tagify__tag:hover {
-    --tag-hover: $dark-card-background !important;
+    --tag-hover: dark-card-background !important;
     background-color: #171818 !important
 }
 
@@ -35305,7 +35258,7 @@ body.dark-only .page-wrapper .page-body-wrapper .page-body .card:not(.email-body
 }
 
 body.dark-only .page-wrapper .page-body-wrapper .page-body .card:not(.email-body) .dataTables_wrapper .table-striped tbody tr:nth-of-type(odd) {
-    --bs-table-accent-bg: $dark-card-background
+    --bs-table-accent-bg: dark-card-background
 }
 
 body.dark-only .page-wrapper .page-body-wrapper .page-body .card:not(.email-body) .dataTables_wrapper .dataTables_paginate .paginate_button {
@@ -38281,7 +38234,7 @@ body.dark-only .select-box .selection-option:hover {
 }
 
 body.dark-only .table-hover>tbody>tr:hover {
-    --bs-table-accent-bg: $dark-card-background
+    --bs-table-accent-bg: dark-card-background
 }
 
 body.dark-only .animate-widget .p-25,
@@ -40668,7 +40621,7 @@ footer p .footer-icon {
 }
 
 .tagify {
-    --tags-focus-border-color: $gray-60
+    --tags-focus-border-color: gray-60
 }
 
 .tagify__input {
@@ -45589,7 +45542,6 @@ html[dir=rtl] .social-chat .other-msg {
 }
 
 html[dir=rtl] .social-chat .flex-grow-1:before {
-    border-left: 7px solid var(-semi-dark);
     border-right: unset;
     left: 100%;
     right: unset
