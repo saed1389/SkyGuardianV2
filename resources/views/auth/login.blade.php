@@ -12,8 +12,6 @@
     <title>Sky Guardian</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200;300;400;600;700;800;900&amp;display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i,900&amp;display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/icofont.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/themify.css') }}">
@@ -40,23 +38,30 @@
                         </a>
                     </div>
                     <div class="login-main">
-                        <form class="theme-form">
+                        <form class="theme-form" method="POST" action="{{ route('login') }}">
+                            @csrf
                             <h3>Sign in to account</h3>
                             <p>Enter your email & password to login</p>
                             <div class="form-group">
-                                <label class="col-form-label">Email Address</label>
-                                <input class="form-control" type="email" required="" placeholder="Test@gmail.com">
+                                <label class="col-form-label" for="email">Email Address</label>
+                                <input class="form-control" type="email" id="email" name="email" :value="old('email')" required autofocus autocomplete="username">
+                                @error('email')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label">Password</label>
+                                <label class="col-form-label" for="password">Password</label>
                                 <div class="form-input position-relative">
-                                    <input class="form-control" type="password" name="login[password]" required="" placeholder="*********">
+                                    <input class="form-control" type="password" name="password" required autocomplete="current-password">
                                     <div class="show-hide"><span class="show"></span></div>
                                 </div>
+                                @error('password')
+                                <span class="text-danger">{{ $message }}</span>
+                                @enderror
                             </div>
                             <div class="form-group mb-0">
                                 <div class="checkbox p-0">
-                                    <input id="checkbox1" type="checkbox">
+                                    <input id="checkbox1" type="checkbox" name="remember">
                                     <label class="text-muted" for="checkbox1">Remember password</label>
                                 </div>
                                 <button class="btn btn-primary btn-block w-100" type="submit">Sign in</button>

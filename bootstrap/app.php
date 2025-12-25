@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append([
             \Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class,
             \Spatie\Csp\AddCspHeaders::class,
+            \App\Http\Middleware\SecurityHeaders::class,
         ]);
 
         // Optional: Register Spatie Permission middleware aliases if installed
