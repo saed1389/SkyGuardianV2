@@ -1,83 +1,105 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
+    <meta charset="utf-8" />
     <title>Sky Guardian</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/icofont.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/themify.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/flag-icon.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
-    <link id="color" rel="stylesheet" href="{{ asset('assets/css/color-1.css') }}" media="screen">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <script src="{{ asset('assets/js/layout.js') }}"></script>
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
 </head>
+
 <body>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-xl-7">
-            <img class="bg-img-cover bg-center" src="{{ asset('assets/images/login/2.jpg') }}" alt="Sky Guardian">
-        </div>
-        <div class="col-xl-5 p-0">
-            <div class="login-card login-dark login-bg">
-                <div>
-                    <div>
-                        <a class="logo text-start" href="/">
-                            <img class="img-fluid for-light" src="{{ asset('assets/images/logo/logo.png') }}" alt="Sky Guardian">
-                            <img class="img-fluid for-dark" src="{{ asset('assets/images/logo/logo_dark.png') }}" alt="Sky Guardian">
-                        </a>
-                    </div>
-                    <div class="login-main">
-                        <form class="theme-form" method="POST" action="{{ route('login') }}">
-                            @csrf
-                            <h3>Sign in to account</h3>
-                            <p>Enter your email & password to login</p>
-                            <div class="form-group">
-                                <label class="col-form-label" for="email">Email Address</label>
-                                <input class="form-control" type="email" id="email" name="email" :value="old('email')" required autofocus autocomplete="username">
-                                @error('email')
-                                <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label class="col-form-label" for="password">Password</label>
-                                <div class="form-input position-relative">
-                                    <input class="form-control" type="password" name="password" required autocomplete="current-password">
-                                    <div class="show-hide"><span class="show"></span></div>
+
+<div class="auth-page-wrapper auth-bg-cover py-5 d-flex justify-content-center align-items-center min-vh-100">
+    <div class="bg-overlay"></div>
+    <div class="auth-page-content overflow-hidden pt-lg-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card overflow-hidden">
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <div class="p-lg-5 p-4 auth-one-bg h-100">
+                                    <div class="bg-overlay"></div>
+                                    <div class="position-relative h-100 d-flex flex-column">
+                                        <div class="mb-4">
+                                            <a href="/" class="d-block">
+                                                <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="80">
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                                @error('password')
-                                <span class="text-danger">{{ $message }}</span>
-                                @enderror
                             </div>
-                            <div class="form-group mb-0">
-                                <div class="checkbox p-0">
-                                    <input id="checkbox1" type="checkbox" name="remember">
-                                    <label class="text-muted" for="checkbox1">Remember password</label>
+                            <div class="col-lg-6">
+                                <div class="p-lg-5 p-4">
+                                    <div>
+                                        <h5 class="text-primary">Welcome Back !</h5>
+                                        <p class="text-muted">Sign in to continue to Sky Guardian.</p>
+                                    </div>
+                                    <div class="mt-4">
+                                        <form action="{{ route('login') }}" method="post">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <label for="email" class="form-label">Username</label>
+                                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter Email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                                @error('email')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label" for="password">Password</label>
+                                                <div class="position-relative auth-pass-inputgroup mb-3">
+                                                    <input type="password" class="form-control pe-5 password-input" placeholder="Enter password" id="password" name="password" required autocomplete="current-password">
+                                                    <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="remember">Remember me</label>
+                                            </div>
+
+                                            <div class="mt-4">
+                                                <button class="btn btn-success w-100" type="submit">Sign In</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                                <button class="btn btn-primary btn-block w-100" type="submit">Sign in</button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
-    <script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
-    <script src="{{ asset('assets/js/config.js') }}"></script>
-    <script src="{{ asset('assets/js/script.js') }}"></script>
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center">
+                        <p class="mb-0">&copy;
+                            <script>document.write(new Date().getFullYear())</script> Sky Guardian.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
+<script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+<script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
+<script src="{{ asset('assets/libs/feather-icons/feather.min.js') }}"></script>
+<script src="{{ asset('assets/js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
+<script src="{{ asset('assets/js/plugins.js') }}"></script>
+<script src="{{ asset('assets/js/pages/password-addon.init.js') }}"></script>
 </body>
 </html>

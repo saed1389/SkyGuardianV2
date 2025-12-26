@@ -1,5 +1,4 @@
 <div>
-    <!-- removeNotificationModal -->
     <div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -19,39 +18,32 @@
                         <button type="button" class="btn w-sm btn-danger" id="delete-notification">Yes, Delete It!</button>
                     </div>
                 </div>
-
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-    <!-- ========== App Menu ========== -->
+            </div>
+        </div>
+    </div>
     <div class="app-menu navbar-menu">
-        <!-- LOGO -->
         <div class="navbar-brand-box">
-            <!-- Dark Logo-->
-            <a href="index.html" class="logo logo-dark">
-                    <span class="logo-sm">
-                        <img src="assets/images/logo-sm.png" alt="" height="22">
-                    </span>
+            <a href="{{ route('dashboard') }}" class="logo logo-dark">
+                <span class="logo-sm">
+                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                </span>
                 <span class="logo-lg">
-                        <img src="assets/images/logo-dark.png" alt="" height="17">
-                    </span>
+                    <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="75">
+                </span>
             </a>
-            <!-- Light Logo-->
-            <a href="index.html" class="logo logo-light">
-                    <span class="logo-sm">
-                        <img src="assets/images/logo-sm.png" alt="" height="22">
-                    </span>
+            <a href="{{ route('dashboard') }}" class="logo logo-light">
+                <span class="logo-sm">
+                    <img src="{{ asset('assets/images/logo-sm.png') }}" alt="" height="22">
+                </span>
                 <span class="logo-lg">
-                        <img src="assets/images/logo-light.png" alt="" height="17">
-                    </span>
+                    <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="75">
+                </span>
             </a>
             <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
                 <i class="ri-record-circle-line"></i>
             </button>
         </div>
-
-
-
+        @livewire('back.partials.sidebar')
         <div class="sidebar-background"></div>
     </div>
     <div class="vertical-overlay"></div>

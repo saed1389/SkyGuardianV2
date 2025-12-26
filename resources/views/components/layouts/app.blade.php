@@ -1,69 +1,70 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     @php
         $nonce = Illuminate\Support\Str::random(40);
     @endphp
     <meta http-equiv="Content-Security-Policy" content="style-src 'self' 'nonce-{{ $nonce }}'; script-src 'self' 'nonce-{{ $nonce }}'">
-
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Sky Guardian</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="keywords" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
-    <title>Sky Guardian</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-
-    <!-- Add nonce to style tags -->
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/font-awesome.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/icofont.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/themify.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/flag-icon.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/slick.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/slick-theme.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/scrollbar.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/animate.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/bootstrap.css') }}">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
-    <link nonce="{{ $nonce }}" id="color" rel="stylesheet" href="{{ asset('assets/css/color-1.css') }}" media="screen">
-    <link nonce="{{ $nonce }}" rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link href="{{ asset('assets/libs/jsvectormap/css/jsvectormap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" type="text/css" />
+    <script src="{{ asset('assets/js/layout.js') }}"></script>
+    <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
     @stack('styles')
     @livewireStyles
 </head>
 <body>
-<div class="loader-wrapper">
-    <div class="theme-loader">
-        <div class="loader-p"></div>
-    </div>
-</div>
-<div class="tap-top"><i data-feather="chevrons-up"></i></div>
-<div class="page-wrapper compact-wrapper" id="pageWrapper">
+<div id="layout-wrapper">
+    @livewire('back.partials.top-bar')
+
+    @livewire('back.partials.header')
+
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
     {{ $slot }}
 </div>
 
-<!-- Add nonce to script tags -->
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/jquery.min.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/bootstrap/bootstrap.bundle.min.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/scrollbar/simplebar.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/scrollbar/custom.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/config.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/sidebar-menu.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/sidebar-pin.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/slick/slick.min.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/slick/slick.js') }}"></script>
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/header-slick.js') }}"></script>
+<button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
+    <i class="ri-arrow-up-line"></i>
+</button>
 
-<script nonce="{{ $nonce }}" src="{{ asset('assets/js/script.js') }}"></script>
+<div id="preloader">
+    <div id="status">
+        <div class="spinner-border text-primary avatar-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<div class="customizer-setting d-none d-md-block">
+    <div class="btn-info btn-rounded shadow-lg btn btn-icon btn-lg p-2" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
+        <i class='mdi mdi-spin mdi-cog-outline fs-22'></i>
+    </div>
+</div>
+
+
+<script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+<script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
+<script src="{{ asset('assets/libs/feather-icons/feather.min.js') }}"></script>
+<script src="{{ asset('assets/js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
+<script src="{{ asset('assets/js/plugins.js') }}"></script>
+<script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('assets/libs/jsvectormap/js/jsvectormap.min.js') }}"></script>
+<script src="{{ asset('assets/libs/jsvectormap/maps/world-merc.js') }}"></script>
+<script src="{{ asset('assets/libs/swiper/swiper-bundle.min.js') }}"></script>
+<script src="{{ asset('assets/js/pages/dashboard-ecommerce.init.js') }}"></script>
+<script src="{{ asset('assets/js/app.js') }}"></script>
 @stack('scripts')
 @livewireScripts
-
-
 </body>
 </html>

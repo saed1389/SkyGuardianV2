@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Middleware\Role;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetLocale;
+use Bepsvpt\SecureHeaders\SecureHeadersMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Spatie\Csp\AddCspHeaders;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -11,19 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Add security middleware - simple version
-        $middleware->append([
-            \Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class,
-            \Spatie\Csp\AddCspHeaders::class,
-            \App\Http\Middleware\SecurityHeaders::class,
+        $middleware->alias([
+            'role' => Role::class,
+            $middleware->append([
+                SecureHeadersMiddleware::class,
+                AddCspHeaders::class,
+                SecurityHeaders::class,
+                SetLocale::class,
+            ])
         ]);
-
-        // Optional: Register Spatie Permission middleware aliases if installed
-        // $middleware->alias([
-        //     'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-        //     'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-        //     'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-        // ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
