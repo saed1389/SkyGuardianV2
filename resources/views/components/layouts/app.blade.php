@@ -2,10 +2,6 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    @php
-        $nonce = Illuminate\Support\Str::random(40);
-    @endphp
-    <meta http-equiv="Content-Security-Policy" content="style-src 'self' 'nonce-{{ $nonce }}'; script-src 'self' 'nonce-{{ $nonce }}'">
     <title>Sky Guardian</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +14,7 @@
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('styles')
     @livewireStyles
 </head>
@@ -44,13 +41,6 @@
         </div>
     </div>
 </div>
-
-<div class="customizer-setting d-none d-md-block">
-    <div class="btn-info btn-rounded shadow-lg btn btn-icon btn-lg p-2" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
-        <i class='mdi mdi-spin mdi-cog-outline fs-22'></i>
-    </div>
-</div>
-
 
 <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
