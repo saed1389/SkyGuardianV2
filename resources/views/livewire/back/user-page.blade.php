@@ -35,39 +35,65 @@
             }
         </style>
     @endpush
-    @push('scripts')
-        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-        <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
-        <script>
-            $(function (){
-                $(document).on('click', '#delete', function (e) {
-                    e.preventDefault();
-                    var link = $(this).attr("href");
+        @push('scripts')
+            <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+            <script src="{{ asset('assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+            <script>
+                document.addEventListener('livewire:initialized', () => {
+                    // Listen for delete confirmation request
+                    Livewire.on('showDeleteConfirmation', (userId) => {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: 'This user will be permanently deleted!',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, delete it!',
+                            cancelButtonText: 'Cancel',
+                            showLoaderOnConfirm: true,
+                            preConfirm: () => {
+                                return new Promise((resolve) => {
+                                    @this.call('deleteUser', userId);
+                                    resolve();
+                                });
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'The user has been deleted.',
+                                    'success'
+                                );
 
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: 'Should this data be deleted?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        showDenyButton: false,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, Delete!',
-                        cancelButtonText: 'Cancel',
-                    }).then((result)=> {
-                        if (result.isConfirmed) {
-                            window.location.href = link
-                            Swal.fire(
-                                'Deleted!',
-                                'Your file will be deleted.',
-                                'success'
-                            )
-                        }
-                    })
+                                toastr.success('User deleted successfully!', 'Success', {
+                                    timeOut: 3000,
+                                    progressBar: true,
+                                });
+                            }
+                        }).catch((error) => {
+
+                            @this.call('cancelDelete');
+                        });
+                    });
+
+                    Livewire.on('userDeleted', () => {
+                        toastr.success('User deleted successfully!', 'Success', {
+                            timeOut: 3000,
+                            progressBar: true,
+                        });
+                    });
+
+                    Livewire.on('message', (message) => {
+                        toastr.success(message, 'Success', {
+                            timeOut: 3000,
+                            progressBar: true,
+                        });
+                    });
                 });
-            });
-        </script>
-    @endpush
+            </script>
+        @endpush
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
@@ -156,15 +182,22 @@
                                                         <td>
                                                             <div class="d-flex gap-2">
                                                                 <div class="edit">
+                                                                    <button class="btn btn-sm btn-info edit-item-btn"
+                                                                            wire:click="openMemberModal({{ $user->id }})"
+                                                                            title="View Members">
+                                                                        <i class="ri-group-line me-1"></i> View Members
+                                                                    </button>
+                                                                </div>
+                                                                <div class="edit">
                                                                     <button class="btn btn-sm btn-success edit-item-btn"
                                                                             wire:click="openEditModal({{ $user->id }})">
-                                                                        Edit
+                                                                        <i class="ri-edit-line me-1"></i> Edit
                                                                     </button>
                                                                 </div>
                                                                 <div class="remove">
                                                                     <button class="btn btn-sm btn-danger remove-item-btn delete"
-                                                                            onclick="confirmDelete({{ $user->id }})">
-                                                                        Remove
+                                                                            wire:click="confirmDelete({{ $user->id }})">
+                                                                        <i class="ri-delete-bin-line me-1"></i> Remove
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -173,7 +206,10 @@
                                                 @empty
                                                     <tr>
                                                         <td colspan="8" class="text-center">
-                                                            <!-- No results content -->
+                                                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop" colors="primary:#121331,secondary:#08a88a" style="width:75px;height:75px">
+                                                            </lord-icon>
+                                                            <h5 class="mt-2">No Users Found</h5>
+                                                            <p class="text-muted mb-0">Add your first user to get started.</p>
                                                         </td>
                                                     </tr>
                                                 @endforelse
@@ -194,7 +230,7 @@
 
             <!-- Add/Edit Modal -->
             @if($showModal)
-                <div class="modal fade show" tabindex="-1" aria-labelledby="userModalLabel" aria-modal="true" role="dialog" style="display: block;">
+                <div class="modal fade show" tabindex="-1" aria-labelledby="userModalLabel" aria-modal="true" role="dialog" style="display: block; z-index: 1056">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content">
                             <div class="modal-header bg-light p-3">
@@ -298,6 +334,103 @@
                                     </button>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-backdrop fade show"></div>
+            @endif
+
+            @if($showMemberModal)
+                <div class="modal fade show" tabindex="-1" aria-labelledby="memberModalLabel" aria-modal="true" role="dialog" style="display: block;">
+                    <div class="modal-dialog modal-dialog-centered modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header bg-light p-3">
+                                <h5 class="modal-title" id="memberModalLabel">
+                                    <i class="ri-group-line me-2"></i>
+                                    {{ $memberModalTitle }}
+                                </h5>
+                                <button type="button" class="btn-close" wire:click="memberModalClose" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                @if($members->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-bordered">
+                                            <thead class="table-dark">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Airport</th>
+                                                <th>Status</th>
+                                                <th>Joined Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($members as $index => $member)
+                                                <tr>
+                                                    <td>{{ $index + 1 }}</td>
+                                                    <td>{{ $member->name }}</td>
+                                                    <td>{{ $member->email }}</td>
+                                                    <td>{{ $member->phone ?? 'N/A' }}</td>
+                                                    <td>{{ $member->airport ?? 'N/A' }}</td>
+                                                    <td>
+                                                <span class="badge badge-soft-{{ $member->status == 1 ? 'success' : 'danger' }} text-uppercase">
+                                                    {{ $member->status == 1 ? 'Active' : 'Inactive' }}
+                                                </span>
+                                                    </td>
+                                                    <td>{{ $member->created_at->format('d M, Y') }}</td>
+                                                    <td>
+                                                        <div class="d-flex gap-1">
+                                                            <button class="btn btn-sm btn-info" wire:click="openEditModal({{ $member->id }})">
+                                                                <i class="ri-edit-line"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-danger" wire:click="confirmDelete({{ $member->id }})">
+                                                                <i class="ri-delete-bin-line"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <div class="alert alert-info">
+                                                <i class="ri-information-line me-2"></i>
+                                                Showing <strong>{{ $members->count() }}</strong> members under this admin.
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 text-end">
+                                            <button class="btn btn-primary" wire:click="openAddModal">
+                                                <i class="ri-add-line me-1"></i> Add New Member to {{ $adminName }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="text-center py-5">
+                                        <lord-icon src="https://cdn.lordicon.com/wxnxiano.json"
+                                                   trigger="loop"
+                                                   colors="primary:#405189,secondary:#0ab39c"
+                                                   style="width:100px;height:100px">
+                                        </lord-icon>
+                                        <h4 class="mt-3">No Members Found</h4>
+                                        <p class="text-muted mb-4">This admin doesn't have any members yet.</p>
+                                        <button class="btn btn-primary" wire:click="openAddModal">
+                                            <i class="ri-add-line me-1"></i> Add First Member
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" wire:click="memberModalClose">Close</button>
+                                <button type="button" class="btn btn-success" onclick="window.print()">
+                                    <i class="ri-printer-line me-1"></i> Print List
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
