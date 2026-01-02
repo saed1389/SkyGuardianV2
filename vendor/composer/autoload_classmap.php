@@ -51,6 +51,7 @@ return array(
     'App\\Models\\SkyguardianFlights' => $baseDir . '/app/Models/SkyguardianFlights.php',
     'App\\Models\\SkyguardianPositions' => $baseDir . '/app/Models/SkyguardianPositions.php',
     'App\\Models\\SkyguardianStatistics' => $baseDir . '/app/Models/SkyguardianStatistics.php',
+    'App\\Models\\SkyguardianWeather' => $baseDir . '/app/Models/SkyguardianWeather.php',
     'App\\Models\\SkyguardianZones' => $baseDir . '/app/Models/SkyguardianZones.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
