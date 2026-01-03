@@ -1,8 +1,15 @@
 <div>
+    @if($loading)
+        <div class="loading-overlay">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    @endif
+
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
-                <!-- Page Header -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="d-flex justify-content-between align-items-center">
@@ -17,6 +24,17 @@
                                     <div class="text-muted small">Last Update</div>
                                     <div class="h6 mb-0">{{ $stats['update_time'] ?? '--:--:--' }}</div>
                                 </div>
+
+                                <div class="form-check form-switch d-flex align-items-center me-2">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="autoRefreshToggle"
+                                           {{ $autoRefreshEnabled ? 'checked' : '' }}
+                                           wire:click="toggleAutoRefresh">
+                                    <label class="form-check-label ms-2 small" for="autoRefreshToggle">
+                                        Auto Refresh
+                                    </label>
+                                </div>
+
                                 <button wire:click="refreshDashboard" wire:loading.attr="disabled"
                                         class="btn btn-sm btn-primary">
                                     <i class="fas fa-sync-alt" wire:loading.class="fa-spin"></i> Refresh
@@ -26,27 +44,58 @@
                     </div>
                 </div>
 
-                <!-- Real-time Stats Cards -->
+                @if(count($activeAircraft) === 0)
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <div class="alert alert-warning alert-dismissible fade show py-2" role="alert">
+                                <small>
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    No active aircraft found in the last 60 minutes.
+                                    This could mean:
+                                    <ul class="mb-0 mt-1">
+                                        <li>No aircraft have transmitted position data recently</li>
+                                        <li>Database connection issue</li>
+                                        <li>All aircraft are outside the monitoring area</li>
+                                    </ul>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <div class="alert alert-info alert-dismissible fade show py-2" role="alert">
+                                <small>
+                                    <i class="fas fa-clock me-1"></i>
+                                    Showing data from the last 60 minutes only.
+                                    <span id="data-freshness-indicator">
+                                    {{ $stats['active_aircraft'] ?? 0 }} aircraft currently active.
+                                </span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="row mb-4">
                     <div class="col-md-2">
                         <div class="card bg-primary text-white border-primary">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="h6 mb-1">Active Aircraft</div>
+                                        <div class="h6 mb-1 text-white">Active Aircraft</div>
                                         <div class="display-6 fw-bold">{{ $stats['active_aircraft'] ?? 0 }}</div>
                                         <small class="opacity-75">Last 60 minutes</small>
                                     </div>
                                     <div class="avatar-sm">
                                         <div class="avatar-title bg-white bg-opacity-20 rounded fs-24">
-                                            <i class="fas fa-plane"></i>
+                                            <i class="fa-solid fa-plane text-black"></i>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
                                     <div class="progress bg-white bg-opacity-20" style="height: 4px;">
-                                        <div class="progress-bar bg-white"
-                                             style="width: {{ min(100, ($stats['active_aircraft'] ?? 0) / max(1, ($stats['total_aircraft'] ?? 100)) * 100) }}%"></div>
+                                        <div class="progress-bar bg-black" style="width: {{ min(100, ($stats['active_aircraft'] ?? 0) / max(1, ($stats['total_aircraft'] ?? 100)) * 100) }}%"></div>
                                     </div>
                                     <small class="opacity-75">{{ $stats['total_aircraft'] ?? 0 }} total in database</small>
                                 </div>
@@ -59,20 +108,19 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="h6 mb-1">Military</div>
+                                        <div class="h6 mb-1 text-white">Military</div>
                                         <div class="display-6 fw-bold">{{ $stats['active_military'] ?? 0 }}</div>
                                         <small class="opacity-75">Active military</small>
                                     </div>
                                     <div class="avatar-sm">
                                         <div class="avatar-title bg-white bg-opacity-20 rounded fs-24">
-                                            <i class="fas fa-fighter-jet"></i>
+                                            <i class="fas fa-fighter-jet text-black"></i>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
                                     <div class="progress bg-white bg-opacity-20" style="height: 4px;">
-                                        <div class="progress-bar bg-white"
-                                             style="width: {{ ($stats['active_aircraft'] ?? 0) > 0 ? (($stats['active_military'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100) : 0 }}%"></div>
+                                        <div class="progress-bar bg-black" style="width: {{ ($stats['active_aircraft'] ?? 0) > 0 ? (($stats['active_military'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100) : 0 }}%"></div>
                                     </div>
                                     <small class="opacity-75">{{ ($stats['active_aircraft'] ?? 0) > 0 ? round((($stats['active_military'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100), 1) : 0 }}% of active</small>
                                 </div>
@@ -81,24 +129,23 @@
                     </div>
 
                     <div class="col-md-2">
-                        <div class="card bg-warning text-dark border-warning">
+                        <div class="card bg-warning text-white border-warning">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="h6 mb-1">High Threat</div>
-                                        <div class="display-6 fw-bold">{{ $stats['high_threat'] ?? 0 }}</div>
-                                        <small class="opacity-75">Threat level ≥ 4</small>
+                                        <div class="h6 mb-1 text-white">High Threat</div>
+                                        <div class="display-6 fw-bold ">{{ $stats['high_threat'] ?? 0 }}</div>
+                                        <small class="opacity-75 ">Threat level ≥ 4</small>
                                     </div>
                                     <div class="avatar-sm">
-                                        <div class="avatar-title bg-dark bg-opacity-20 rounded fs-24">
-                                            <i class="fas fa-exclamation-triangle"></i>
+                                        <div class="avatar-title bg-white bg-opacity-20 rounded fs-24">
+                                            <i class="fas fa-exclamation-triangle text-black"></i>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
-                                    <div class="progress bg-dark bg-opacity-20" style="height: 4px;">
-                                        <div class="progress-bar bg-dark"
-                                             style="width: {{ ($stats['active_aircraft'] ?? 0) > 0 ? (($stats['high_threat'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100) : 0 }}%"></div>
+                                    <div class="progress bg-white bg-opacity-20" style="height: 4px;">
+                                        <div class="progress-bar bg-black" style="width: {{ ($stats['active_aircraft'] ?? 0) > 0 ? (($stats['high_threat'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100) : 0 }}%"></div>
                                     </div>
                                     <small class="opacity-75">{{ ($stats['active_aircraft'] ?? 0) > 0 ? round((($stats['high_threat'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100), 1) : 0 }}% threat ratio</small>
                                 </div>
@@ -111,20 +158,19 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="h6 mb-1">In Estonia</div>
+                                        <div class="h6 mb-1 text-white">In Estonia</div>
                                         <div class="display-6 fw-bold">{{ $stats['in_estonia'] ?? 0 }}</div>
                                         <small class="opacity-75">Inside airspace</small>
                                     </div>
                                     <div class="avatar-sm">
                                         <div class="avatar-title bg-white bg-opacity-20 rounded fs-24">
-                                            <i class="fas fa-map-marker-alt"></i>
+                                            <i class="fas fa-map-marker-alt text-black"></i>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
                                     <div class="progress bg-white bg-opacity-20" style="height: 4px;">
-                                        <div class="progress-bar bg-white"
-                                             style="width: {{ ($stats['active_aircraft'] ?? 0) > 0 ? (($stats['in_estonia'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100) : 0 }}%"></div>
+                                        <div class="progress-bar bg-black" style="width: {{ ($stats['active_aircraft'] ?? 0) > 0 ? (($stats['in_estonia'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100) : 0 }}%"></div>
                                     </div>
                                     <small class="opacity-75">{{ ($stats['active_aircraft'] ?? 0) > 0 ? round((($stats['in_estonia'] ?? 0) / ($stats['active_aircraft'] ?? 1) * 100), 1) : 0 }}% in airspace</small>
                                 </div>
@@ -137,20 +183,19 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="h6 mb-1">AI Alerts</div>
+                                        <div class="h6 mb-1 text-white">AI Alerts</div>
                                         <div class="display-6 fw-bold">{{ $stats['ai_alerts_today'] ?? 0 }}</div>
                                         <small class="opacity-75">Today</small>
                                     </div>
                                     <div class="avatar-sm">
                                         <div class="avatar-title bg-white bg-opacity-20 rounded fs-24">
-                                            <i class="fas fa-robot"></i>
+                                            <i class="fas fa-robot text-black"></i>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mt-3">
                                     <div class="progress bg-white bg-opacity-20" style="height: 4px;">
-                                        <div class="progress-bar bg-white"
-                                             style="width: {{ min(100, ($stats['ai_alerts_today'] ?? 0) / 20 * 100) }}%"></div>
+                                        <div class="progress-bar bg-black" style="width: {{ min(100, ($stats['ai_alerts_today'] ?? 0) / 20 * 100) }}%"></div>
                                     </div>
                                     <small class="opacity-75">Avg: {{ $stats['avg_alerts_per_hour'] ?? 0 }}/hour</small>
                                 </div>
@@ -163,7 +208,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <div class="h6 mb-1">Latest Risk</div>
+                                        <div class="h6 mb-1 text-white">Latest Risk</div>
                                         @if(isset($stats['latest_analysis']) && $stats['latest_analysis']->overall_risk)
                                             <div class="display-6 fw-bold text-{{ strtolower($stats['latest_analysis']->overall_risk) === 'high' ? 'danger' : (strtolower($stats['latest_analysis']->overall_risk) === 'medium' ? 'warning' : 'success') }}">
                                                 {{ $stats['latest_analysis']->overall_risk }}
@@ -176,7 +221,7 @@
                                     </div>
                                     <div class="avatar-sm">
                                         <div class="avatar-title bg-white bg-opacity-20 rounded fs-24">
-                                            <i class="fas fa-shield-alt"></i>
+                                            <i class="fas fa-shield-alt text-black"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -192,20 +237,22 @@
                     </div>
                 </div>
 
-                <!-- Main Content Row -->
                 <div class="row">
-                    <!-- Left Column: Map and Active Aircraft -->
                     <div class="col-lg-8">
-                        <!-- Live Map -->
                         <div class="card mb-4">
                             <div class="card-header bg-primary text-white">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0">
+                                    <h5 class="card-title mb-0 text-white">
                                         <i class="fas fa-map-marked-alt me-2"></i>Live Air Traffic Map
                                     </h5>
-                                    <span class="badge bg-light text-dark" id="map-aircraft-count">
-                                        {{ count($activeAircraft) }} active aircraft
-                                    </span>
+                                    <div>
+                                        <span class="badge bg-light text-dark me-2" id="map-aircraft-count">
+                                            {{ count($activeAircraft) }} active aircraft
+                                        </span>
+                                        <span class="badge bg-info" title="Data freshness">
+                                            <i class="fas fa-clock me-1"></i>Last 60 min
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-body p-0">
@@ -231,19 +278,24 @@
                                     </div>
                                     <div class="col-md-6 text-end">
                                         <small class="text-muted">
-                                            Real-time positions from last 60 minutes
+                                            <i class="fas fa-filter me-1"></i>
+                                            Filtered: Last 60 minutes only
                                         </small>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Active Aircraft Table -->
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="fas fa-plane me-2"></i>Active Aircraft (Last Hour)
-                                </h5>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-plane me-2"></i>Active Aircraft (Last Hour)
+                                    </h5>
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-clock me-1"></i>Showing last 60 minutes
+                                    </span>
+                                </div>
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">
@@ -262,7 +314,20 @@
                                         </thead>
                                         <tbody>
                                         @forelse($activeAircraft as $aircraft)
-                                            <tr class="{{ $aircraft->aircraft_threat >= 4 ? 'table-danger' : ($aircraft->aircraft_threat >= 3 ? 'table-warning' : '') }}">
+                                            @php
+                                                $positionTime = $aircraft->position_time ? \Carbon\Carbon::parse($aircraft->position_time) : null;
+                                                $minutesAgo = $positionTime ? $positionTime->diffInMinutes(now()) : null;
+
+                                                $rowClass = '';
+                                                if ($minutesAgo !== null) {
+                                                    if ($minutesAgo > 60) {
+                                                        continue;
+                                                    } elseif ($minutesAgo > 30) {
+                                                        $rowClass = 'table-secondary';
+                                                    }
+                                                }
+                                            @endphp
+                                            <tr class="{{ $rowClass }} {{ $aircraft->aircraft_threat >= 4 ? 'table-danger' : ($aircraft->aircraft_threat >= 3 ? 'table-warning' : '') }}">
                                                 <td>
                                                     <div class="fw-bold">{{ $aircraft->callsign ?? 'N/A' }}</div>
                                                     <small class="text-muted font-monospace">{{ $aircraft->hex }}</small>
@@ -310,7 +375,17 @@
                                                 </td>
                                                 <td>
                                                     @if($aircraft->position_time)
-                                                        {{ \Carbon\Carbon::parse($aircraft->position_time)->diffForHumans() }}
+                                                        @php
+                                                            $diff = \Carbon\Carbon::parse($aircraft->position_time)->diffForHumans();
+                                                        @endphp
+                                                        <span title="{{ $aircraft->position_time }}">
+                                                            {{ $diff }}
+                                                        </span>
+                                                        @if($minutesAgo !== null && $minutesAgo > 30)
+                                                            <br><small class="text-warning">
+                                                                <i class="fas fa-exclamation-circle me-1"></i>Data may be stale
+                                                            </small>
+                                                        @endif
                                                     @else
                                                         N/A
                                                     @endif
@@ -322,6 +397,9 @@
                                                     <div class="text-muted">
                                                         <i class="fas fa-plane-slash fa-2x mb-2"></i>
                                                         <p>No active aircraft in the last hour</p>
+                                                        <small class="text-warning">
+                                                            Check if aircraft have transmitted position data recently.
+                                                        </small>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -333,9 +411,7 @@
                         </div>
                     </div>
 
-                    <!-- Right Column: Charts, Alerts, and Quick Stats -->
                     <div class="col-lg-4">
-                        <!-- Today's Activity Chart -->
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">
@@ -347,7 +423,6 @@
                             </div>
                         </div>
 
-                        <!-- Threat Level Distribution -->
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">
@@ -359,7 +434,6 @@
                             </div>
                         </div>
 
-                        <!-- Additional Chart: Military vs Civil -->
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="card-title mb-0">
@@ -368,14 +442,19 @@
                             </div>
                             <div class="card-body">
                                 <div id="military-civil-chart" style="height: 200px;"></div>
+                                @if(count($activeAircraft) === 0)
+                                    <div class="text-center text-muted small">
+                                        <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                                        <p>No aircraft data available</p>
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
-                        <!-- Recent AI Alerts -->
                         <div class="card mb-4">
                             <div class="card-header bg-danger text-white">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0">
+                                    <h5 class="card-title mb-0 text-white">
                                         <i class="fas fa-robot me-2"></i>Recent AI Alerts
                                     </h5>
                                     <span class="badge bg-light text-dark">
@@ -421,53 +500,9 @@
                                 </a>
                             </div>
                         </div>
-
-                        <!-- Quick Links -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0">
-                                    <i class="fas fa-rocket me-2"></i>Quick Actions
-                                </h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-2">
-                                    <div class="col-6">
-                                        <a href="{{ route('user.live-map') }}" class="btn btn-outline-primary w-100 mb-2">
-                                            <i class="fas fa-map me-1"></i> Live Map
-                                        </a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('user.military-monitor') }}" class="btn btn-outline-danger w-100 mb-2">
-                                            <i class="fas fa-fighter-jet me-1"></i> Military
-                                        </a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('user.ai-threat-analysis') }}" class="btn btn-outline-warning w-100 mb-2">
-                                            <i class="fas fa-robot me-1"></i> AI Analysis
-                                        </a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('user.analysis-history') }}" class="btn btn-outline-info w-100 mb-2">
-                                            <i class="fas fa-history me-1"></i> History
-                                        </a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('user.aircraft-database') }}" class="btn btn-outline-success w-100 mb-2">
-                                            <i class="fas fa-database me-1"></i> Database
-                                        </a>
-                                    </div>
-                                    <div class="col-6">
-                                        <a href="{{ route('user.reports') }}" class="btn btn-outline-dark w-100 mb-2">
-                                            <i class="fas fa-file-alt me-1"></i> Reports
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
-                <!-- Threat Trends Chart -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="card">
@@ -490,28 +525,46 @@
         <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script>
+            window.chartInstances = {};
             let dashboardMap = null;
             let mapMarkers = new Map();
             let isMapInitialized = false;
             let pendingMarkersData = null;
+            let refreshInterval = null;
+            let autoRefreshEnabled = {{ $autoRefreshEnabled ? 'true' : 'false' }};
 
-            // Initialize dashboard map
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
             function initDashboardMap() {
-                if (isMapInitialized) return;
-
-                console.log('Initializing dashboard map...');
+                if (isMapInitialized || !document.getElementById('dashboard-map')) return;
 
                 try {
                     dashboardMap = L.map('dashboard-map').setView([59.42, 24.83], 8);
 
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap contributors'
+                        attribution: '© OpenStreetMap contributors',
+                        maxZoom: 18,
+                        minZoom: 6
                     }).addTo(dashboardMap);
 
-                    // Estonian border
-                    L.polygon([
-                        [59.0, 21.5], [59.0, 28.5], [57.5, 28.5], [57.5, 21.5]
-                    ], {
+                    const estoniaBounds = [
+                        [57.5, 21.5],
+                        [59.8, 21.5],
+                        [59.8, 28.2],
+                        [57.5, 28.2]
+                    ];
+
+                    L.polygon(estoniaBounds, {
                         color: '#0d6efd',
                         fillColor: '#0d6efd',
                         fillOpacity: 0.05,
@@ -520,11 +573,11 @@
                     }).addTo(dashboardMap).bindPopup('Estonian Airspace');
 
                     isMapInitialized = true;
-                    console.log('Dashboard map initialized');
+                    console.log('Map initialized');
 
-                    // Load initial markers if we have data
                     if (pendingMarkersData) {
                         updateDashboardMarkers(pendingMarkersData);
+                        pendingMarkersData = null;
                     }
 
                 } catch (error) {
@@ -532,63 +585,77 @@
                 }
             }
 
-            // Update markers on dashboard - FIXED VERSION
-            function updateDashboardMarkers(markersData) {
-                console.log('updateDashboardMarkers called with:', markersData);
+            function cleanupCharts() {
+                Object.values(window.chartInstances).forEach(chart => {
+                    if (chart && typeof chart.destroy === 'function') {
+                        chart.destroy();
+                    }
+                });
+                window.chartInstances = {};
+            }
 
-                // If map is not ready, store data and return
-                if (!isMapInitialized) {
+            function updateDashboardMarkers(markersData) {
+                console.log('Updating map markers with data:', markersData);
+
+                if (!isMapInitialized || !dashboardMap) {
                     console.log('Map not ready, storing markers data');
                     pendingMarkersData = markersData;
                     return;
                 }
 
-                // Clear existing markers
                 mapMarkers.forEach(marker => {
-                    if (dashboardMap && dashboardMap.hasLayer(marker)) {
+                    if (dashboardMap.hasLayer(marker)) {
                         dashboardMap.removeLayer(marker);
                     }
                 });
                 mapMarkers.clear();
 
-                // Handle different data formats
                 let markersArray = [];
 
                 try {
-                    // If markersData is a string (JSON), parse it
                     if (typeof markersData === 'string') {
                         markersArray = JSON.parse(markersData);
-                    }
-                    // If it's already an array, use it directly
-                    else if (Array.isArray(markersData)) {
+                    } else if (Array.isArray(markersData)) {
                         markersArray = markersData;
-                    }
-                    // If it's an object with markers property (from Livewire event)
-                    else if (markersData && typeof markersData === 'object' && markersData.markers) {
-                        if (typeof markersData.markers === 'string') {
-                            markersArray = JSON.parse(markersData.markers);
-                        } else {
-                            markersArray = markersData.markers;
-                        }
-                    }
-                    else {
-                        console.log('Invalid markers data format, using empty array');
-                        markersArray = [];
+                    } else if (markersData && typeof markersData === 'object' && markersData.markers) {
+                        markersArray = typeof markersData.markers === 'string'
+                            ? JSON.parse(markersData.markers)
+                            : markersData.markers;
                     }
                 } catch (e) {
                     console.error('Error parsing markers data:', e);
                     markersArray = [];
                 }
 
-                console.log('Processing', markersArray.length, 'markers');
+                console.log('Processed markers array:', markersArray);
 
-                // Update aircraft count badge
-                document.getElementById('map-aircraft-count').textContent = markersArray.length + ' active aircraft';
+                const now = new Date();
+                markersArray = markersArray.filter(aircraft => {
+                    if (!aircraft.position_time) {
+                        console.log('Aircraft has no position time:', aircraft);
+                        return false;
+                    }
+                    const positionTime = new Date(aircraft.position_time);
+                    const minutesAgo = (now - positionTime) / (1000 * 60);
+                    const isRecent = minutesAgo <= 60;
+                    if (!isRecent) {
+                        console.log('Filtering out old aircraft:', aircraft.callsign, 'minutes ago:', minutesAgo);
+                    }
+                    return isRecent;
+                });
 
-                // Add new markers
+                console.log('Filtered markers:', markersArray.length);
+
+                const countElement = document.getElementById('map-aircraft-count');
+                if (countElement) {
+                    countElement.textContent = markersArray.length + ' active aircraft';
+                }
+
+                const bounds = L.latLngBounds();
+
                 markersArray.forEach(aircraft => {
                     if (!aircraft || !aircraft.latitude || !aircraft.longitude) {
-                        console.warn('Skipping invalid aircraft:', aircraft);
+                        console.log('Skipping invalid aircraft:', aircraft);
                         return;
                     }
 
@@ -597,378 +664,415 @@
                     const heading = parseFloat(aircraft.heading) || 0;
 
                     if (isNaN(lat) || isNaN(lng)) {
-                        console.warn('Invalid coordinates for aircraft:', aircraft.hex);
+                        console.log('Invalid coordinates:', aircraft);
                         return;
                     }
 
-                    // Determine color and icon
-                    let color = '#007bff'; // Default blue for civil
+                    let color = '#007bff';
                     let icon = 'plane';
 
                     if (aircraft.is_military) {
-                        color = '#dc3545'; // Red for military
+                        color = '#dc3545';
                         icon = 'fighter-jet';
                     } else if (aircraft.is_drone) {
-                        color = '#fd7e14'; // Orange for drones
+                        color = '#fd7e14';
                         icon = 'drone';
                     } else if (aircraft.is_nato) {
-                        color = '#0dcaf0'; // Blue for NATO
+                        color = '#0dcaf0';
                         icon = 'flag';
                     }
 
-                    // High threat aircraft
                     if (aircraft.threat_level >= 4) {
-                        color = '#dc3545'; // Red for high threat
+                        color = '#dc3545';
                     }
 
-                    // Create custom icon
+                    const positionTime = aircraft.position_time ? new Date(aircraft.position_time) : null;
+                    let ageIndicator = '';
+                    if (positionTime) {
+                        const minutesAgo = Math.round((now - positionTime) / (1000 * 60));
+                        if (minutesAgo > 30) {
+                            color = '#6c757d';
+                        }
+                        ageIndicator = `<br><small>Updated: ${minutesAgo} min ago</small>`;
+                    }
+
                     const customIcon = L.divIcon({
                         html: `
-                        <div style="
-                            background-color: ${color};
-                            width: 22px;
-                            height: 22px;
-                            border-radius: 50%;
-                            border: 2px solid white;
-                            box-shadow: 0 0 6px rgba(0,0,0,0.5);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            color: white;
-                            font-size: 10px;
-                            cursor: pointer;
-                            transform: rotate(${heading}deg);
-                        ">
-                            <i class="fas fa-${icon}"></i>
-                        </div>
-                    `,
+                            <div style="
+                                background-color: ${color};
+                                width: 22px;
+                                height: 22px;
+                                border-radius: 50%;
+                                border: 2px solid white;
+                                box-shadow: 0 0 6px rgba(0,0,0,0.5);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: white;
+                                font-size: 10px;
+                                cursor: pointer;
+                                transform: rotate(${heading}deg);
+                            ">
+                                <i class="fas fa-${icon}"></i>
+                            </div>
+                        `,
                         className: 'dashboard-aircraft-marker',
                         iconSize: [26, 26],
-                        iconAnchor: [13, 13],
-                        popupAnchor: [0, -13]
+                        iconAnchor: [13, 13]
                     });
 
                     const marker = L.marker([lat, lng], {
                         icon: customIcon,
-                        title: `${aircraft.callsign || aircraft.hex} - ${aircraft.type || 'Aircraft'}`
+                        title: `${aircraft.callsign || aircraft.hex}`
                     });
 
-                    // Create popup content
                     const popupContent = `
-                    <div style="min-width: 200px;">
-                        <strong>${aircraft.callsign || aircraft.hex}</strong><br>
-                        <small>${aircraft.type || 'Unknown'} - ${aircraft.country || 'Unknown'}</small><br>
-                        <hr>
-                        <small>Threat: Level ${aircraft.threat_level || 1}</small><br>
-                        <small>Alt: ${aircraft.altitude ? Math.round(aircraft.altitude) : 'N/A'}m</small><br>
-                        <small>Speed: ${aircraft.speed ? Math.round(aircraft.speed) : 'N/A'}km/h</small><br>
-                        <hr>
-                        <small>${aircraft.position_time ? new Date(aircraft.position_time).toLocaleTimeString() : ''}</small>
-                    </div>
-                `;
+                        <div style="min-width: 200px;">
+                            <strong>${aircraft.callsign || aircraft.hex}</strong><br>
+                            <small>${aircraft.type || 'Unknown'} - ${aircraft.country || 'Unknown'}</small><br>
+                            <hr>
+                            <small>Threat: Level ${aircraft.threat_level || 1}</small><br>
+                            <small>Alt: ${aircraft.altitude ? Math.round(aircraft.altitude) : 'N/A'}m</small><br>
+                            <small>Speed: ${aircraft.speed ? Math.round(aircraft.speed) : 'N/A'}km/h</small><br>
+                            <small>Position: ${aircraft.latitude.toFixed(4)}, ${aircraft.longitude.toFixed(4)}</small>
+                            ${ageIndicator}
+                        </div>
+                    `;
 
                     marker.bindPopup(popupContent);
                     marker.addTo(dashboardMap);
                     mapMarkers.set(aircraft.hex, marker);
+                    bounds.extend([lat, lng]);
+
+                    console.log('Added marker for:', aircraft.callsign || aircraft.hex);
                 });
 
-                // Fit bounds if we have markers
-                if (mapMarkers.size > 0) {
-                    const bounds = L.latLngBounds(Array.from(mapMarkers.values()).map(m => m.getLatLng()));
-                    if (bounds.isValid()) {
-                        dashboardMap.fitBounds(bounds.pad(0.1), {
-                            padding: [50, 50],
-                            maxZoom: 10,
-                            animate: true
+                if (markersArray.length > 0 && bounds.isValid()) {
+                    dashboardMap.fitBounds(bounds.pad(0.1), {
+                        padding: [50, 50],
+                        maxZoom: 10,
+                        animate: true
+                    });
+                } else if (markersArray.length === 0) {
+                    // Reset view if no markers
+                    dashboardMap.setView([59.42, 24.83], 8);
+                }
+
+                console.log('Total markers on map:', mapMarkers.size);
+            }
+
+            function setupAutoRefresh() {
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                    refreshInterval = null;
+                }
+
+                if (autoRefreshEnabled) {
+                    refreshInterval = setInterval(() => {
+                        console.log('Auto-refreshing dashboard...');
+                        @this.refreshDashboard();
+                    }, 30000);
+                }
+            }
+
+            function initCharts() {
+                cleanupCharts();
+
+                const todayData = @json($todayAnalyses);
+                if (todayData && todayData.length > 0) {
+                    const todayChartElement = document.querySelector("#today-activity-chart");
+                    if (todayChartElement) {
+                        const hours = todayData.map(d => d.hour + ':00');
+                        const aircraftCounts = todayData.map(d => parseFloat(d.avg_aircraft) || 0);
+                        const militaryCounts = todayData.map(d => parseFloat(d.avg_military) || 0);
+
+                        window.chartInstances.todayActivity = new ApexCharts(todayChartElement, {
+                            series: [
+                                {
+                                    name: 'Total Aircraft',
+                                    type: 'line',
+                                    data: aircraftCounts
+                                },
+                                {
+                                    name: 'Military Aircraft',
+                                    type: 'line',
+                                    data: militaryCounts
+                                }
+                            ],
+                            chart: {
+                                height: 200,
+                                type: 'line',
+                                toolbar: { show: false },
+                                animations: { enabled: false }
+                            },
+                            colors: ['#0d6efd', '#dc3545'],
+                            stroke: {
+                                width: [3, 3],
+                                curve: 'smooth'
+                            },
+                            markers: { size: 4 },
+                            xaxis: {
+                                categories: hours,
+                                labels: { rotate: -45 }
+                            },
+                            yaxis: {
+                                title: { text: 'Aircraft Count', style: { fontSize: '12px' } },
+                                min: 0
+                            },
+                            legend: { show: true, position: 'top' },
+                            tooltip: { shared: true, intersect: false }
                         });
+                        window.chartInstances.todayActivity.render();
+                    }
+                } else {
+                    const todayChartElement = document.querySelector("#today-activity-chart");
+                    if (todayChartElement) {
+                        todayChartElement.innerHTML = `
+                            <div class="text-center text-muted" style="height: 200px; display: flex; flex-direction: column; justify-content: center;">
+                                <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                <p>No activity data available</p>
+                            </div>
+                        `;
                     }
                 }
 
-                console.log(`Added ${mapMarkers.size} markers to map`);
-            }
-
-            // Initialize charts
-            function initCharts() {
-                // Today's Activity Chart
-                const todayData = @json($todayAnalyses);
-                if (todayData && todayData.length > 0) {
-                    const hours = todayData.map(d => d.hour + ':00');
-                    const aircraftCounts = todayData.map(d => parseFloat(d.avg_aircraft) || 0);
-                    const militaryCounts = todayData.map(d => parseFloat(d.avg_military) || 0);
-
-                    const todayChart = new ApexCharts(document.querySelector("#today-activity-chart"), {
-                        series: [
-                            {
-                                name: 'Total Aircraft',
-                                type: 'line',
-                                data: aircraftCounts
-                            },
-                            {
-                                name: 'Military Aircraft',
-                                type: 'line',
-                                data: militaryCounts
-                            }
-                        ],
-                        chart: {
-                            height: 200,
-                            type: 'line',
-                            toolbar: { show: false }
-                        },
-                        colors: ['#0d6efd', '#dc3545'],
-                        stroke: {
-                            width: [3, 3],
-                            curve: 'smooth'
-                        },
-                        markers: {
-                            size: 4
-                        },
-                        xaxis: {
-                            categories: hours,
-                            labels: {
-                                rotate: -45
-                            }
-                        },
-                        yaxis: {
-                            title: {
-                                text: 'Aircraft Count',
-                                style: {
-                                    fontSize: '12px'
-                                }
-                            }
-                        },
-                        legend: {
-                            show: true,
-                            position: 'top'
-                        },
-                        tooltip: {
-                            shared: true,
-                            intersect: false
-                        }
-                    });
-                    todayChart.render();
-                }
-
-                // Threat Distribution Chart
                 const threatData = @json($aiAnalysis);
                 if (threatData && threatData.length > 0) {
-                    const threatLevels = threatData.map(d => `Level ${d.threat_level}`);
-                    const threatCounts = threatData.map(d => parseInt(d.count) || 0);
-                    const colors = ['#198754', '#ffc107', '#fd7e14', '#dc3545', '#6610f2'];
+                    const threatChartElement = document.querySelector("#threat-distribution-chart");
+                    if (threatChartElement) {
+                        const threatLevels = threatData.map(d => `Level ${d.threat_level}`);
+                        const threatCounts = threatData.map(d => parseInt(d.count) || 0);
 
-                    const threatChart = new ApexCharts(document.querySelector("#threat-distribution-chart"), {
-                        series: threatCounts,
-                        chart: {
-                            type: 'donut',
-                            height: 200
-                        },
-                        labels: threatLevels,
-                        colors: colors,
-                        legend: {
-                            show: true,
-                            position: 'bottom'
-                        },
-                        plotOptions: {
-                            pie: {
-                                donut: {
-                                    size: '60%',
-                                    labels: {
-                                        show: true,
-                                        total: {
+                        window.chartInstances.threatDistribution = new ApexCharts(threatChartElement, {
+                            series: threatCounts,
+                            chart: {
+                                type: 'donut',
+                                height: 200
+                            },
+                            labels: threatLevels,
+                            colors: ['#198754', '#ffc107', '#fd7e14', '#dc3545', '#6610f2'],
+                            legend: { show: true, position: 'bottom' },
+                            plotOptions: {
+                                pie: {
+                                    donut: {
+                                        size: '60%',
+                                        labels: {
                                             show: true,
-                                            label: 'Total Alerts',
-                                            color: '#6c757d'
+                                            total: {
+                                                show: true,
+                                                label: 'Total Alerts',
+                                                color: '#6c757d'
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        },
-                        dataLabels: {
-                            enabled: false
-                        }
-                    });
-                    threatChart.render();
+                            },
+                            dataLabels: { enabled: false }
+                        });
+                        window.chartInstances.threatDistribution.render();
+                    }
+                } else {
+                    const threatChartElement = document.querySelector("#threat-distribution-chart");
+                    if (threatChartElement) {
+                        threatChartElement.innerHTML = `
+                            <div class="text-center text-muted" style="height: 200px; display: flex; flex-direction: column; justify-content: center;">
+                                <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                                <p>No threat distribution data</p>
+                            </div>
+                        `;
+                    }
                 }
 
-                // Military vs Civil Chart (Additional Chart)
                 const activeAircraft = @json($activeAircraft);
-                if (activeAircraft && activeAircraft.length > 0) {
-                    const militaryCount = activeAircraft.filter(a => a.is_military).length;
-                    const civilCount = activeAircraft.length - militaryCount;
-                    const droneCount = activeAircraft.filter(a => a.is_drone).length;
-                    const natoCount = activeAircraft.filter(a => a.is_nato).length;
+                console.log('Active aircraft for chart:', activeAircraft);
 
-                    const militaryCivilChart = new ApexCharts(document.querySelector("#military-civil-chart"), {
-                        series: [{
-                            data: [
-                                { x: 'Military', y: militaryCount, fillColor: '#dc3545' },
-                                { x: 'Civil', y: civilCount, fillColor: '#0d6efd' },
-                                { x: 'Drones', y: droneCount, fillColor: '#fd7e14' },
-                                { x: 'NATO', y: natoCount, fillColor: '#0dcaf0' }
-                            ]
-                        }],
-                        chart: {
-                            type: 'bar',
-                            height: 200,
-                            toolbar: { show: false }
-                        },
-                        colors: ['#dc3545', '#0d6efd', '#fd7e14', '#0dcaf0'],
-                        plotOptions: {
-                            bar: {
-                                horizontal: true,
-                                borderRadius: 4,
-                                distributed: true
+                const militaryCivilElement = document.querySelector("#military-civil-chart");
+                if (militaryCivilElement) {
+                    if (activeAircraft && activeAircraft.length > 0) {
+                        const militaryCount = activeAircraft.filter(a => a.is_military).length;
+                        const civilCount = activeAircraft.length - militaryCount;
+                        const droneCount = activeAircraft.filter(a => a.is_drone).length;
+                        const natoCount = activeAircraft.filter(a => a.is_nato).length;
+
+                        console.log('Chart data:', { militaryCount, civilCount, droneCount, natoCount });
+
+                        window.chartInstances.militaryCivil = new ApexCharts(militaryCivilElement, {
+                            series: [{
+                                data: [
+                                    { x: 'Military', y: militaryCount },
+                                    { x: 'Civil', y: civilCount },
+                                    { x: 'Drones', y: droneCount },
+                                    { x: 'NATO', y: natoCount }
+                                ]
+                            }],
+                            chart: {
+                                type: 'bar',
+                                height: 200,
+                                toolbar: { show: false }
+                            },
+                            colors: ['#dc3545', '#0d6efd', '#fd7e14', '#0dcaf0'],
+                            plotOptions: {
+                                bar: {
+                                    horizontal: true,
+                                    borderRadius: 4,
+                                    distributed: true
+                                }
+                            },
+                            dataLabels: {
+                                enabled: true,
+                                formatter: function(val) {
+                                    return val;
+                                }
+                            },
+                            xaxis: {
+                                categories: ['Military', 'Civil', 'Drones', 'NATO'],
+                                labels: {
+                                    show: true
+                                }
+                            },
+                            yaxis: {
+                                title: { text: 'Aircraft Count' },
+                                labels: {
+                                    show: true
+                                }
                             }
-                        },
-                        dataLabels: {
-                            enabled: true,
-                            formatter: function(val) {
-                                return val;
-                            }
-                        },
-                        xaxis: {
-                            categories: ['Military', 'Civil', 'Drones', 'NATO']
-                        },
-                        yaxis: {
-                            title: {
-                                text: 'Aircraft Count'
-                            }
-                        }
-                    });
-                    militaryCivilChart.render();
+                        });
+                        window.chartInstances.militaryCivil.render();
+                    } else {
+
+                        militaryCivilElement.innerHTML = `
+                            <div class="text-center text-muted" style="height: 200px; display: flex; flex-direction: column; justify-content: center;">
+                                <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                                <p>No aircraft data available</p>
+                                <small>Chart will populate when aircraft are active</small>
+                            </div>
+                        `;
+                    }
                 }
 
-                // Threat Trends Chart (Last 7 Days)
                 const trendsData = @json($threatTrends);
                 if (trendsData && trendsData.length > 0) {
-                    const dates = trendsData.map(d => {
-                        const date = new Date(d.date);
-                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    });
-                    const anomalyScores = trendsData.map(d => parseFloat(d.avg_anomaly) || 0);
-                    const highRiskDays = trendsData.map(d => parseInt(d.high_risk_count) || 0);
-                    const compositeScores = trendsData.map(d => parseFloat(d.avg_composite) || 0);
+                    const trendsElement = document.querySelector("#threat-trends-chart");
+                    if (trendsElement) {
+                        const dates = trendsData.map(d => {
+                            const date = new Date(d.date);
+                            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                        });
+                        const anomalyScores = trendsData.map(d => parseFloat(d.avg_anomaly) || 0);
+                        const highRiskDays = trendsData.map(d => parseInt(d.high_risk_count) || 0);
+                        const compositeScores = trendsData.map(d => parseFloat(d.avg_composite) || 0);
 
-                    const trendsChart = new ApexCharts(document.querySelector("#threat-trends-chart"), {
-                        series: [
-                            {
-                                name: 'Avg Anomaly Score',
-                                type: 'line',
-                                data: anomalyScores
-                            },
-                            {
-                                name: 'High Risk Incidents',
-                                type: 'column',
-                                data: highRiskDays
-                            },
-                            {
-                                name: 'Composite Score',
-                                type: 'line',
-                                data: compositeScores
-                            }
-                        ],
-                        chart: {
-                            height: 300,
-                            type: 'line',
-                            toolbar: {
-                                show: true,
-                                tools: {
-                                    download: true,
-                                    selection: true,
-                                    zoom: true,
-                                    zoomin: true,
-                                    zoomout: true,
-                                    pan: true,
-                                    reset: true
-                                }
-                            }
-                        },
-                        colors: ['#dc3545', '#0d6efd', '#fd7e14'],
-                        stroke: {
-                            width: [3, 0, 3],
-                            curve: 'smooth',
-                            dashArray: [0, 0, 5]
-                        },
-                        markers: {
-                            size: [5, 0, 5]
-                        },
-                        xaxis: {
-                            categories: dates,
-                            title: {
-                                text: 'Date'
-                            }
-                        },
-                        yaxis: [
-                            {
-                                title: {
-                                    text: 'Anomaly Score',
-                                    style: {
-                                        color: '#dc3545'
-                                    }
+                        window.chartInstances.threatTrends = new ApexCharts(trendsElement, {
+                            series: [
+                                {
+                                    name: 'Avg Anomaly Score',
+                                    type: 'line',
+                                    data: anomalyScores
                                 },
-                                min: 0,
-                                max: 100
+                                {
+                                    name: 'High Risk Incidents',
+                                    type: 'column',
+                                    data: highRiskDays
+                                },
+                                {
+                                    name: 'Composite Score',
+                                    type: 'line',
+                                    data: compositeScores
+                                }
+                            ],
+                            chart: {
+                                height: 300,
+                                type: 'line',
+                                toolbar: { show: true }
                             },
-                            {
-                                opposite: true,
-                                title: {
-                                    text: 'High Risk Incidents',
-                                    style: {
-                                        color: '#0d6efd'
+                            colors: ['#dc3545', '#0d6efd', '#fd7e14'],
+                            stroke: {
+                                width: [3, 0, 3],
+                                curve: 'smooth',
+                                dashArray: [0, 0, 5]
+                            },
+                            markers: { size: [5, 0, 5] },
+                            xaxis: {
+                                categories: dates,
+                                title: { text: 'Date' }
+                            },
+                            yaxis: [
+                                {
+                                    title: {
+                                        text: 'Anomaly Score',
+                                        style: { color: '#dc3545' }
+                                    },
+                                    min: 0,
+                                    max: 100
+                                },
+                                {
+                                    opposite: true,
+                                    title: {
+                                        text: 'High Risk Incidents',
+                                        style: { color: '#0d6efd' }
                                     }
                                 }
-                            }
-                        ],
-                        tooltip: {
-                            shared: true,
-                            intersect: false
-                        },
-                        legend: {
-                            show: true,
-                            position: 'top'
-                        },
-                        grid: {
-                            borderColor: '#f1f1f1'
-                        }
-                    });
-                    trendsChart.render();
+                            ],
+                            tooltip: { shared: true, intersect: false },
+                            legend: { show: true, position: 'top' },
+                            grid: { borderColor: '#f1f1f1' }
+                        });
+                        window.chartInstances.threatTrends.render();
+                    }
+                } else {
+                    const trendsElement = document.querySelector("#threat-trends-chart");
+                    if (trendsElement) {
+                        trendsElement.innerHTML = `
+                            <div class="text-center text-muted" style="height: 300px; display: flex; flex-direction: column; justify-content: center;">
+                                <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                                <p>No trend data available</p>
+                                <small>Data will appear after analyses are performed</small>
+                            </div>
+                        `;
+                    }
                 }
             }
 
-            // Initialize everything when page loads
             document.addEventListener('DOMContentLoaded', function() {
-                console.log('Initializing dashboard...');
-
-                // Initialize map
+                console.log('DOM loaded, initializing dashboard...');
                 setTimeout(initDashboardMap, 100);
-
-                // Initialize charts
                 setTimeout(initCharts, 500);
-
-                // Auto-refresh every 30 seconds
-                setInterval(() => {
-                    console.log('Auto-refreshing dashboard...');
-                    @this.refreshDashboard();
-                }, 30000);
+                setupAutoRefresh();
             });
 
-            // Listen for Livewire events
             document.addEventListener('livewire:initialized', () => {
-                console.log('Livewire initialized for dashboard');
+                console.log('Livewire initialized');
 
-                // Update map when data is refreshed
                 Livewire.on('dashboard-data-loaded', (event) => {
-                    console.log('Dashboard data loaded event received:', event);
+                    console.log('Dashboard data loaded event received');
                     updateDashboardMarkers(event);
-
-                    // Reinitialize charts with updated data
                     setTimeout(initCharts, 100);
+                });
+
+                Livewire.on('auto-refresh-toggled', (event) => {
+                    console.log('Auto refresh toggled:', event.enabled);
+                    autoRefreshEnabled = event.enabled;
+                    setupAutoRefresh();
+
+                    const toggle = document.getElementById('autoRefreshToggle');
+                    if (toggle) {
+                        toggle.checked = autoRefreshEnabled;
+                    }
                 });
             });
 
-            // Handle window resize
-            window.addEventListener('resize', () => {
+            window.addEventListener('resize', debounce(() => {
                 if (dashboardMap) {
                     setTimeout(() => dashboardMap.invalidateSize(), 100);
+                }
+                setTimeout(initCharts, 200);
+            }, 250));
+
+            window.addEventListener('beforeunload', () => {
+                cleanupCharts();
+                if (refreshInterval) clearInterval(refreshInterval);
+                if (dashboardMap) {
+                    dashboardMap.remove();
                 }
             });
         </script>
@@ -977,112 +1081,6 @@
     @push('styles')
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-        <style>
-            #dashboard-map {
-                min-height: 400px;
-                border-radius: 4px;
-                background-color: #f8f9fa;
-            }
-            .dashboard-aircraft-marker {
-                background: transparent !important;
-                border: none !important;
-            }
-            .avatar-sm {
-                width: 40px;
-                height: 40px;
-            }
-            .avatar-title {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                height: 100%;
-            }
-            .fs-24 {
-                font-size: 24px;
-            }
-            .table-danger {
-                background-color: rgba(220, 53, 69, 0.05) !important;
-            }
-            .table-warning {
-                background-color: rgba(255, 193, 7, 0.05) !important;
-            }
-            .card {
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                border: 1px solid rgba(0,0,0,0.1);
-                transition: transform 0.2s ease;
-            }
-            .card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            }
-            .list-group-item {
-                border-left: none;
-                border-right: none;
-                padding: 1rem;
-            }
-            .list-group-item:first-child {
-                border-top: none;
-            }
-            .list-group-item:last-child {
-                border-bottom: none;
-            }
-            .btn-outline-primary:hover {
-                background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-                color: white;
-            }
-            .btn-outline-danger:hover {
-                background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
-                color: white;
-            }
-            .btn-outline-warning:hover {
-                background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%);
-                color: #000;
-            }
-            .btn-outline-info:hover {
-                background: linear-gradient(135deg, #0dcaf0 0%, #31d2f2 100%);
-                color: white;
-            }
-            .btn-outline-success:hover {
-                background: linear-gradient(135deg, #198754 0%, #157347 100%);
-                color: white;
-            }
-            .btn-outline-dark:hover {
-                background: linear-gradient(135deg, #212529 0%, #424649 100%);
-                color: white;
-            }
-            .card-header.bg-primary {
-                background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
-            }
-            .card-header.bg-danger {
-                background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%) !important;
-            }
-            .card.bg-primary {
-                background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%) !important;
-            }
-            .card.bg-danger {
-                background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%) !important;
-            }
-            .card.bg-info {
-                background: linear-gradient(135deg, #0dcaf0 0%, #31d2f2 100%) !important;
-            }
-            .card.bg-success {
-                background: linear-gradient(135deg, #198754 0%, #157347 100%) !important;
-            }
-            .card.bg-dark {
-                background: linear-gradient(135deg, #212529 0%, #424649 100%) !important;
-            }
-            .progress {
-                border-radius: 10px;
-                overflow: hidden;
-            }
-            .progress-bar {
-                border-radius: 10px;
-            }
-            .font-monospace {
-                font-family: 'Courier New', monospace;
-                font-size: 12px;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('user/assets/css/pages/dashboard.css') }}" />
     @endpush
 </div>

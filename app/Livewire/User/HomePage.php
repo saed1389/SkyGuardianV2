@@ -9,172 +9,189 @@ use Carbon\Carbon;
 class HomePage extends Component
 {
     public $loading = false;
+    public $autoRefreshEnabled = true;
 
-    // Real-time stats
     public $stats = [];
     public $recentAlerts = [];
     public $activeAircraft = [];
     public $aiAnalysis = [];
     public $todayAnalyses = [];
     public $threatTrends = [];
-
-    // Map markers data
     public $mapMarkers = [];
 
-    // Time periods
-    public $timeRange = '1hour';
-
-    public function mount()
+    public function mount(): void
     {
         $this->loadDashboardData();
     }
 
-    public function loadDashboardData()
+    public function loadDashboardData(): void
     {
         $this->loading = true;
 
-        // 1. Real-time statistics
-        $this->loadRealTimeStats();
+        DB::beginTransaction();
+        try {
+            $this->loadRealTimeStats();
+            $this->loadRecentAlerts();
+            $this->loadActiveAircraft();
+            $this->loadAIAnalysis();
+            $this->loadTodayAnalyses();
+            $this->loadThreatTrends();
+            $this->prepareMapMarkers();
 
-        // 2. Recent AI alerts
-        $this->loadRecentAlerts();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
 
-        // 3. Active aircraft positions
-        $this->loadActiveAircraft();
-
-        // 4. AI threat analysis
-        $this->loadAIAnalysis();
-
-        // 5. Today's analyses
-        $this->loadTodayAnalyses();
-
-        // 6. Threat trends
-        $this->loadThreatTrends();
-
-        // 7. Map markers
-        $this->prepareMapMarkers();
+            $this->recentAlerts = collect();
+            $this->activeAircraft = collect();
+            $this->aiAnalysis = collect();
+            $this->todayAnalyses = collect();
+            $this->threatTrends = collect();
+            $this->mapMarkers = [];
+            $this->stats = $this->getDefaultStats();
+        }
 
         $this->loading = false;
-
-        // Dispatch event for map update
         $this->dispatch('dashboard-data-loaded', markers: $this->mapMarkers);
     }
 
-    private function loadRealTimeStats()
+    private function loadRealTimeStats(): void
     {
         $now = Carbon::now();
         $oneHourAgo = $now->copy()->subHour();
         $todayStart = $now->copy()->startOfDay();
 
-        // Active aircraft in last hour
-        $activeAircraft = DB::table('skyguardian_positions')
-            ->where('position_time', '>=', $oneHourAgo)
-            ->distinct('hex')
-            ->count('hex');
+        $activeAircraftQuery = DB::table('skyguardian_positions')
+            ->where('position_time', '>=', $oneHourAgo);
 
-        // Military aircraft active
-        $activeMilitary = DB::table('skyguardian_positions as p')
+        $activeAircraft = $activeAircraftQuery->distinct('hex')->count('hex');
+
+        $threatCounts = DB::table('skyguardian_positions as p')
             ->join('skyguardian_aircraft as a', 'p.hex', '=', 'a.hex')
             ->where('p.position_time', '>=', $oneHourAgo)
-            ->where('a.is_military', true)
-            ->distinct('p.hex')
-            ->count('p.hex');
+            ->selectRaw('
+                COUNT(DISTINCT CASE WHEN a.is_military = true THEN p.hex END) as active_military,
+                COUNT(DISTINCT CASE WHEN a.threat_level >= 4 THEN p.hex END) as high_threat'
+            )
+            ->first();
 
-        // High threat aircraft
-        $highThreat = DB::table('skyguardian_positions as p')
-            ->join('skyguardian_aircraft as a', 'p.hex', '=', 'a.hex')
-            ->where('p.position_time', '>=', $oneHourAgo)
-            ->where('a.threat_level', '>=', 4)
-            ->distinct('p.hex')
-            ->count('p.hex');
-
-        // AI alerts today
         $aiAlertsToday = DB::table('skyguardian_ai_alerts')
             ->whereDate('ai_timestamp', $todayStart)
             ->count();
 
-        // Aircraft in Estonia right now
         $inEstonia = DB::table('skyguardian_positions')
             ->where('position_time', '>=', $oneHourAgo)
             ->where('in_estonia', true)
             ->distinct('hex')
             ->count('hex');
 
-        // Total aircraft in database
         $totalAircraft = DB::table('skyguardian_aircraft')->count();
 
-        // Latest analysis
         $latestAnalysis = DB::table('skyguardian_analyses')
             ->orderBy('analysis_time', 'desc')
             ->first();
 
-        // Calculate average alerts per hour for today (fix the error)
-        $currentHour = (int) date('H');
-        $avgPerHour = $aiAlertsToday > 0 && $currentHour > 0
-            ? round($aiAlertsToday / ($currentHour + 1), 1)
-            : 0;
+        $currentHour = $now->hour;
+        $avgPerHour = $currentHour > 0 ? round($aiAlertsToday / ($currentHour + 1), 1) : 0;
 
         $this->stats = [
             'active_aircraft' => $activeAircraft,
-            'active_military' => $activeMilitary,
-            'high_threat' => $highThreat,
+            'active_military' => $threatCounts->active_military ?? 0,
+            'high_threat' => $threatCounts->high_threat ?? 0,
             'ai_alerts_today' => $aiAlertsToday,
             'in_estonia' => $inEstonia,
             'total_aircraft' => $totalAircraft,
             'latest_analysis' => $latestAnalysis,
             'update_time' => $now->format('H:i:s'),
             'avg_alerts_per_hour' => $avgPerHour,
+            'current_hour' => $currentHour,
         ];
     }
 
-    private function loadRecentAlerts()
+    private function loadRecentAlerts(): void
     {
         $this->recentAlerts = DB::table('skyguardian_ai_alerts')
-            ->select('id', 'analysis_id', 'trigger_level', 'threat_level', 'situation', 'primary_concern', 'ai_timestamp', 'confidence')
+            ->select('id', 'analysis_id', 'trigger_level', 'threat_level',
+                'situation', 'primary_concern', 'ai_timestamp', 'confidence')
             ->orderBy('ai_timestamp', 'desc')
             ->limit(5)
-            ->get();
+            ->get()
+            ->map(function ($alert) {
+                $alert->confidence = floatval($alert->confidence);
+                $alert->threat_level = strtoupper($alert->threat_level);
+                return $alert;
+            });
     }
 
-    private function loadActiveAircraft()
+    private function loadActiveAircraft(): void
     {
         $oneHourAgo = Carbon::now()->subHour();
 
-        // Get latest positions for each aircraft in last hour
-        $this->activeAircraft = DB::table('skyguardian_positions as p')
-            ->select([
-                'p.hex',
-                'p.latitude',
-                'p.longitude',
-                'p.altitude',
-                'p.speed',
-                'p.heading',
-                'p.position_time',
-                'p.in_estonia',
-                'p.near_sensitive',
-                'p.threat_level as position_threat',
-                'a.callsign',
-                'a.type',
-                'a.country',
-                'a.is_military',
-                'a.is_drone',
-                'a.is_nato',
-                'a.threat_level as aircraft_threat',
-            ])
-            ->join('skyguardian_aircraft as a', 'p.hex', '=', 'a.hex')
-            ->where('p.position_time', '>=', $oneHourAgo)
-            ->whereIn('p.id', function($query) use ($oneHourAgo) {
-                $query->select(DB::raw('MAX(id)'))
-                    ->from('skyguardian_positions')
-                    ->where('position_time', '>=', $oneHourAgo)
-                    ->groupBy('hex');
-            })
-            ->orderBy('p.position_time', 'desc')
-            ->limit(10)
+        $recentAircraft = DB::table('skyguardian_positions')
+            ->select('hex', DB::raw('MAX(position_time) as latest_time'))
+            ->where('position_time', '>=', $oneHourAgo)
+            ->groupBy('hex')
             ->get();
+
+        if ($recentAircraft->isEmpty()) {
+            $this->activeAircraft = collect();
+            return;
+        }
+
+        $latestPositions = [];
+        foreach ($recentAircraft as $aircraft) {
+            $latestPositions[] = DB::table('skyguardian_positions')
+                ->where('hex', $aircraft->hex)
+                ->where('position_time', $aircraft->latest_time)
+                ->first();
+        }
+
+        $this->activeAircraft = collect($latestPositions)
+            ->filter(function ($position) {
+                return $position !== null;
+            })
+            ->map(function ($position) {
+                $aircraft = DB::table('skyguardian_aircraft')
+                    ->where('hex', $position->hex)
+                    ->first();
+
+                if (!$aircraft) {
+                    return null;
+                }
+
+                $positionTime = Carbon::parse($position->position_time);
+                $minutesAgo = $positionTime->diffInMinutes(now());
+
+                return (object) [
+                    'hex' => $position->hex,
+                    'latitude' => $position->latitude,
+                    'longitude' => $position->longitude,
+                    'altitude' => $position->altitude,
+                    'speed' => $position->speed,
+                    'heading' => $position->heading,
+                    'position_time' => $position->position_time,
+                    'in_estonia' => $position->in_estonia,
+                    'near_sensitive' => $position->near_sensitive,
+                    'position_threat' => $position->threat_level,
+                    'callsign' => $aircraft->callsign,
+                    'type' => $aircraft->type,
+                    'country' => $aircraft->country,
+                    'is_military' => boolval($aircraft->is_military),
+                    'is_drone' => boolval($aircraft->is_drone),
+                    'is_nato' => boolval($aircraft->is_nato),
+                    'aircraft_threat' => intval($aircraft->threat_level),
+                    'minutes_ago' => $minutesAgo,
+                ];
+            })
+            ->filter(function ($aircraft) {
+                return $aircraft !== null && $aircraft->minutes_ago <= 60;
+            })
+            ->sortByDesc('position_time')
+            ->take(20)
+            ->values();
     }
 
-    private function loadAIAnalysis()
+    private function loadAIAnalysis(): void
     {
         $todayStart = Carbon::today();
 
@@ -188,10 +205,15 @@ class HomePage extends Component
             ->whereDate('ai_timestamp', $todayStart)
             ->groupBy('threat_level')
             ->orderBy('threat_level', 'desc')
-            ->get();
+            ->get()
+            ->map(function ($analysis) {
+                $analysis->avg_confidence = floatval($analysis->avg_confidence);
+                $analysis->count = intval($analysis->count);
+                return $analysis;
+            });
     }
 
-    private function loadTodayAnalyses()
+    private function loadTodayAnalyses(): void
     {
         $todayStart = Carbon::today();
 
@@ -206,10 +228,17 @@ class HomePage extends Component
             ->whereDate('analysis_time', $todayStart)
             ->groupBy(DB::raw('HOUR(analysis_time)'))
             ->orderBy('hour')
-            ->get();
+            ->get()
+            ->map(function ($analysis) {
+                $analysis->avg_aircraft = floatval($analysis->avg_aircraft);
+                $analysis->avg_military = floatval($analysis->avg_military);
+                $analysis->avg_anomaly = floatval($analysis->avg_anomaly);
+                $analysis->analysis_count = intval($analysis->analysis_count);
+                return $analysis;
+            });
     }
 
-    private function loadThreatTrends()
+    private function loadThreatTrends(): void
     {
         $lastWeek = Carbon::now()->subDays(7);
 
@@ -224,44 +253,74 @@ class HomePage extends Component
             ->where('analysis_time', '>=', $lastWeek)
             ->groupBy(DB::raw('DATE(analysis_time)'))
             ->orderBy('date')
-            ->get();
+            ->get()
+            ->map(function ($trend) {
+                $trend->avg_anomaly = floatval($trend->avg_anomaly);
+                $trend->max_anomaly = floatval($trend->max_anomaly);
+                $trend->avg_composite = floatval($trend->avg_composite);
+                $trend->high_risk_count = intval($trend->high_risk_count);
+                return $trend;
+            });
     }
 
-    private function prepareMapMarkers()
+    private function prepareMapMarkers(): void
     {
-        $this->mapMarkers = [];
-
-        foreach ($this->activeAircraft as $aircraft) {
-            if (!is_null($aircraft->latitude) && !is_null($aircraft->longitude)) {
-                $this->mapMarkers[] = [
-                    'hex' => $aircraft->hex,
-                    'callsign' => $aircraft->callsign ?? 'N/A',
-                    'type' => $aircraft->type ?? 'Unknown',
-                    'country' => $aircraft->country ?? 'Unknown',
-                    'threat_level' => intval($aircraft->aircraft_threat),
-                    'is_military' => boolval($aircraft->is_military),
-                    'is_drone' => boolval($aircraft->is_drone),
-                    'is_nato' => boolval($aircraft->is_nato),
-                    'latitude' => floatval($aircraft->latitude),
-                    'longitude' => floatval($aircraft->longitude),
-                    'altitude' => floatval($aircraft->altitude),
-                    'speed' => floatval($aircraft->speed),
-                    'heading' => floatval($aircraft->heading),
-                    'position_time' => $aircraft->position_time,
-                    'in_estonia' => boolval($aircraft->in_estonia),
-                    'near_sensitive' => boolval($aircraft->near_sensitive),
-                    'is_active' => true,
-                ];
-            }
-        }
+        $this->mapMarkers = $this->activeAircraft->filter(function ($aircraft) {
+            return !is_null($aircraft->latitude) &&
+                !is_null($aircraft->longitude) &&
+                $aircraft->minutes_ago <= 60;
+        })->map(function ($aircraft) {
+            return [
+                'hex' => $aircraft->hex,
+                'callsign' => $aircraft->callsign ?? 'N/A',
+                'type' => $aircraft->type ?? 'Unknown',
+                'country' => $aircraft->country ?? 'Unknown',
+                'threat_level' => $aircraft->aircraft_threat,
+                'is_military' => $aircraft->is_military,
+                'is_drone' => $aircraft->is_drone,
+                'is_nato' => $aircraft->is_nato,
+                'latitude' => floatval($aircraft->latitude),
+                'longitude' => floatval($aircraft->longitude),
+                'altitude' => floatval($aircraft->altitude),
+                'speed' => floatval($aircraft->speed),
+                'heading' => floatval($aircraft->heading),
+                'position_time' => $aircraft->position_time,
+                'in_estonia' => $aircraft->in_estonia,
+                'near_sensitive' => $aircraft->near_sensitive,
+                'is_active' => true,
+                'minutes_ago' => $aircraft->minutes_ago,
+            ];
+        })->values()->toArray();
     }
 
-    public function refreshDashboard()
+    private function getDefaultStats(): array
+    {
+        return [
+            'active_aircraft' => 0,
+            'active_military' => 0,
+            'high_threat' => 0,
+            'ai_alerts_today' => 0,
+            'in_estonia' => 0,
+            'total_aircraft' => 0,
+            'latest_analysis' => null,
+            'update_time' => Carbon::now()->format('H:i:s'),
+            'avg_alerts_per_hour' => 0,
+            'current_hour' => 0,
+        ];
+    }
+
+    public function toggleAutoRefresh(): void
+    {
+        $this->autoRefreshEnabled = !$this->autoRefreshEnabled;
+        $this->dispatch('auto-refresh-toggled', enabled: $this->autoRefreshEnabled);
+    }
+
+    public function refreshDashboard(): void
     {
         $this->loadDashboardData();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
         return view('livewire.user.home-page')->layout('components.layouts.userApp');
     }

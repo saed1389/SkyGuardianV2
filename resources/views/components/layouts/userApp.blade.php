@@ -12,6 +12,7 @@
     <link href="{{ asset('user/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('user/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('user/assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @stack('styles')
     @livewireStyles
@@ -47,6 +48,34 @@
 <script src="{{ asset('user/assets/js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
 <script src="{{ asset('user/assets/js/app.js') }}"></script>
 @livewireScripts
+@push('scripts')
+    <script>
+        window.addEventListener('language-changed', function(event) {
+            const translationsPath = `/user/assets/lang/${event.detail.locale}.json`;
+
+            fetch(translationsPath)
+                .then(response => response.json())
+                .then(translations => {
+                    document.querySelectorAll('[data-i18n]').forEach(element => {
+                        const key = element.getAttribute('data-i18n');
+                        const translation = getNestedProperty(translations, key);
+                        if (translation) {
+                            element.textContent = translation;
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading sidebar translations:', error);
+                });
+        });
+
+        function getNestedProperty(obj, path) {
+            return path.split('.').reduce((current, key) => {
+                return current && current[key] !== undefined ? current[key] : null;
+            }, obj);
+        }
+    </script>
+@endpush
 @stack('scripts')
 </body>
 </html>

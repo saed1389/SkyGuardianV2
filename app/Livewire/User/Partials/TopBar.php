@@ -10,25 +10,24 @@ class TopBar extends Component
     public $weather;
     public $loading = false;
 
-    public function mount()
+    public function mount(): void
     {
         $this->loadWeather();
     }
 
-    public function loadWeather()
+    public function loadWeather(): void
     {
         $this->weather = SkyguardianWeather::latest('data_timestamp')->first();
     }
 
-    public function refreshWeather()
+    public function refreshWeather(): void
     {
         $this->loading = true;
         $this->loadWeather();
         $this->loading = false;
     }
 
-    // Helper methods for the view
-    public function getWeatherIcon()
+    public function getWeatherIcon(): string
     {
         if (!$this->weather) return 'bx-cloud';
 
@@ -41,7 +40,7 @@ class TopBar extends Component
         }
     }
 
-    public function getWeatherIconClass()
+    public function getWeatherIconClass(): string
     {
         if (!$this->weather) return 'text-secondary';
 
@@ -54,19 +53,19 @@ class TopBar extends Component
         }
     }
 
-    public function getFormattedSunrise()
+    public function getFormattedSunrise(): string
     {
         if (!$this->weather || !$this->weather->sunrise) return 'N/A';
         return \Carbon\Carbon::createFromTimestamp($this->weather->sunrise)->format('H:i');
     }
 
-    public function getFormattedSunset()
+    public function getFormattedSunset(): string
     {
         if (!$this->weather || !$this->weather->sunset) return 'N/A';
         return \Carbon\Carbon::createFromTimestamp($this->weather->sunset)->format('H:i');
     }
 
-    public function getFormattedVisibility()
+    public function getFormattedVisibility(): string
     {
         if (!$this->weather || !$this->weather->visibility) return 'N/A';
         return round($this->weather->visibility / 1000, 1) . ' km';
@@ -83,7 +82,20 @@ class TopBar extends Component
         return $this->weather->created_at->diffForHumans();
     }
 
-    public function render()
+    public function getFlagImage(): string
+    {
+        $locale = app()->getLocale();
+
+        if ($locale === 'tr') {
+            return asset('user/assets/images/flags/tr.svg');
+        } elseif ($locale === 'ee') {
+            return asset('user/assets/images/flags/estonia.svg');
+        } else {
+            return asset('user/assets/images/flags/us.svg');
+        }
+    }
+
+    public function render(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
     {
         return view('livewire.user.partials.top-bar');
     }

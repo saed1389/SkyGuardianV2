@@ -1,0 +1,46 @@
+.text-orange {
+    color: #fd7e14 !important;
+}
+
+#weatherDropdown .dropdown-body {
+    min-width: 280px;
+}
+
+#weatherDropdown {
+    inset: unset;
+}
+
+#weatherDropdown .avatar-title {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.locale-toast {
+    animation: slideIn 0.3s ease-out;
+    background: white;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
