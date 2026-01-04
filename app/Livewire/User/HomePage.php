@@ -19,6 +19,9 @@ class HomePage extends Component
     public $threatTrends = [];
     public $mapMarkers = [];
 
+    // New property for aircraft types
+    public $aircraftTypes = [];
+
     public function mount(): void
     {
         $this->loadDashboardData();
@@ -37,6 +40,7 @@ class HomePage extends Component
             $this->loadTodayAnalyses();
             $this->loadThreatTrends();
             $this->prepareMapMarkers();
+            $this->loadAircraftTypes();
 
             DB::commit();
         } catch (\Exception $e) {
@@ -48,6 +52,7 @@ class HomePage extends Component
             $this->todayAnalyses = collect();
             $this->threatTrends = collect();
             $this->mapMarkers = [];
+            $this->aircraftTypes = [];
             $this->stats = $this->getDefaultStats();
         }
 
@@ -59,52 +64,49 @@ class HomePage extends Component
     {
         $now = Carbon::now();
         $oneHourAgo = $now->copy()->subHour();
-        $todayStart = $now->copy()->startOfDay();
 
-        $activeAircraftQuery = DB::table('skyguardian_positions')
-            ->where('position_time', '>=', $oneHourAgo);
+        // 1. Active Aircraft (unique aircraft in last 60 minutes)
+        $activeAircraft = DB::table('skyguardian_positions')
+            ->where('position_time', '>=', $oneHourAgo)
+            ->select('hex')
+            ->distinct()
+            ->count('hex');
 
-        $activeAircraft = $activeAircraftQuery->distinct('hex')->count('hex');
-
+        // 2. Military, High Threat, and In Estonia (all in one query for better performance)
         $threatCounts = DB::table('skyguardian_positions as p')
             ->join('skyguardian_aircraft as a', 'p.hex', '=', 'a.hex')
             ->where('p.position_time', '>=', $oneHourAgo)
             ->selectRaw('
-                COUNT(DISTINCT CASE WHEN a.is_military = true THEN p.hex END) as active_military,
-                COUNT(DISTINCT CASE WHEN a.threat_level >= 4 THEN p.hex END) as high_threat'
+            COUNT(DISTINCT p.hex) as total_active,
+            COUNT(DISTINCT CASE WHEN a.is_military = true THEN p.hex END) as active_military,
+            COUNT(DISTINCT CASE WHEN a.threat_level >= 4 THEN p.hex END) as high_threat,
+            COUNT(DISTINCT CASE WHEN p.in_estonia = true THEN p.hex END) as in_estonia'
             )
             ->first();
 
-        $aiAlertsToday = DB::table('skyguardian_ai_alerts')
-            ->whereDate('ai_timestamp', $todayStart)
+        // 3. AI Alerts (last 60 minutes)
+        $aiAlertsLastHour = DB::table('skyguardian_ai_alerts')
+            ->where('ai_timestamp', '>=', $oneHourAgo)
             ->count();
 
-        $inEstonia = DB::table('skyguardian_positions')
-            ->where('position_time', '>=', $oneHourAgo)
-            ->where('in_estonia', true)
-            ->distinct('hex')
-            ->count('hex');
-
+        // 4. Total Aircraft (all time - for reference)
         $totalAircraft = DB::table('skyguardian_aircraft')->count();
 
+        // 5. Latest Risk Analysis (last 60 minutes)
         $latestAnalysis = DB::table('skyguardian_analyses')
+            ->where('analysis_time', '>=', $oneHourAgo)
             ->orderBy('analysis_time', 'desc')
             ->first();
 
-        $currentHour = $now->hour;
-        $avgPerHour = $currentHour > 0 ? round($aiAlertsToday / ($currentHour + 1), 1) : 0;
-
         $this->stats = [
-            'active_aircraft' => $activeAircraft,
+            'active_aircraft' => $threatCounts->total_active ?? 0,
             'active_military' => $threatCounts->active_military ?? 0,
             'high_threat' => $threatCounts->high_threat ?? 0,
-            'ai_alerts_today' => $aiAlertsToday,
-            'in_estonia' => $inEstonia,
+            'ai_alerts_last_hour' => $aiAlertsLastHour,
+            'in_estonia' => $threatCounts->in_estonia ?? 0,
             'total_aircraft' => $totalAircraft,
             'latest_analysis' => $latestAnalysis,
             'update_time' => $now->format('H:i:s'),
-            'avg_alerts_per_hour' => $avgPerHour,
-            'current_hour' => $currentHour,
         ];
     }
 
@@ -215,7 +217,7 @@ class HomePage extends Component
 
     private function loadTodayAnalyses(): void
     {
-        $todayStart = Carbon::today();
+        $oneHourAgo = Carbon::now()->today();
 
         $this->todayAnalyses = DB::table('skyguardian_analyses')
             ->select(
@@ -225,7 +227,7 @@ class HomePage extends Component
                 DB::raw('AVG(anomaly_score) as avg_anomaly'),
                 DB::raw('COUNT(*) as analysis_count')
             )
-            ->whereDate('analysis_time', $todayStart)
+            ->where('analysis_time', '>=', $oneHourAgo) // Changed from whereDate
             ->groupBy(DB::raw('HOUR(analysis_time)'))
             ->orderBy('hour')
             ->get()
@@ -263,6 +265,28 @@ class HomePage extends Component
             });
     }
 
+    private function loadAircraftTypes(): void
+    {
+        $oneHourAgo = Carbon::now()->subHour();
+
+        $this->aircraftTypes = DB::table('skyguardian_positions as p')
+            ->join('skyguardian_aircraft as a', 'p.hex', '=', 'a.hex')
+            ->select(
+                'a.type',
+                DB::raw('COUNT(DISTINCT p.hex) as count')
+            )
+            ->where('p.position_time', '>=', $oneHourAgo)
+            ->whereNotNull('a.type')
+            ->groupBy('a.type')
+            ->orderBy('count', 'desc')
+            ->limit(10)
+            ->get()
+            ->map(function ($type) {
+                $type->count = intval($type->count);
+                return $type;
+            });
+    }
+
     private function prepareMapMarkers(): void
     {
         $this->mapMarkers = $this->activeAircraft->filter(function ($aircraft) {
@@ -273,8 +297,8 @@ class HomePage extends Component
             return [
                 'hex' => $aircraft->hex,
                 'callsign' => $aircraft->callsign ?? 'N/A',
-                'type' => $aircraft->type ?? 'Unknown',
-                'country' => $aircraft->country ?? 'Unknown',
+                'type' => $aircraft->type ?? __('t-unknown'),
+                'country' => $aircraft->country ?? __('t-unknown'),
                 'threat_level' => $aircraft->aircraft_threat,
                 'is_military' => $aircraft->is_military,
                 'is_drone' => $aircraft->is_drone,
