@@ -547,15 +547,13 @@
                 let isRefreshing = false;
                 let resizeDebounceTimer = null;
 
-                // Function to get translation from DOM elements
                 function translate(key) {
-                    // Try to get from DOM element with data-key
+
                     const element = document.querySelector(`[data-key="${key}"]`);
                     if (element) {
                         return element.textContent || key;
                     }
 
-                    // For chart-specific translations, we'll use fallback English text
                     const chartTranslations = {
                         't-total-aircraft': 'Total Aircraft',
                         't-military-aircraft': 'Military Aircraft',
@@ -607,7 +605,6 @@
                     return chartTranslations[key] || key;
                 }
 
-                // Function to get chart translation
                 function getChartTranslation(key) {
                     return translate(key);
                 }
@@ -651,7 +648,6 @@
                         }).addTo(dashboardMap).bindPopup(getChartTranslation('t-in-estonia') + ' Airspace');
 
                         isMapInitialized = true;
-                        console.log('Map initialized successfully');
 
                         if (pendingMarkersData) {
                             updateDashboardMarkers(pendingMarkersData);
@@ -678,15 +674,12 @@
                 }
 
                 function updateDashboardMarkers(markersData) {
-                    console.log('Updating map markers');
 
                     if (!isMapInitialized || !dashboardMap) {
-                        console.log('Map not ready, storing markers data');
                         pendingMarkersData = markersData;
                         return;
                     }
 
-                    // Clear existing markers
                     mapMarkers.forEach(marker => {
                         if (dashboardMap.hasLayer(marker)) {
                             dashboardMap.removeLayer(marker);
@@ -707,7 +700,6 @@
                         markersArray = [];
                     }
 
-                    // Filter only recent aircraft (last 60 minutes)
                     const now = new Date();
                     const recentAircraft = markersArray.filter(aircraft => {
                         if (!aircraft || !aircraft.position_time) return false;
@@ -724,9 +716,6 @@
                         }
                     });
 
-                    console.log(`Added ${recentAircraft.length} recent aircraft to map`);
-
-                    // Update aircraft count display
                     const countElement = document.getElementById('map-aircraft-count');
                     if (countElement) {
                         countElement.textContent = `${recentAircraft.length} ${getChartTranslation('t-active-aircraft')}`;
@@ -841,33 +830,26 @@
                 }
 
                 function setupAutoRefresh() {
-                    console.log('Setting up auto-refresh. Current state:', autoRefreshEnabled);
 
-                    // Clear any existing interval
                     if (refreshInterval) {
                         clearInterval(refreshInterval);
                         refreshInterval = null;
                     }
 
-                    // Only set new interval if auto-refresh is enabled
                     if (autoRefreshEnabled && !isRefreshing) {
-                        console.log('Setting new auto-refresh interval (30 seconds)');
                         refreshInterval = setInterval(() => {
                             if (!isRefreshing) {
                                 isRefreshing = true;
-                                console.log('Auto-refreshing dashboard...');
 
                                 try {
-                                    // Trigger Livewire refresh
+
                                     if (window.Livewire) {
                                         @this.refreshDashboard();
                                     }
                                 } catch (e) {
-                                    console.error('Error during auto-refresh:', e);
                                     isRefreshing = false;
                                 }
 
-                                // Reset the flag after a delay
                                 setTimeout(() => {
                                     isRefreshing = false;
                                 }, 5000);
@@ -952,16 +934,15 @@
                     try {
                         cleanupCharts();
 
-                        // 1. Today's Activity Chart (TODAY's data from $todayAnalyses)
                         const todayData = @json($todayAnalyses);
                         const todayChartElement = document.querySelector("#today-activity-chart");
 
                         if (todayChartElement) {
-                            // Clear existing content first
+
                             todayChartElement.innerHTML = '';
 
                             if (todayData && todayData.length > 0) {
-                                // Convert hour numbers to time strings (e.g., 0 -> "00:00", 1 -> "01:00")
+
                                 const hours = todayData.map(d => {
                                     const hour = parseInt(d.hour);
                                     return hour < 10 ? `0${hour}:00` : `${hour}:00`;
@@ -1035,7 +1016,7 @@
                                 });
                                 window.chartInstances.todayActivity.render();
                             } else {
-                                // Show empty state for Today's Activity chart
+
                                 todayChartElement.innerHTML = `
                         <div class="text-center text-muted" style="height: 200px; display: flex; flex-direction: column; justify-content: center;">
                             <i class="fas fa-chart-line fa-2x mb-2"></i>
@@ -1046,7 +1027,6 @@
                             }
                         }
 
-                        // 2. Threat Level Distribution Chart (TODAY's data from $aiAnalysis)
                         const threatData = @json($aiAnalysis);
                         const threatChartElement = document.querySelector("#threat-distribution-chart");
 
@@ -1113,7 +1093,6 @@
                             }
                         }
 
-                        // 3. Military vs Civil Chart (LAST 60 MINUTES data from $activeAircraft)
                         const activeAircraft = @json($activeAircraft);
                         const militaryCivilElement = document.querySelector("#military-civil-chart");
 
@@ -1204,10 +1183,8 @@
                             }
                         }
 
-                        // 4. Aircraft Types Chart (LAST 60 MINUTES data from $activeAircraft)
                         initAircraftTypesChart();
 
-                        // 5. Threat Trends Chart (LAST 7 DAYS data from $threatTrends)
                         const trendsData = @json($threatTrends);
                         const trendsElement = document.querySelector("#threat-trends-chart");
 
@@ -1343,48 +1320,35 @@
                     }
                 }
 
-                // Initialize everything when DOM is loaded
                 document.addEventListener('DOMContentLoaded', function() {
-                    console.log('DOM loaded, initializing dashboard...');
 
-                    // Initialize map with a small delay
                     setTimeout(initDashboardMap, 100);
 
-                    // Initialize charts on next animation frame
                     requestAnimationFrame(() => {
                         setTimeout(initCharts, 300);
                     });
 
-                    // Initial setup of auto-refresh
                     setupAutoRefresh();
 
-                    // Update auto-refresh toggle UI
                     const toggle = document.getElementById('autoRefreshToggle');
                     if (toggle) {
                         toggle.checked = autoRefreshEnabled;
                     }
                 });
 
-                // Livewire event listeners
                 document.addEventListener('livewire:initialized', () => {
-                    console.log('Livewire initialized');
 
-                    // Listen for dashboard data updates
                     Livewire.on('dashboard-data-loaded', (event) => {
-                        console.log('Dashboard data loaded event received', event);
 
                         try {
-                            // Extract markers data from the event
                             const markersData = event.detail && event.detail[0] ? event.detail[0] : event;
                             updateDashboardMarkers(markersData);
 
-                            // Reinitialize charts with new data
                             chartsInitialized = false;
                             requestAnimationFrame(() => {
                                 setTimeout(initCharts, 100);
                             });
 
-                            // Reset refreshing flag
                             isRefreshing = false;
                         } catch (e) {
                             console.error('Error processing dashboard data:', e);
@@ -1392,11 +1356,8 @@
                         }
                     });
 
-                    // Listen for auto-refresh toggle events
                     Livewire.on('auto-refresh-toggled', (event) => {
-                        console.log('Auto refresh toggled:', event);
 
-                        // Extract the enabled state from the event
                         let enabled = event;
                         if (typeof event === 'object' && event.detail) {
                             enabled = event.detail[0] ? event.detail[0].enabled : event.enabled;
@@ -1404,23 +1365,19 @@
 
                         autoRefreshEnabled = enabled;
 
-                        // Update the toggle UI
                         const toggle = document.getElementById('autoRefreshToggle');
                         if (toggle) {
                             toggle.checked = autoRefreshEnabled;
                         }
 
-                        // Setup auto-refresh based on new state
                         setupAutoRefresh();
 
-                        // Reset charts to ensure they use updated data
                         chartsInitialized = false;
                         requestAnimationFrame(() => {
                             setTimeout(initCharts, 100);
                         });
                     });
 
-                    // Reinitialize charts when Livewire updates components
                     Livewire.hook('message.processed', (message) => {
                         if (!chartsInitialized) {
                             requestAnimationFrame(() => {
@@ -1430,7 +1387,6 @@
                     });
                 });
 
-                // Handle window resize with debouncing
                 window.addEventListener('resize', debounce(() => {
                     if (dashboardMap) {
                         setTimeout(() => {
@@ -1442,18 +1398,15 @@
                         }, 100);
                     }
 
-                    // Reinitialize charts on resize
                     chartsInitialized = false;
                     requestAnimationFrame(() => {
                         setTimeout(initCharts, 200);
                     });
                 }, 250));
 
-                // Cleanup on page unload
                 window.addEventListener('beforeunload', () => {
                     cleanupCharts();
 
-                    // Always clear the interval when leaving the page
                     if (refreshInterval) {
                         clearInterval(refreshInterval);
                         refreshInterval = null;
@@ -1468,7 +1421,6 @@
                     }
                 });
 
-                // Global function to manually refresh (can be called from browser console for debugging)
                 window.manualRefresh = function() {
                     if (!isRefreshing && window.Livewire) {
                         isRefreshing = true;

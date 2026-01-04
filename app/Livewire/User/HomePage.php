@@ -19,7 +19,6 @@ class HomePage extends Component
     public $threatTrends = [];
     public $mapMarkers = [];
 
-    // New property for aircraft types
     public $aircraftTypes = [];
 
     public function mount(): void
@@ -65,14 +64,12 @@ class HomePage extends Component
         $now = Carbon::now();
         $oneHourAgo = $now->copy()->subHour();
 
-        // 1. Active Aircraft (unique aircraft in last 60 minutes)
         $activeAircraft = DB::table('skyguardian_positions')
             ->where('position_time', '>=', $oneHourAgo)
             ->select('hex')
             ->distinct()
             ->count('hex');
 
-        // 2. Military, High Threat, and In Estonia (all in one query for better performance)
         $threatCounts = DB::table('skyguardian_positions as p')
             ->join('skyguardian_aircraft as a', 'p.hex', '=', 'a.hex')
             ->where('p.position_time', '>=', $oneHourAgo)
@@ -84,15 +81,12 @@ class HomePage extends Component
             )
             ->first();
 
-        // 3. AI Alerts (last 60 minutes)
         $aiAlertsLastHour = DB::table('skyguardian_ai_alerts')
             ->where('ai_timestamp', '>=', $oneHourAgo)
             ->count();
 
-        // 4. Total Aircraft (all time - for reference)
         $totalAircraft = DB::table('skyguardian_aircraft')->count();
 
-        // 5. Latest Risk Analysis (last 60 minutes)
         $latestAnalysis = DB::table('skyguardian_analyses')
             ->where('analysis_time', '>=', $oneHourAgo)
             ->orderBy('analysis_time', 'desc')
@@ -227,7 +221,7 @@ class HomePage extends Component
                 DB::raw('AVG(anomaly_score) as avg_anomaly'),
                 DB::raw('COUNT(*) as analysis_count')
             )
-            ->where('analysis_time', '>=', $oneHourAgo) // Changed from whereDate
+            ->where('analysis_time', '>=', $oneHourAgo)
             ->groupBy(DB::raw('HOUR(analysis_time)'))
             ->orderBy('hour')
             ->get()
