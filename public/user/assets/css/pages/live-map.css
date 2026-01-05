@@ -1,0 +1,45 @@
+#map {
+    min-height: 600px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+}
+.leaflet-container {
+    font-family: inherit;
+    font-size: 14px;
+}
+.leaflet-popup-content {
+    font-size: 14px;
+    line-height: 1.4;
+}
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+.custom-aircraft-marker {
+    background: transparent !important;
+    border: none !important;
+}
+.badge.bg-purple {
+    background-color: #6f42c1 !important;
+    color: white;
+}
+.leaflet-marker-icon {
+    transition: transform 0.3s ease;
+}
+.leaflet-popup {
+    z-index: 1000;
+}
+/* Custom scrollbar for the table */
+.table-responsive::-webkit-scrollbar {
+    height: 6px;
+}
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

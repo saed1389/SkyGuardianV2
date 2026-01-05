@@ -12,33 +12,30 @@ class LiveMapPage extends Component
     public $lastUpdate;
     public $totalAircraft = 0;
     public $militaryCount = 0;
+    public $highThreatCount = 0;
+    public $inEstoniaCount = 0;
     public $refreshing = false;
-
-    // For filters
     public $filterType = 'all';
     public $filterCountry = 'all';
     public $filterThreatLevel = 'all';
-
-    // Map settings
     public $centerLat = 59.42;
     public $centerLon = 24.83;
     public $zoomLevel = 8;
 
-    public function mount()
+    public function mount(): void
     {
         $this->loadAircraftData();
     }
 
-    public function loadAircraftData()
+    public function loadAircraftData(): void
     {
         $this->refreshing = true;
 
         $fiveMinutesAgo = Carbon::now('UTC')->subMinutes(5)->toIso8601String();
 
-        // Get all positions from last 5 minutes (including historical)
         $query = DB::table('skyguardian_positions as p')
             ->select([
-                'p.id', // Add ID to distinguish duplicate positions
+                'p.id',
                 'p.hex',
                 DB::raw('CAST(p.latitude AS DECIMAL(10,6)) as latitude'),
                 DB::raw('CAST(p.longitude AS DECIMAL(10,6)) as longitude'),
@@ -65,7 +62,6 @@ class LiveMapPage extends Component
             ->orderBy('p.hex', 'asc')
             ->orderBy('p.position_time', 'desc');
 
-        // Apply filters
         if ($this->filterType === 'military') {
             $query->where('a.is_military', true);
         } elseif ($this->filterType === 'civil') {
@@ -82,19 +78,8 @@ class LiveMapPage extends Component
             $query->where('p.threat_level', '>=', $this->filterThreatLevel);
         }
 
-        // Get raw results
         $results = $query->get();
 
-        \Log::info("Query returned {$results->count()} aircraft from last 5 minutes (UTC)");
-
-        if ($results->count() > 0) {
-            \Log::info("Position time range:", [
-                'newest' => $results->first()->position_time,
-                'oldest' => $results->last()->position_time
-            ]);
-        }
-
-        // Convert to proper format
         $this->aircraft = $results->map(function ($item) {
             return [
                 'hex' => $item->hex,
@@ -108,7 +93,7 @@ class LiveMapPage extends Component
                 'near_sensitive' => boolval($item->near_sensitive),
                 'near_military_base' => boolval($item->near_military_base),
                 'near_border' => boolval($item->near_border),
-                'position_time' => $item->position_time, // Keep as ISO string
+                'position_time' => $item->position_time,
                 'callsign' => $item->callsign ?? 'N/A',
                 'type' => $item->type ?? 'unknown',
                 'aircraft_name' => $item->aircraft_name ?? 'Unknown',
@@ -120,22 +105,26 @@ class LiveMapPage extends Component
             ];
         })->toArray();
 
-        $this->totalAircraft = count($this->aircraft);
-        $this->militaryCount = collect($this->aircraft)->where('is_military', true)->count();
-        $this->lastUpdate = now()->format('H:i:s');
+        $uniqueAircraft = collect($this->aircraft)->unique('hex');
 
+        $this->totalAircraft = $uniqueAircraft->count();
+        $this->militaryCount = $uniqueAircraft->where('is_military', true)->count();
+
+        $this->highThreatCount = $uniqueAircraft->where('threat_level', '>=', 4)->count();
+        $this->inEstoniaCount = $uniqueAircraft->where('in_estonia', true)->count();
+
+        $this->lastUpdate = now()->format('H:i:s');
         $this->refreshing = false;
 
-        // Dispatch event with JSON-encoded data
         $this->dispatch('aircraft-updated', aircraft: json_encode($this->aircraft));
     }
 
-    public function applyFilters()
+    public function applyFilters(): void
     {
         $this->loadAircraftData();
     }
 
-    public function resetFilters()
+    public function resetFilters(): void
     {
         $this->filterType = 'all';
         $this->filterCountry = 'all';
@@ -143,7 +132,7 @@ class LiveMapPage extends Component
         $this->loadAircraftData();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
         $countries = DB::table('skyguardian_aircraft')
             ->whereNotNull('country')
