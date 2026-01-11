@@ -15,7 +15,7 @@ Route::middleware('auth', 'role:user')->prefix('user')->name('user.')->group(fun
     Route::get('/members-list', MemberPage::class)->name('members-list');
 
     Route::get('live-map', LiveMapPage::class)->name('live-map');
-    Route::get('ai-threat-analysis', ThreatAnalysisPage::class)->name('ai-threat-analysis');
+    Route::get('/ai-threat-analysis', ThreatAnalysisPage::class)->name('ai-threat-analysis');
     Route::get('analysis-history', AnalysisHistoryPage::class)->name('analysis-history');
     Route::get('military-monitor', MilitaryMonitorPage::class)->name('military-monitor');
     Route::get('aircraft-database', AircraftDatabasePage::class)->name('aircraft-database');

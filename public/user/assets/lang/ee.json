@@ -151,5 +151,6 @@
     "t-heading": "Suund",
     "t-location": "Asukoht",
     "t-in-estonian-airspace": "Eesti õhuruumis",
-    "t-outside-estonia": "Väljaspool Eestit"
+    "t-outside-estonia": "Väljaspool Eestit",
+    "t-map-legend": "Kaardi legend"
 }

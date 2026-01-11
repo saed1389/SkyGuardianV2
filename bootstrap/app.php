@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => Role::class,
+            'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+            'Excel' => Maatwebsite\Excel\Facades\Excel::class,
             $middleware->append([
                 SecureHeadersMiddleware::class,
                 AddCspHeaders::class,

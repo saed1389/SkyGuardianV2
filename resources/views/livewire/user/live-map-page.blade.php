@@ -122,7 +122,7 @@
                                     </div>
                                     <div class="col-md-3 d-flex align-items-end">
                                         <button wire:click="resetFilters" class="btn btn-outline-secondary">
-                                            <i class="fas fa-times me-1"></i> <span data-key="Clear Filters" wire:ignore>Clear Filters</span>
+                                            <i class="fas fa-times me-1"></i> <span data-key="t-clear-filters" wire:ignore>Clear Filters</span>
                                         </button>
                                     </div>
                                 </div>
@@ -465,14 +465,14 @@
                     legend.onAdd = function(map) {
                         const div = L.DomUtil.create('div', 'info legend');
                         div.innerHTML = `
-                    <h4>Map Legend</h4>
-                    <div><span style="background:#0d6efd; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="" wire:ignore>Estonian territory</span></div>
-                    <div><span style="background:#dc3545; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="" wire:ignore>Russia border</span></div>
-                    <div><span style="background:#28a745; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="" wire:ignore>Latvia border</span></div>
-                    <div><span style="background:#ff9900; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="" wire:ignore>Airports</span></div>
-                    <div><span style="background:#dc3545; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="" wire:ignore>Military bases</span></div>
-                    <div><span style="background:#dc3545; padding: 3px 8px; border-radius: 3px; color: white;">●</span> <span data-key="" wire:ignore>Capital city</span></div>
-                    <div><span style="background:#0d6efd; padding: 3px 8px; border-radius: 3px; color: white;">●</span> <span data-key="" wire:ignore>Other cities</span></div>
+                    <h4 data-key="t-map-legend" wire:ignore>Map Legend</h4>
+                    <div><span style="background:#0d6efd; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="t-estonian-territory" wire:ignore>Estonian territory</span></div>
+                    <div><span style="background:#dc3545; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="t-russia-border" wire:ignore>Russia border</span></div>
+                    <div><span style="background:#28a745; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="t-latvia-border" wire:ignore>Latvia border</span></div>
+                    <div><span style="background:#ff9900; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="t-airports" wire:ignore>Airports</span></div>
+                    <div><span style="background:#dc3545; padding: 3px 8px; border-radius: 3px; color: white;">■</span> <span data-key="t-military-bases" wire:ignore>Military bases</span></div>
+                    <div><span style="background:#dc3545; padding: 3px 8px; border-radius: 3px; color: white;">●</span> <span data-key="t-capital-city" wire:ignore>Capital city</span></div>
+                    <div><span style="background:#0d6efd; padding: 3px 8px; border-radius: 3px; color: white;">●</span> <span data-key="t-other-cities" wire:ignore>Other cities</span></div>
                 `;
                         return div;
                     };

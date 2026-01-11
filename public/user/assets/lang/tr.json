@@ -151,5 +151,6 @@
     "t-heading": "İstikamet",
     "t-location": "Konum",
     "t-in-estonian-airspace": "Estonya hava sahasında",
-    "t-outside-estonia": "Estonya dışında"
+    "t-outside-estonia": "Estonya dışında",
+    "t-map-legend": "Harita Lejantısı"
 }

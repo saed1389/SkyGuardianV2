@@ -1,130 +1,179 @@
-<div>
+<div x-data="{
+    autoRefresh: @entangle('autoRefresh'),
+    refreshInterval: @entangle('refreshInterval'),
+    init() {
+        if (this.autoRefresh) {
+            this.startAutoRefresh();
+        }
+
+        Livewire.on('start-auto-refresh', (data) => {
+            this.refreshInterval = data.interval;
+            this.startAutoRefresh();
+        });
+
+        Livewire.on('stop-auto-refresh', () => {
+            this.stopAutoRefresh();
+        });
+    },
+    startAutoRefresh() {
+        this.autoRefreshInterval = setInterval(() => {
+            @this.refreshData();
+        }, this.refreshInterval * 1000);
+    },
+    stopAutoRefresh() {
+        if (this.autoRefreshInterval) {
+            clearInterval(this.autoRefreshInterval);
+        }
+    }
+}" class="threat-analysis-page">
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
                 <div class="row mb-4">
                     <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h1 class="h3 mb-0">
-                                <i class="fas fa-robot me-2"></i>AI Threat Analysis
-                            </h1>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge bg-primary">
-                                    <i class="fas fa-sync-alt fa-spin me-1" wire:loading wire:target="refreshData"></i>
-                                    Last Updated: {{ $latestAlert ? \Carbon\Carbon::parse($latestAlert->ai_timestamp)->diffForHumans() : 'N/A' }}
-                                </span>
-                                <button wire:click="refreshData" wire:loading.attr="disabled"
-                                        class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-redo"></i> Refresh
-                                </button>
+                        <div class="page-title-box d-flex align-items-center justify-content-between">
+                            <div class="page-title-left">
+                                <h4 class="mb-1 text-dark">
+                                    <i class="fas fa-shield-alt text-primary me-2"></i>
+                                    AI Threat Analysis Dashboard
+                                </h4>
+                                <p class="text-muted mb-0">
+                                    Real-time threat assessment and predictive intelligence
+                                </p>
+                            </div>
+                            <div class="page-title-right">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="btn-group" role="group">
+                                        <button wire:click="toggleAutoRefresh"
+                                                :class="{'btn-success': autoRefresh, 'btn-outline-secondary': !autoRefresh}"
+                                                class="btn btn-sm"
+                                                title="Auto Refresh">
+                                            <i class="fas fa-sync-alt" :class="{'fa-spin': autoRefresh}"></i>
+                                            {{ $refreshInterval }}s
+                                        </button>
+                                        <button wire:click="refreshData"
+                                                wire:loading.attr="disabled"
+                                                class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-redo" wire:loading.class="fa-spin"></i>
+                                            Refresh
+                                        </button>
+                                    </div>
+                                    @if($latestAlert)
+                                        <div class="d-flex align-items-center">
+                                            <div class="vr mx-2"></div>
+                                            <small class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>
+                                                Last alert: {{ $latestAlert->time_ago }}
+                                            </small>
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                        <p class="text-muted mb-0">AI-powered threat assessment and predictive analysis</p>
                     </div>
                 </div>
 
                 <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card bg-primary bg-opacity-10 border-primary">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card card-hover border-start border-3 border-primary">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <p class="text-muted mb-1">Total AI Alerts</p>
-                                        <h3 class="mb-0">{{ $stats['total'] ?? 0 }}</h3>
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="text-muted fw-normal mb-2">Total Alerts</h5>
+                                        <h3 class="mb-0">{{ number_format($stats['total'] ?? 0) }}</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="badge bg-primary-subtle text-primary me-1">
+                                                Today: {{ $stats['today'] ?? 0 }}
+                                            </span>
+                                            <span class="text-success">
+                                                <i class="fas fa-arrow-up me-1"></i>
+                                                {{ $stats['yesterday_count'] ?? 0 }} yesterday
+                                            </span>
+                                        </p>
                                     </div>
-                                    <div class="avatar-sm">
-                                        <div class="avatar-title bg-primary bg-opacity-20 rounded fs-22">
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-primary-subtle rounded fs-2 text-primary">
                                             <i class="fas fa-bell"></i>
-                                        </div>
+                                        </span>
                                     </div>
-                                </div>
-                                <div class="mt-3">
-                                    <p class="mb-0 text-muted">
-                                        <span class="badge bg-primary me-1">Today: {{ $stats['today'] ?? 0 }}</span>
-                                        <span class="text-success">AI Confidence: {{ $stats['avg_confidence'] ?? 0 }}%</span>
-                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-3">
-                        <div class="card bg-danger bg-opacity-10 border-danger">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card card-hover border-start border-3 border-danger">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <p class="text-muted mb-1">High Threat Alerts</p>
-                                        <h3 class="mb-0">{{ $stats['high_threat'] ?? 0 }}</h3>
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="text-muted fw-normal mb-2">High Threats</h5>
+                                        <h3 class="mb-0">{{ number_format($stats['high_threat'] ?? 0) }}</h3>
+                                        <div class="progress mt-2" style="height: 6px;">
+                                            <div class="progress-bar bg-danger" role="progressbar"
+                                                 style="width: {{ $stats['total'] > 0 ? ($stats['high_threat'] / $stats['total'] * 100) : 0 }}%">
+                                            </div>
+                                        </div>
+                                        <small class="text-muted mt-1 d-block">
+                                            {{ $stats['total'] > 0 ? round($stats['high_threat'] / $stats['total'] * 100, 1) : 0 }}% of total
+                                        </small>
                                     </div>
-                                    <div class="avatar-sm">
-                                        <div class="avatar-title bg-danger bg-opacity-20 rounded fs-22">
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-danger-subtle rounded fs-2 text-danger">
                                             <i class="fas fa-exclamation-triangle"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <div class="progress progress-sm">
-                                        <div class="progress-bar bg-danger" role="progressbar"
-                                             style="width: {{ $stats['total'] > 0 ? ($stats['high_threat'] / $stats['total'] * 100) : 0 }}%">
-                                        </div>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-3">
-                        <div class="card bg-warning bg-opacity-10 border-warning">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card card-hover border-start border-3 border-warning">
                             <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <p class="text-muted mb-1">Latest Threat Level</p>
-                                        <h3 class="mb-0">
-                                            @if($latestAlert)
-                                                <span class="badge bg-{{ strtolower($latestAlert->threat_level) === 'high' ? 'danger' : 'warning' }}">
-                                                    {{ $latestAlert->threat_level ?? 'N/A' }}
-                                                </span>
-                                            @else
-                                                N/A
-                                            @endif
-                                        </h3>
-                                    </div>
-                                    <div class="avatar-sm">
-                                        <div class="avatar-title bg-warning bg-opacity-20 rounded fs-22">
-                                            <i class="fas fa-shield-alt"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <p class="mb-0 text-muted">
-                                        @if($latestAlert)
-                                            <small>Trigger: {{ $latestAlert->trigger_level }}</small>
-                                        @endif
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3">
-                        <div class="card bg-success bg-opacity-10 border-success">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <p class="text-muted mb-1">AI Confidence</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="text-muted fw-normal mb-2">AI Confidence</h5>
                                         <h3 class="mb-0">{{ $stats['avg_confidence'] ?? 0 }}%</h3>
-                                    </div>
-                                    <div class="avatar-sm">
-                                        <div class="avatar-title bg-success bg-opacity-20 rounded fs-22">
-                                            <i class="fas fa-brain"></i>
+                                        <div class="progress mt-2" style="height: 6px;">
+                                            <div class="progress-bar bg-warning" role="progressbar"
+                                                 style="width: {{ $stats['avg_confidence'] ?? 0 }}%">
+                                            </div>
                                         </div>
+                                        <small class="text-muted mt-1 d-block">
+                                            Average prediction accuracy
+                                        </small>
+                                    </div>
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-warning-subtle rounded fs-2 text-warning">
+                                            <i class="fas fa-brain"></i>
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="mt-3">
-                                    <div class="progress progress-sm">
-                                        <div class="progress-bar bg-success" role="progressbar"
-                                             style="width: {{ $stats['avg_confidence'] ?? 0 }}%">
-                                        </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card card-hover border-start border-3 border-info">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h5 class="text-muted fw-normal mb-2">7-Day Trend</h5>
+                                        <h3 class="mb-0">{{ $stats['week_count'] ?? 0 }}</h3>
+                                        <p class="mb-0 text-muted">
+                                            <span class="badge bg-info-subtle text-info me-1">
+                                                Daily avg: {{ $stats['week_count'] ? ceil($stats['week_count'] / 7) : 0 }}
+                                            </span>
+                                            <span class="text-success">
+                                                <i class="fas fa-chart-line me-1"></i>
+                                                Active monitoring
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="avatar-sm flex-shrink-0">
+                                        <span class="avatar-title bg-info-subtle rounded fs-2 text-info">
+                                            <i class="fas fa-chart-bar"></i>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -135,64 +184,39 @@
                 @if($latestAlert)
                     <div class="row mb-4">
                         <div class="col-12">
-                            <div class="card border-{{ strtolower($latestAlert->threat_level) === 'high' ? 'danger' : 'warning' }}">
-                                <div class="card-header bg-{{ strtolower($latestAlert->threat_level) === 'high' ? 'danger' : 'warning' }} bg-opacity-10">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="card-title mb-0">
-                                            <i class="fas fa-exclamation-circle me-2"></i>
-                                            Latest AI Alert
-                                            <span class="badge bg-{{ strtolower($latestAlert->threat_level) === 'high' ? 'danger' : 'warning' }} ms-2">
-                                            {{ $latestAlert->threat_level }}
-                                        </span>
-                                        </h5>
-                                        <span class="text-muted">
-                                        {{ \Carbon\Carbon::parse($latestAlert->ai_timestamp)->format('M d, Y H:i:s') }}
-                                    </span>
+                            <div class="alert alert-{{ $latestAlert->threat_level_color }} alert-dismissible fade show" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-exclamation-circle fa-2x me-3"></i>
                                     </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <h6 class="text-muted mb-2">SITUATION:</h6>
-                                            <p class="mb-3">{{ Str::limit($latestAlert->situation, 300) }}</p>
-
-                                            <h6 class="text-muted mb-2">PRIMARY CONCERN:</h6>
-                                            <p class="mb-3">{{ $latestAlert->primary_concern }}</p>
-
-                                            <div class="d-flex gap-2">
-                                            <span class="badge bg-info">
-                                                Trigger: {{ $latestAlert->trigger_level }}
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <h5 class="alert-heading mb-0">
+                                                Latest AI Alert: {{ $latestAlert->threat_level }} Threat Detected
+                                                <span class="badge bg-{{ $latestAlert->threat_level_color }} ms-2">
+                                                {{ $latestAlert->confidence }}
                                             </span>
-                                                <span class="badge bg-{{ $latestAlert->confidence === 'HIGH' ? 'danger' : 'warning' }}">
-                                                Confidence: {{ $latestAlert->confidence }}
-                                            </span>
-                                                <span class="badge bg-secondary">
-                                                AI Score: {{ round($latestAlert->ai_confidence_score * 100) }}%
-                                            </span>
-                                            </div>
+                                            </h5>
+                                            <small class="text-muted">{{ $latestAlert->formatted_timestamp }}</small>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="card bg-light">
-                                                <div class="card-body">
-                                                    <h6 class="text-muted mb-3">QUICK ANALYSIS</h6>
-
-                                                    <div class="mb-3">
-                                                        <small class="text-muted d-block">Likely Scenario</small>
-                                                        <strong>{{ $latestAlert->likely_scenario }}</strong>
-                                                    </div>
-
-                                                    <div class="mb-3">
-                                                        <small class="text-muted d-block">Forecast</small>
-                                                        <small>{{ Str::limit($latestAlert->forecast, 100) }}</small>
-                                                    </div>
-
-                                                    <button wire:click="viewDetails('{{ $latestAlert->id }}')"
-                                                            class="btn btn-sm btn-outline-primary w-100">
-                                                        <i class="fas fa-search me-1"></i> View Full Analysis
-                                                    </button>
-                                                </div>
-                                            </div>
+                                        <p class="mb-1">{{ Str::limit($latestAlert->situation, 200) }}</p>
+                                        <div class="mt-2">
+                                        <span class="badge bg-light text-dark me-2">
+                                            <i class="fas fa-bolt me-1"></i> {{ $latestAlert->trigger_level }}
+                                        </span>
+                                            <span class="badge bg-light text-dark me-2">
+                                            <i class="fas fa-percentage me-1"></i> {{ $latestAlert->confidence_percentage }}% confidence
+                                        </span>
+                                            <span class="badge bg-light text-dark">
+                                            <i class="fas fa-list me-1"></i> {{ $latestAlert->likely_scenario }}
+                                        </span>
                                         </div>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-3">
+                                        <button wire:click="viewDetails('{{ $latestAlert->id }}')"
+                                                class="btn btn-{{ $latestAlert->threat_level_color }}">
+                                            <i class="fas fa-search me-1"></i> View Details
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -203,38 +227,64 @@
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
+                            <div class="card-header bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-filter me-2"></i>Filter Alerts
+                                    </h5>
+                                    <div class="d-flex gap-2">
+                                        <button wire:click="applyFilters" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-check me-1"></i> Apply
+                                        </button>
+                                        <button wire:click="resetFilters" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-times me-1"></i> Clear
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="card-body">
                                 <div class="row g-3">
-                                    <div class="col-md-3">
+                                    <div class="col-xl-3 col-lg-4 col-md-6">
                                         <label class="form-label">Threat Level</label>
-                                        <select wire:model.live="filterLevel" class="form-select">
-                                            <option value="all">All Levels</option>
+                                        <select wire:model.live="filterLevel" class="form-select form-select-sm">
+                                            <option value="all">All Threat Levels</option>
                                             @foreach($alertLevels as $level)
                                                 <option value="{{ $level }}">{{ $level }}</option>
                                             @endforeach
                                         </select>
                                     </div>
 
-                                    <div class="col-md-3">
-                                        <label class="form-label">Date</label>
-                                        <input type="date" wire:model.live="filterDate" class="form-control">
+                                    <div class="col-xl-3 col-lg-4 col-md-6">
+                                        <label class="form-label">Date Range</label>
+                                        <input type="date" wire:model.live="filterDate" class="form-control form-control-sm">
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-xl-4 col-lg-4 col-md-8">
                                         <label class="form-label">Search Analysis</label>
-                                        <div class="input-group">
+                                        <div class="input-group input-group-sm">
                                             <span class="input-group-text">
                                                 <i class="fas fa-search"></i>
                                             </span>
-                                            <input type="text" wire:model.live.debounce.300ms="search"
-                                                   class="form-control" placeholder="Search in situations, concerns...">
+                                            <input type="text" wire:model.live.debounce.500ms="search"
+                                                   class="form-control"
+                                                   placeholder="Search in situations, concerns, scenarios...">
+                                            @if($search)
+                                                <button wire:click="$set('search', '')" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                     </div>
 
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button wire:click="resetFilters" class="btn btn-outline-secondary w-100">
-                                            <i class="fas fa-times me-1"></i> Clear
-                                        </button>
+                                    <div class="col-xl-2 col-lg-4 col-md-4">
+                                        <label class="form-label">Items per page</label>
+                                        <select wire:model.live="perPage" class="form-select form-select-sm">
+                                            <option value="10">10</option>
+                                            <option value="15">15</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -245,82 +295,174 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
+                            <div class="card-header bg-light">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0">Historical AI Alerts</h5>
-                                    <span class="badge bg-light text-dark">
-                                        {{ count($alerts) }} records
-                                    </span>
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-history me-2"></i>Historical AI Alerts
+                                    </h5>
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if(count($selectedAlerts) > 0)
+                                            <div class="me-2">
+                                            <span class="badge bg-primary">
+                                                {{ count($selectedAlerts) }} selected
+                                            </span>
+                                            </div>
+                                            <select wire:model="bulkAction" class="form-select form-select-sm w-auto">
+                                                <option value="">Bulk Actions</option>
+                                                <option value="export">Export Selected</option>
+                                                <option value="mark_high">Mark as High Threat</option>
+                                                <option value="mark_medium">Mark as Medium Threat</option>
+                                                <option value="mark_reviewed">Mark as Reviewed</option>
+                                            </select>
+                                            <button wire:click="applyBulkAction"
+                                                    class="btn btn-sm btn-primary"
+                                                    wire:loading.attr="disabled">
+                                                Apply
+                                            </button>
+                                        @endif
+                                        <button wire:click="showExportModal"
+                                                class="btn btn-sm btn-success">
+                                            <i class="fas fa-file-export me-1"></i> Export
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+
                             <div class="card-body p-0">
                                 @if($loading)
                                     <div class="text-center py-5">
                                         <div class="spinner-border text-primary" role="status">
                                             <span class="visually-hidden">Loading...</span>
                                         </div>
-                                        <p class="mt-2">Loading AI analysis...</p>
+                                        <p class="mt-2 text-muted">Loading threat analysis data...</p>
                                     </div>
                                 @else
                                     <div class="table-responsive">
-                                        <table class="table table-hover mb-0">
-                                            <thead>
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="table-light">
                                             <tr>
-                                                <th width="80">ID</th>
-                                                <th>Analysis Time</th>
+                                                <th width="50" class="text-center">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" wire:model="selectAll" wire:change="toggleSelectAll">
+                                                    </div>
+                                                </th>
+                                                <th width="80">
+                                                    <a href="#" wire:click.prevent="sortBy('id')" class="text-dark">
+                                                        ID
+                                                        @if($sortField === 'id')
+                                                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                        @endif
+                                                    </a>
+                                                </th>
+                                                <th>
+                                                    <a href="#" wire:click.prevent="sortBy('ai_timestamp')" class="text-dark">
+                                                        Time
+                                                        @if($sortField === 'ai_timestamp')
+                                                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                        @endif
+                                                    </a>
+                                                </th>
+                                                <th>
+                                                    <a href="#" wire:click.prevent="sortBy('threat_level')" class="text-dark">
+                                                        Threat Level
+                                                        @if($sortField === 'threat_level')
+                                                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                        @endif
+                                                    </a>
+                                                </th>
                                                 <th>Situation Summary</th>
-                                                <th>Threat Level</th>
                                                 <th>Primary Concern</th>
-                                                <th>AI Confidence</th>
-                                                <th>Actions</th>
+                                                <th>
+                                                    <a href="#" wire:click.prevent="sortBy('ai_confidence_score')" class="text-dark">
+                                                        AI Confidence
+                                                        @if($sortField === 'ai_confidence_score')
+                                                            <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
+                                                        @endif
+                                                    </a>
+                                                </th>
+                                                <th width="120" class="text-center">Actions</th>
                                             </tr>
                                             </thead>
                                             <tbody>
                                             @forelse($alerts as $alert)
                                                 <tr class="{{ $alert->threat_level === 'HIGH' ? 'table-danger' : '' }}">
-                                                    <td>
-                                                        <small class="text-muted">#{{ $alert->id }}</small>
-                                                    </td>
-                                                    <td>
-                                                        <div>{{ \Carbon\Carbon::parse($alert->ai_timestamp)->format('M d, Y') }}</div>
-                                                        <small class="text-muted">
-                                                            {{ \Carbon\Carbon::parse($alert->ai_timestamp)->format('H:i:s') }}
-                                                        </small>
-                                                    </td>
-                                                    <td>
-                                                        <div class="fw-medium">{{ Str::limit($alert->situation, 100) }}</div>
-                                                        <small class="text-muted">{{ $alert->trigger_level }}</small>
-                                                    </td>
-                                                    <td>
-                                                    <span class="badge bg-{{ strtolower($alert->threat_level) === 'high' ? 'danger' : 'warning' }}">
-                                                        {{ $alert->threat_level }}
-                                                    </span>
-                                                    </td>
-                                                    <td>
-                                                        <div>{{ Str::limit($alert->primary_concern, 80) }}</div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="progress flex-grow-1 me-2" style="height: 6px;">
-                                                                <div class="progress-bar bg-{{ $alert->ai_confidence_score > 0.7 ? 'success' : 'warning' }}"
-                                                                     style="width: {{ $alert->ai_confidence_score * 100 }}%"></div>
-                                                            </div>
-                                                            <span>{{ round($alert->ai_confidence_score * 100) }}%</span>
+                                                    <td class="text-center">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" value="{{ $alert->id }}" wire:model="selectedAlerts">
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <button wire:click="viewDetails('{{ $alert->id }}')"
-                                                                class="btn btn-sm btn-outline-primary">
-                                                            <i class="fas fa-eye"></i> View
-                                                        </button>
+                                                        <span class="badge bg-light text-dark">#{{ $alert->id }}</span>
+                                                        @if($alert->analysis_id)
+                                                            <small class="d-block text-muted">{{ $alert->analysis_id }}</small>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <div class="fw-medium">{{ $alert->ai_timestamp->format('M d, Y') }}</div>
+                                                        <small class="text-muted">{{ $alert->ai_timestamp->format('H:i') }}</small>
+                                                        <div class="text-muted small">{{ $alert->time_ago }}</div>
+                                                    </td>
+                                                    <td>
+                                                    <span class="badge bg-{{ $alert->threat_level_color }} px-2 py-1">
+                                                        <i class="fas fa-shield-alt me-1"></i>
+                                                        {{ $alert->threat_level }}
+                                                    </span>
+                                                        <div class="text-muted small mt-1">{{ $alert->trigger_level }}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="fw-medium text-truncate" style="max-width: 250px;"
+                                                             title="{{ $alert->situation }}">
+                                                            {{ $alert->situation }}
+                                                        </div>
+                                                        @if($alert->likely_scenario)
+                                                            <small class="text-muted d-block mt-1">
+                                                                <i class="fas fa-project-diagram me-1"></i>
+                                                                {{ $alert->likely_scenario }}
+                                                            </small>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-truncate" style="max-width: 200px;">
+                                                            {{ $alert->primary_concern }}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                                <div class="progress-bar bg-{{ $alert->ai_confidence_score > 0.7 ? 'success' : ($alert->ai_confidence_score > 0.4 ? 'warning' : 'danger') }}"
+                                                                     style="width: {{ $alert->ai_confidence_score * 100 }}%"
+                                                                     role="progressbar">
+                                                                </div>
+                                                            </div>
+                                                            <span class="fw-medium">{{ $alert->confidence_percentage }}%</span>
+                                                        </div>
+                                                        <small class="text-muted d-block mt-1">{{ $alert->confidence }}</small>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="btn-group btn-group-sm" role="group">
+                                                            <button wire:click="viewDetails('{{ $alert->id }}')"
+                                                                    class="btn btn-outline-primary"
+                                                                    title="View Details">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button wire:click="exportSingleAlert('{{ $alert->id }}')"
+                                                                    class="btn btn-outline-secondary"
+                                                                    title="Export as PDF">
+                                                                <i class="fas fa-file-pdf"></i>
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="7" class="text-center py-4">
+                                                    <td colspan="8" class="text-center py-5">
                                                         <div class="text-muted">
-                                                            <i class="fas fa-robot fa-2x mb-2"></i>
-                                                            <p>No AI threat analysis available</p>
+                                                            <i class="fas fa-robot fa-3x mb-3 opacity-25"></i>
+                                                            <h5 class="mb-2">No Threat Analysis Found</h5>
+                                                            <p class="mb-0">Try adjusting your filters or refresh the data</p>
+                                                            <button wire:click="resetFilters" class="btn btn-sm btn-outline-primary mt-3">
+                                                                <i class="fas fa-redo me-1"></i> Reset Filters
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -331,15 +473,18 @@
                                 @endif
                             </div>
 
-                            @if(count($alerts) > 0)
-                                <div class="card-footer">
+                            @if($alerts->hasPages() || $alerts->total() > 0)
+                                <div class="card-footer bg-light">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <small class="text-muted">
-                                            Showing {{ count($alerts) }} most recent alerts
-                                        </small>
-                                        <button wire:click="refreshData" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-sync-alt"></i> Refresh
-                                        </button>
+                                        <div>
+                                            <small class="text-muted">
+                                                Showing {{ $alerts->firstItem() ?? 0 }} to {{ $alerts->lastItem() ?? 0 }}
+                                                of {{ $alerts->total() }} entries
+                                            </small>
+                                        </div>
+                                        <div>
+                                            {{ $alerts->links('livewire::bootstrap') }}
+                                        </div>
                                     </div>
                                 </div>
                             @endif
@@ -347,33 +492,37 @@
                     </div>
                 </div>
 
-                @if(!empty($stats['level_distribution']))
+                @if(!empty($stats['level_distribution']) || !empty($stats['trends']))
                     <div class="row mt-4">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Threat Level Distribution</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-container" style="height: 250px;">
-                                        <div id="threat-chart"></div>
+                        @if(!empty($stats['level_distribution']))
+                            <div class="col-xl-6">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-chart-pie me-2"></i>Threat Level Distribution
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="threat-chart" style="min-height: 300px;"></div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
 
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">Recent Alert Trends (7 Days)</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="chart-container" style="height: 250px;">
-                                        <div id="trend-chart"></div>
+                        @if(!empty($stats['trends']))
+                            <div class="col-xl-6">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-chart-line me-2"></i>7-Day Alert Trends
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="trend-chart" style="min-height: 300px;"></div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     </div>
                 @endif
             </div>
@@ -381,158 +530,191 @@
     </div>
 
     @if($showDetailsModal && $alertDetails)
-        <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" wire:ignore.self>
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header bg-{{ strtolower($alertDetails->threat_level) === 'high' ? 'danger' : 'warning' }} text-white">
-                        <h5 class="modal-title">
+        <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog" wire:ignore.self>
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-{{ $alertDetails->threat_level_color }} text-white">
+                        <h5 class="modal-title text-white">
                             <i class="fas fa-file-alt me-2"></i>
                             AI Threat Analysis Details
-                            <span class="badge bg-light text-dark ms-2">ID: {{ $alertDetails->analysis_id }}</span>
+                            <span class="badge bg-white text-dark ms-2">ID: {{ $alertDetails->analysis_id ?? $alertDetails->id }}</span>
                         </h5>
                         <button type="button" class="btn-close btn-close-white" wire:click="closeModal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="card bg-light">
+                            <div class="col-md-8">
+                                <div class="card">
                                     <div class="card-body">
-                                        <h6 class="text-muted mb-3">ANALYSIS METADATA</h6>
                                         <div class="row">
-                                            <div class="col-6">
+                                            <div class="col-md-6">
                                                 <small class="text-muted d-block">Analysis Time</small>
-                                                <strong>{{ \Carbon\Carbon::parse($alertDetails->ai_timestamp)->format('Y-m-d H:i:s') }}</strong>
+                                                <h6 class="mb-2">{{ $alertDetails->formatted_timestamp }}</h6>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-md-6">
                                                 <small class="text-muted d-block">Trigger Level</small>
                                                 <span class="badge bg-info">{{ $alertDetails->trigger_level }}</span>
                                             </div>
-                                            <div class="col-6 mt-2">
+                                            <div class="col-md-6 mt-2">
                                                 <small class="text-muted d-block">AI Confidence</small>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                                    <div class="progress flex-grow-1 me-2" style="height: 8px;">
                                                         <div class="progress-bar bg-success"
-                                                             style="width: {{ $alertDetails->ai_confidence_score * 100 }}%"></div>
+                                                             style="width: {{ $alertDetails->confidence_percentage }}%"></div>
                                                     </div>
-                                                    <strong>{{ round($alertDetails->ai_confidence_score * 100) }}%</strong>
+                                                    <strong>{{ $alertDetails->confidence_percentage }}%</strong>
                                                 </div>
                                             </div>
-                                            <div class="col-6 mt-2">
+                                            <div class="col-md-6 mt-2">
                                                 <small class="text-muted d-block">Response Length</small>
-                                                <strong>{{ $alertDetails->ai_response_length }} chars</strong>
+                                                <strong>{{ number_format($alertDetails->ai_response_length) }} chars</strong>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="card bg-{{ strtolower($alertDetails->threat_level) === 'high' ? 'danger' : 'warning' }} bg-opacity-10">
-                                    <div class="card-body">
-                                        <h6 class="text-muted mb-3">THREAT ASSESSMENT</h6>
-                                        <div class="text-center">
-                                            <div class="display-4 fw-bold text-{{ strtolower($alertDetails->threat_level) === 'high' ? 'danger' : 'warning' }}">
-                                                {{ $alertDetails->threat_level }}
+                            <div class="col-md-4">
+                                <div class="card bg-{{ $alertDetails->threat_level_color }}-subtle">
+                                    <div class="card-body text-center">
+                                        <div class="display-4 fw-bold text-{{ $alertDetails->threat_level_color }}">
+                                            {{ $alertDetails->threat_level }}
+                                        </div>
+                                        <div class="mt-2">
+                                        <span class="badge bg-{{ $alertDetails->confidence === 'HIGH' ? 'danger' : 'warning' }}">
+                                            {{ $alertDetails->confidence }} Confidence
+                                        </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion" id="analysisAccordion">
+                            <div class="accordion-item border-0 mb-3">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#situationCollapse">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <strong>Situation Analysis</strong>
+                                    </button>
+                                </h2>
+                                <div id="situationCollapse" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <div class="alert alert-light">
+                                            {{ $alertDetails->situation }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-item border-0 mb-3">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#concernsCollapse">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        <strong>Threat Concerns</strong>
+                                    </button>
+                                </h2>
+                                <div id="concernsCollapse" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <h6 class="text-muted mb-2">Primary Concern</h6>
+                                                <div class="card border-warning">
+                                                    <div class="card-body">
+                                                        {{ $alertDetails->primary_concern }}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="mt-2">
-                                            <span class="badge bg-{{ $alertDetails->confidence === 'HIGH' ? 'danger' : 'warning' }}">
-                                                Confidence: {{ $alertDetails->confidence }}
-                                            </span>
+                                            <div class="col-md-6 mb-3">
+                                                <h6 class="text-muted mb-2">Secondary Concerns</h6>
+                                                <div class="card border-secondary">
+                                                    <div class="card-body">
+                                                        {{ $alertDetails->secondary_concerns ?? 'No secondary concerns identified' }}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Analysis Sections -->
-                        <div class="analysis-section mb-4">
-                            <h6 class="text-muted mb-2 border-bottom pb-2">SITUATION ANALYSIS</h6>
-                            <div class="card">
-                                <div class="card-body">
-                                    <p class="mb-0">{{ $alertDetails->situation }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="analysis-section">
-                                    <h6 class="text-muted mb-2 border-bottom pb-2">PRIMARY CONCERN</h6>
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <p class="mb-0">{{ $alertDetails->primary_concern }}</p>
+                            <div class="accordion-item border-0 mb-3">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#scenarioCollapse">
+                                        <i class="fas fa-project-diagram me-2"></i>
+                                        <strong>Scenario & Forecast</strong>
+                                    </button>
+                                </h2>
+                                <div id="scenarioCollapse" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <h6 class="text-muted mb-2">Likely Scenario</h6>
+                                                <div class="card bg-warning-subtle">
+                                                    <div class="card-body">
+                                                        <h5 class="text-warning">{{ $alertDetails->likely_scenario }}</h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <h6 class="text-muted mb-2">Forecast</h6>
+                                                <div class="card bg-info-subtle">
+                                                    <div class="card-body">
+                                                        {{ $alertDetails->forecast }}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="analysis-section">
-                                    <h6 class="text-muted mb-2 border-bottom pb-2">SECONDARY CONCERNS</h6>
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <p class="mb-0">{{ $alertDetails->secondary_concerns }}</p>
+
+                            <div class="accordion-item border-0 mb-3">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#recommendationsCollapse">
+                                        <i class="fas fa-lightbulb me-2"></i>
+                                        <strong>AI Recommendations</strong>
+                                    </button>
+                                </h2>
+                                <div id="recommendationsCollapse" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <div class="card bg-success-subtle">
+                                            <div class="card-body">
+                                                <div class="recommendations">
+                                                    {!! nl2br(e($alertDetails->recommendations)) !!}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="analysis-section">
-                                    <h6 class="text-muted mb-2 border-bottom pb-2">LIKELY SCENARIO</h6>
-                                    <div class="card bg-warning bg-opacity-10">
-                                        <div class="card-body">
-                                            <h5 class="text-warning">{{ $alertDetails->likely_scenario }}</h5>
+                            @if($alertDetails->ai_analysis_raw)
+                                <div class="accordion-item border-0">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button bg-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#rawCollapse">
+                                            <i class="fas fa-code me-2"></i>
+                                            <strong>Raw AI Analysis</strong>
+                                        </button>
+                                    </h2>
+                                    <div id="rawCollapse" class="accordion-collapse collapse">
+                                        <div class="accordion-body">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <pre class="mb-0 bg-dark text-light p-3 rounded" style="font-size: 12px; max-height: 300px; overflow: auto;">{{ $alertDetails->ai_analysis_raw }}</pre>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="analysis-section">
-                                    <h6 class="text-muted mb-2 border-bottom pb-2">FORECAST</h6>
-                                    <div class="card bg-info bg-opacity-10">
-                                        <div class="card-body">
-                                            <p class="mb-0">{{ $alertDetails->forecast }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="analysis-section">
-                            <h6 class="text-muted mb-2 border-bottom pb-2">AI RECOMMENDATIONS</h6>
-                            <div class="card bg-success bg-opacity-10">
-                                <div class="card-body">
-                                    <div class="recommendations">
-                                        {!! nl2br(e($alertDetails->recommendations)) !!}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="analysis-section mt-4">
-                            <button class="btn btn-sm btn-outline-secondary w-100"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#rawAnalysis">
-                                <i class="fas fa-code me-1"></i> View Raw AI Analysis
-                            </button>
-                            <div class="collapse mt-2" id="rawAnalysis">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <pre class="mb-0" style="font-size: 12px; max-height: 300px; overflow: auto;">{{ $alertDetails->ai_analysis_raw }}</pre>
-                                    </div>
-                                </div>
-                            </div>
+                            @endif
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" wire:click="closeModal">
                             <i class="fas fa-times me-1"></i> Close
                         </button>
-                        <button type="button" class="btn btn-primary">
-                            <i class="fas fa-download me-1"></i> Export Report
+                        <button type="button" class="btn btn-primary" wire:click="exportSingleAlert('{{ $alertDetails->id }}')">
+                            <i class="fas fa-file-pdf me-1"></i> Export as PDF
                         </button>
                     </div>
                 </div>
@@ -540,31 +722,101 @@
         </div>
     @endif
 
-    @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <script>
-            document.addEventListener('livewire:initialized', function() {
+    @if($showExportModal)
+        <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog" wire:ignore.self>
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-file-export me-2"></i>
+                            Export Data
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" wire:click="$set('showExportModal', false)"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form wire:submit.prevent="exportData">
+                            <div class="mb-3">
+                                <label class="form-label">Export Format</label>
+                                <select wire:model="exportType" class="form-select">
+                                    <option value="excel">Excel (.xlsx)</option>
+                                    <option value="csv">CSV (.csv)</option>
+                                    <option value="pdf">PDF (.pdf)</option>
+                                    <option value="json">JSON (.json)</option>
+                                </select>
+                            </div>
 
-                Livewire.on('alert-refreshed', function() {
-                    setTimeout(initCharts, 500);
-                });
+                            <div class="mb-3">
+                                <label class="form-label">Data Range</label>
+                                <select wire:model="exportRange" class="form-select">
+                                    <option value="current">Current Filtered Results ({{ $alerts->total() }} records)</option>
+                                    <option value="selected">Selected Items ({{ count($selectedAlerts) }} records)</option>
+                                    <option value="all">All Records ({{ $stats['total'] ?? 0 }} records)</option>
+                                    <option value="today">Today's Alerts ({{ $stats['today'] ?? 0 }} records)</option>
+                                    <option value="last7days">Last 7 Days ({{ $stats['week_count'] ?? 0 }} records)</option>
+                                    <option value="last30days">Last 30 Days</option>
+                                </select>
+                            </div>
 
-                setTimeout(initCharts, 1000);
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <small>
+                                    @if($exportRange === 'current')
+                                        Exporting {{ $alerts->total() }} filtered records
+                                    @elseif($exportRange === 'selected')
+                                        Exporting {{ count($selectedAlerts) }} selected records
+                                    @elseif($exportRange === 'today')
+                                        Exporting today's {{ $stats['today'] ?? 0 }} alerts
+                                    @elseif($exportRange === 'last7days')
+                                        Exporting {{ $stats['week_count'] ?? 0 }} alerts from last 7 days
+                                    @else
+                                        Exporting all {{ $stats['total'] ?? 0 }} records
+                                    @endif
+                                </small>
+                            </div>
 
-                function initCharts() {
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary" wire:click="$set('showExportModal', false)">
+                                    Cancel
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-download me-1"></i> Download Export
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+</div>
 
-                    const threatData = @json($stats['level_distribution'] ?? []);
-                    if (Object.keys(threatData).length > 0) {
-                        const threatChart = new ApexCharts(document.querySelector("#threat-chart"), {
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        document.addEventListener('livewire:initialized', function() {
+            initCharts();
+
+            Livewire.on('alert-refreshed', function() {
+                setTimeout(initCharts, 500);
+            });
+
+            function initCharts() {
+                const threatData = @json($stats['level_distribution'] ?? []);
+                if (Object.keys(threatData).length > 0) {
+                    const threatChartEl = document.getElementById("threat-chart");
+                    if (threatChartEl) {
+                        const threatChart = new ApexCharts(threatChartEl, {
                             series: Object.values(threatData),
                             chart: {
                                 type: 'donut',
-                                height: 250
+                                height: 350,
+                                toolbar: { show: true }
                             },
                             labels: Object.keys(threatData),
-                            colors: ['#0d6efd', '#fd7e14', '#dc3545', '#6c757d'],
+                            colors: ['#dc3545', '#ffc107', '#28a745', '#6c757d', '#0d6efd'],
                             legend: {
-                                position: 'bottom'
+                                position: 'bottom',
+                                horizontalAlign: 'center'
                             },
                             plotOptions: {
                                 pie: {
@@ -572,125 +824,151 @@
                                         size: '65%',
                                         labels: {
                                             show: true,
+                                            name: {
+                                                fontSize: '14px'
+                                            },
+                                            value: {
+                                                fontSize: '20px',
+                                                fontWeight: 'bold',
+                                                formatter: function(val) {
+                                                    return val;
+                                                }
+                                            },
                                             total: {
                                                 show: true,
-                                                label: 'Total',
-                                                color: '#6c757d'
+                                                label: 'Total Alerts',
+                                                color: '#6c757d',
+                                                formatter: function(w) {
+                                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                                }
                                             }
                                         }
+                                    }
+                                }
+                            },
+                            dataLabels: {
+                                enabled: true,
+                                formatter: function(val, opts) {
+                                    return opts.w.globals.labels[opts.seriesIndex] + ': ' + val;
+                                },
+                                style: {
+                                    fontSize: '12px',
+                                    fontWeight: 'normal'
+                                }
+                            },
+                            tooltip: {
+                                y: {
+                                    formatter: function(val) {
+                                        return val + ' alerts';
                                     }
                                 }
                             }
                         });
                         threatChart.render();
                     }
+                }
 
-                    const trendData = @json($stats['trends'] ?? []);
-                    if (trendData.length > 0) {
+                const trendData = @json($stats['trends'] ?? []);
+                if (trendData.length > 0) {
+                    const trendChartEl = document.getElementById("trend-chart");
+                    if (trendChartEl) {
                         const dates = trendData.map(item => item.date);
                         const counts = trendData.map(item => item.count);
+                        const confidence = trendData.map(item => item.avg_confidence || 0);
 
-                        const trendChart = new ApexCharts(document.querySelector("#trend-chart"), {
-                            series: [{
-                                name: 'Alerts',
-                                data: counts
-                            }],
-                            chart: {
-                                type: 'area',
-                                height: 250,
-                                toolbar: {
-                                    show: false
+                        const trendChart = new ApexCharts(trendChartEl, {
+                            series: [
+                                {
+                                    name: 'Number of Alerts',
+                                    type: 'column',
+                                    data: counts
+                                },
+                                {
+                                    name: 'Avg Confidence %',
+                                    type: 'line',
+                                    data: confidence
                                 }
+                            ],
+                            chart: {
+                                height: 350,
+                                type: 'line',
+                                toolbar: { show: true }
                             },
-                            colors: ['#0d6efd'],
+                            stroke: {
+                                width: [0, 3],
+                                curve: 'smooth'
+                            },
+                            colors: ['#0d6efd', '#20c997'],
                             dataLabels: {
                                 enabled: false
                             },
-                            stroke: {
-                                curve: 'smooth',
-                                width: 2
-                            },
                             xaxis: {
-                                categories: dates,
-                                labels: {
-                                    formatter: function(value) {
-                                        return new Date(value).toLocaleDateString('en-US', {
-                                            month: 'short',
-                                            day: 'numeric'
-                                        });
+                                categories: dates.map(date => {
+                                    const d = new Date(date);
+                                    return d.toLocaleDateString('en-US', {
+                                        weekday: 'short',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    });
+                                })
+                            },
+                            yaxis: [
+                                {
+                                    title: {
+                                        text: 'Number of Alerts'
                                     }
+                                },
+                                {
+                                    opposite: true,
+                                    title: {
+                                        text: 'Confidence %'
+                                    },
+                                    min: 0,
+                                    max: 100
                                 }
-                            },
-                            yaxis: {
-                                title: {
-                                    text: 'Number of Alerts'
-                                }
-                            },
+                            ],
                             fill: {
-                                type: 'gradient',
-                                gradient: {
-                                    shadeIntensity: 1,
-                                    opacityFrom: 0.4,
-                                    opacityTo: 0.1,
-                                    stops: [0, 90, 100]
+                                opacity: [0.85, 1]
+                            },
+                            tooltip: {
+                                shared: true,
+                                intersect: false,
+                                y: {
+                                    formatter: function(y) {
+                                        if (typeof y !== "undefined") {
+                                            return y.toFixed(0) + (y > 1 ? ' alerts' : ' alert');
+                                        }
+                                        return y;
+                                    }
                                 }
                             }
                         });
                         trendChart.render();
                     }
                 }
-            });
-        </script>
-    @endpush
+            }
 
-    @push('styles')
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-        <style>
-            .analysis-section {
-                margin-bottom: 1.5rem;
-            }
-            .recommendations {
-                white-space: pre-line;
-            }
-            .modal-content {
-                max-height: 85vh;
-            }
-            .modal-body {
-                max-height: 60vh;
-                overflow-y: auto;
-            }
-            .chart-container {
-                position: relative;
-            }
-            .bg-opacity-10 {
-                background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
-            }
-            .bg-danger.bg-opacity-10 {
-                background-color: rgba(220, 53, 69, 0.1) !important;
-            }
-            .bg-warning.bg-opacity-10 {
-                background-color: rgba(255, 193, 7, 0.1) !important;
-            }
-            .bg-success.bg-opacity-10 {
-                background-color: rgba(25, 135, 84, 0.1) !important;
-            }
-            .bg-info.bg-opacity-10 {
-                background-color: rgba(13, 202, 240, 0.1) !important;
-            }
-            .avatar-sm {
-                width: 40px;
-                height: 40px;
-            }
-            .avatar-title {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 100%;
-                height: 100%;
-            }
-            .fs-22 {
-                font-size: 22px;
-            }
-        </style>
-    @endpush
-</div>
+            let refreshInterval;
+
+            Livewire.on('start-auto-refresh', (data) => {
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                }
+                refreshInterval = setInterval(() => {
+                    @this.refreshData();
+                }, data.interval * 1000);
+            });
+
+            Livewire.on('stop-auto-refresh', () => {
+                if (refreshInterval) {
+                    clearInterval(refreshInterval);
+                }
+            });
+        });
+    </script>
+@endpush
+
+@push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="{{ asset('user/assets/css/pages/ai-threat-analysis.css') }}" />
+@endpush
