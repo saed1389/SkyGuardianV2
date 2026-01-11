@@ -13,7 +13,7 @@
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-system">System</span></li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarSystem" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
-                        <i class="ri-mini-program-fill"></i> <span data-key="t-System">System</span>
+                        <i class="ri-mini-program-fill"></i> <span data-key="t-system">System</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarSystem">
                         <ul class="nav nav-sm flex-column">

@@ -10,6 +10,8 @@ use App\Models\SkyguardianAiAlerts;
 use App\Exports\AlertsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 
 class ThreatAnalysisPage extends Component
 {
@@ -29,6 +31,9 @@ class ThreatAnalysisPage extends Component
     public $selectAll = false;
     public $bulkAction = '';
 
+    // Language properties
+    public $currentLocale = 'en';
+
     // Filters
     public $filterLevel = 'all';
     public $filterDate = '';
@@ -44,7 +49,6 @@ class ThreatAnalysisPage extends Component
     // Cache keys
     protected $statsCacheKey = 'threat_analysis_stats_v2';
 
-    // Remove 'page' from queryString as WithPagination trait handles it
     protected $queryString = [
         'filterLevel' => ['except' => 'all'],
         'filterDate' => ['except' => ''],
@@ -56,6 +60,10 @@ class ThreatAnalysisPage extends Component
 
     public function mount()
     {
+        // Set current locale from session
+        $this->currentLocale = Session::get('locale', 'en');
+        App::setLocale($this->currentLocale);
+
         $this->loadStats();
         $this->loadLatestAlert();
     }
@@ -63,7 +71,8 @@ class ThreatAnalysisPage extends Component
     public function loadLatestAlert()
     {
         $this->latestAlert = cache()->remember($this->statsCacheKey . '_latest', 60, function() {
-            return SkyguardianAiAlerts::latest('ai_timestamp')->first();
+            $alert = SkyguardianAiAlerts::latest('ai_timestamp')->first();
+            return $this->applyTranslation($alert);
         });
     }
 
@@ -98,12 +107,6 @@ class ThreatAnalysisPage extends Component
                 ->orderBy('date')
                 ->get();
 
-            $threatLevels = SkyguardianAiAlerts::select('threat_level', DB::raw('count(*) as count'))
-                ->whereNotNull('threat_level')
-                ->groupBy('threat_level')
-                ->orderBy(DB::raw('FIELD(threat_level, "CRITICAL", "HIGH", "MEDIUM", "LOW")'))
-                ->get();
-
             return [
                 'total' => $statsData->total ?? 0,
                 'today' => $statsData->today_count ?? 0,
@@ -111,13 +114,44 @@ class ThreatAnalysisPage extends Component
                 'avg_confidence' => round($statsData->avg_confidence ?? 0, 1),
                 'level_distribution' => $levelDistribution,
                 'trends' => $trends,
-                'threat_levels' => $threatLevels,
                 'yesterday_count' => SkyguardianAiAlerts::whereDate('ai_timestamp', $yesterday)->count(),
                 'week_count' => SkyguardianAiAlerts::where('ai_timestamp', '>=', $lastWeek)->count(),
             ];
         });
     }
 
+    // Apply translation to a single alert
+    private function applyTranslation($alert)
+    {
+        if (!$alert || $this->currentLocale === 'en') {
+            return $alert;
+        }
+
+        // Check if we have a translation in the database
+        $translationColumn = 'analysis_' . $this->currentLocale;
+
+        if (isset($alert->$translationColumn) && !empty($alert->$translationColumn)) {
+            $translation = json_decode($alert->$translationColumn, true);
+
+            if ($translation) {
+                // Clone the alert to avoid modifying the original
+                $translatedAlert = clone $alert;
+
+                // Apply translations if available
+                foreach ($translation as $key => $value) {
+                    if (property_exists($translatedAlert, $key) && !empty($value)) {
+                        $translatedAlert->$key = $value;
+                    }
+                }
+
+                return $translatedAlert;
+            }
+        }
+
+        return $alert;
+    }
+
+    // Get alerts with translations applied
     public function getAlertsProperty()
     {
         $query = SkyguardianAiAlerts::query();
@@ -145,7 +179,14 @@ class ThreatAnalysisPage extends Component
             $query->orderBy('ai_timestamp', 'desc');
         }
 
-        return $query->paginate($this->perPage);
+        $alerts = $query->paginate($this->perPage);
+
+        // Apply translations to each alert
+        $alerts->getCollection()->transform(function ($alert) {
+            return $this->applyTranslation($alert);
+        });
+
+        return $alerts;
     }
 
     public function sortBy($field)
@@ -178,7 +219,23 @@ class ThreatAnalysisPage extends Component
             return null;
         }
 
-        return SkyguardianAiAlerts::find($this->selectedAlertId);
+        $alert = SkyguardianAiAlerts::find($this->selectedAlertId);
+        return $this->applyTranslation($alert);
+    }
+
+    public function changeLanguage($locale)
+    {
+        if (in_array($locale, ['en', 'tr', 'et'])) {
+            $this->currentLocale = $locale;
+            Session::put('locale', $locale);
+            App::setLocale($locale);
+
+            // Refresh the view
+            $this->refreshData();
+
+            // Dispatch event for JavaScript to handle language change
+            $this->dispatch('language-changed', locale: $locale);
+        }
     }
 
     public function applyFilters()
@@ -208,11 +265,6 @@ class ThreatAnalysisPage extends Component
         $this->loadLatestAlert();
 
         $this->dispatch('alert-refreshed');
-        $this->dispatch('notify', [
-            'type' => 'success',
-            'title' => 'Data Refreshed',
-            'message' => 'Threat analysis data has been updated'
-        ]);
     }
 
     public function toggleAutoRefresh()
@@ -228,7 +280,6 @@ class ThreatAnalysisPage extends Component
 
     public function updatedPage()
     {
-        // Clear selections when page changes
         $this->selectedAlerts = [];
         $this->selectAll = false;
     }
@@ -250,11 +301,6 @@ class ThreatAnalysisPage extends Component
     public function applyBulkAction()
     {
         if (empty($this->selectedAlerts) || !$this->bulkAction) {
-            $this->dispatch('notify', [
-                'type' => 'warning',
-                'title' => 'No Selection',
-                'message' => 'Please select alerts and choose an action'
-            ]);
             return;
         }
 
@@ -276,12 +322,6 @@ class ThreatAnalysisPage extends Component
         $this->selectedAlerts = [];
         $this->bulkAction = '';
         $this->selectAll = false;
-
-        $this->dispatch('notify', [
-            'type' => 'success',
-            'title' => 'Action Completed',
-            'message' => 'Bulk action applied successfully'
-        ]);
     }
 
     public function showExportModal()
@@ -329,11 +369,6 @@ class ThreatAnalysisPage extends Component
     public function exportSelected()
     {
         if (empty($this->selectedAlerts)) {
-            $this->dispatch('notify', [
-                'type' => 'warning',
-                'title' => 'No Selection',
-                'message' => 'Please select alerts to export'
-            ]);
             return;
         }
 
