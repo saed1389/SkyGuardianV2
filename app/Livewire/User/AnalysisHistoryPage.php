@@ -2,9 +2,12 @@
 
 namespace App\Livewire\User;
 
+use App\Exports\AnalysesExport;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AnalysisHistoryPage extends Component
 {
@@ -13,31 +16,31 @@ class AnalysisHistoryPage extends Component
     public $showDetailsModal = false;
     public $loading = false;
     public $stats = [];
-    public $timeRange = '7days'; // 7days, 30days, 90days, all
+    public $timeRange = '7days';
     public $filterStatus = 'all';
     public $filterRisk = 'all';
     public $search = '';
+    public $exporting = false;
 
     // Chart data
     public $chartData = [];
     public $riskDistribution = [];
     public $aircraftTrends = [];
 
-    public function mount()
+    public function mount(): void
     {
         $this->loadAnalyses();
         $this->loadStats();
         $this->loadChartData();
     }
 
-    public function loadAnalyses()
+    public function loadAnalyses(): void
     {
         $this->loading = true;
 
         $query = DB::table('skyguardian_analyses')
             ->orderBy('analysis_time', 'desc');
 
-        // Apply time range filter
         if ($this->timeRange !== 'all') {
             $days = match($this->timeRange) {
                 '7days' => 7,
@@ -50,17 +53,14 @@ class AnalysisHistoryPage extends Component
             $query->where('analysis_time', '>=', $startDate);
         }
 
-        // Apply status filter
         if ($this->filterStatus !== 'all') {
             $query->where('status', $this->filterStatus);
         }
 
-        // Apply risk filter
         if ($this->filterRisk !== 'all') {
             $query->where('overall_risk', $this->filterRisk);
         }
 
-        // Apply search filter
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('analysis_id', 'like', '%' . $this->search . '%')
@@ -73,14 +73,13 @@ class AnalysisHistoryPage extends Component
         $this->loading = false;
     }
 
-    public function loadStats()
+    public function loadStats(): void
     {
-        // Calculate time range for stats
         $days = match($this->timeRange) {
             '7days' => 7,
             '30days' => 30,
             '90days' => 90,
-            default => 9999 // all time
+            default => 9999
         };
 
         $startDate = Carbon::now()->subDays($days);
@@ -102,9 +101,8 @@ class AnalysisHistoryPage extends Component
         ];
     }
 
-    public function loadChartData()
+    public function loadChartData(): void
     {
-        // Time range for charts
         $days = match($this->timeRange) {
             '7days' => 7,
             '30days' => 30,
@@ -114,7 +112,6 @@ class AnalysisHistoryPage extends Component
 
         $startDate = Carbon::now()->subDays($days);
 
-        // Daily analysis counts
         $dailyData = DB::table('skyguardian_analyses')
             ->select(
                 DB::raw('DATE(analysis_time) as date'),
@@ -134,7 +131,6 @@ class AnalysisHistoryPage extends Component
             'avg_anomaly' => $dailyData->pluck('avg_anomaly')->map(fn($val) => round($val, 1))->toArray(),
         ];
 
-        // Risk level distribution
         $this->riskDistribution = DB::table('skyguardian_analyses')
             ->select('overall_risk', DB::raw('COUNT(*) as count'))
             ->where('analysis_time', '>=', $startDate)
@@ -143,7 +139,6 @@ class AnalysisHistoryPage extends Component
             ->pluck('count', 'overall_risk')
             ->toArray();
 
-        // Aircraft type trends
         $this->aircraftTrends = DB::table('skyguardian_analyses')
             ->select(
                 DB::raw('AVG(military_aircraft) as avg_military'),
@@ -155,26 +150,27 @@ class AnalysisHistoryPage extends Component
             ->first();
     }
 
-    public function viewDetails($analysisId)
+    public function viewDetails($analysisId): void
     {
         $this->selectedAnalysis = DB::table('skyguardian_analyses')->find($analysisId);
         $this->showDetailsModal = true;
     }
 
-    public function closeModal()
+    public function closeModal(): void
     {
         $this->showDetailsModal = false;
         $this->selectedAnalysis = null;
     }
 
-    public function applyFilters()
+    public function applyFilters(): void
     {
         $this->loadAnalyses();
         $this->loadStats();
         $this->loadChartData();
+        $this->dispatch('charts-updated');
     }
 
-    public function resetFilters()
+    public function resetFilters(): void
     {
         $this->timeRange = '7days';
         $this->filterStatus = 'all';
@@ -183,13 +179,104 @@ class AnalysisHistoryPage extends Component
         $this->applyFilters();
     }
 
-    public function exportAnalysis($analysisId)
+    public function exportAnalysis($analysisId = null)
     {
-        // TODO: Implement export functionality
-        session()->flash('message', 'Export feature coming soon!');
+        $this->exporting = true;
+
+        try {
+            if ($analysisId) {
+                $analysis = DB::table('skyguardian_analyses')->find($analysisId);
+                if (!$analysis) {
+                    session()->flash('export_error', 'Analysis not found.');
+                    $this->exporting = false;
+                    return;
+                }
+
+                $query = DB::table('skyguardian_analyses')->where('id', $analysisId);
+
+                $filename = 'analysis-report-' . ($analysis->analysis_id ?? $analysisId) . '-' . date('Y-m-d-H-i-s') . '.xlsx';
+
+                session()->flash('export_message', "Exporting analysis {$analysis->analysis_id}...");
+
+                $export = new AnalysesExport($query, null, [], 'single');
+
+                $this->exporting = false;
+                return Excel::download($export, $filename);
+
+            } else {
+                $query = $this->buildExportQuery();
+                $filters = [
+                    'time_range' => $this->timeRange,
+                    'status' => $this->filterStatus,
+                    'risk' => $this->filterRisk,
+                    'search' => $this->search,
+                ];
+
+                $rangeText = match($this->timeRange) {
+                    '7days' => '7days',
+                    '30days' => '30days',
+                    '90days' => '90days',
+                    default => 'all-time'
+                };
+
+                $filename = 'analysis-history-' . $rangeText . '-' . date('Y-m-d-H-i-s') . '.xlsx';
+
+                $recordCount = $query->count();
+                session()->flash('export_message', "Exporting {$recordCount} analysis records...");
+
+                $export = new AnalysesExport($query, $this->timeRange, $filters, 'filtered');
+
+                $this->exporting = false;
+                return Excel::download($export, $filename);
+            }
+        } catch (\Exception $e) {
+            $this->exporting = false;
+            logger()->error('Export failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            session()->flash('export_error', 'Export failed: ' . $e->getMessage());
+            return null;
+        }
     }
 
-    public function refreshData()
+    private function buildExportQuery(): \Illuminate\Database\Query\Builder
+    {
+        $query = DB::table('skyguardian_analyses');
+
+        if ($this->timeRange !== 'all') {
+            $days = match($this->timeRange) {
+                '7days' => 7,
+                '30days' => 30,
+                '90days' => 90,
+                default => 7
+            };
+            $startDate = Carbon::now()->subDays($days);
+            $query->where('analysis_time', '>=', $startDate);
+        }
+
+        if ($this->filterStatus !== 'all') {
+            $query->where('status', $this->filterStatus);
+        }
+
+        if ($this->filterRisk !== 'all') {
+            $query->where('overall_risk', $this->filterRisk);
+        }
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('analysis_id', 'like', '%' . $this->search . '%')
+                    ->orWhere('status', 'like', '%' . $this->search . '%')
+                    ->orWhere('weather_notes', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        return $query;
+    }
+
+    public function exportAll()
+    {
+        return $this->exportAnalysis();
+    }
+
+    public function refreshData(): void
     {
         $this->loadAnalyses();
         $this->loadStats();
@@ -197,7 +284,7 @@ class AnalysisHistoryPage extends Component
         $this->dispatch('charts-updated');
     }
 
-    public function getStatusOptions()
+    public function getStatusOptions(): array
     {
         return DB::table('skyguardian_analyses')
             ->select('status')
@@ -206,7 +293,7 @@ class AnalysisHistoryPage extends Component
             ->toArray();
     }
 
-    public function getRiskOptions()
+    public function getRiskOptions(): array
     {
         return DB::table('skyguardian_analyses')
             ->select('overall_risk')
@@ -215,7 +302,7 @@ class AnalysisHistoryPage extends Component
             ->toArray();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
         return view('livewire.user.analysis-history-page', [
             'statusOptions' => $this->getStatusOptions(),

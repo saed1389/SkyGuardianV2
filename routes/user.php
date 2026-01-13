@@ -17,6 +17,9 @@ Route::middleware('auth', 'role:user')->prefix('user')->name('user.')->group(fun
     Route::get('live-map', LiveMapPage::class)->name('live-map');
     Route::get('/ai-threat-analysis', ThreatAnalysisPage::class)->name('ai-threat-analysis');
     Route::get('analysis-history', AnalysisHistoryPage::class)->name('analysis-history');
+    Route::get('/analyses/export/{type?}/{id?}', [App\Http\Controllers\ExportController::class, 'export'])
+        ->name('analyses.export')
+        ->middleware('auth');
     Route::get('military-monitor', MilitaryMonitorPage::class)->name('military-monitor');
     Route::get('aircraft-database', AircraftDatabasePage::class)->name('aircraft-database');
     Route::get('system-logs', SystemLogsPage::class)->name('system-logs');

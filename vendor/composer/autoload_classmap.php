@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\Exports\\AlertsExport' => $baseDir . '/app/Exports/AlertsExport.php',
+    'App\\Exports\\AnalysesExport' => $baseDir . '/app/Exports/AnalysesExport.php',
     'App\\Http\\Controllers\\Api\\AirspaceController' => $baseDir . '/app/Http/Controllers/Api/AirspaceController.php',
     'App\\Http\\Controllers\\Auth\\AuthenticatedSessionController' => $baseDir . '/app/Http/Controllers/Auth/AuthenticatedSessionController.php',
     'App\\Http\\Controllers\\Auth\\ConfirmablePasswordController' => $baseDir . '/app/Http/Controllers/Auth/ConfirmablePasswordController.php',
@@ -18,6 +19,7 @@ return array(
     'App\\Http\\Controllers\\Auth\\RegisteredUserController' => $baseDir . '/app/Http/Controllers/Auth/RegisteredUserController.php',
     'App\\Http\\Controllers\\Auth\\VerifyEmailController' => $baseDir . '/app/Http/Controllers/Auth/VerifyEmailController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
+    'App\\Http\\Controllers\\ExportController' => $baseDir . '/app/Http/Controllers/ExportController.php',
     'App\\Http\\Controllers\\LanguageController' => $baseDir . '/app/Http/Controllers/LanguageController.php',
     'App\\Http\\Controllers\\ProfileController' => $baseDir . '/app/Http/Controllers/ProfileController.php',
     'App\\Http\\Middleware\\Role' => $baseDir . '/app/Http/Middleware/Role.php',
@@ -57,6 +59,7 @@ return array(
     'App\\Models\\SkyguardianZones' => $baseDir . '/app/Models/SkyguardianZones.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
+    'App\\Services\\TranslationService' => $baseDir . '/app/Services/TranslationService.php',
     'App\\View\\Components\\AppLayout' => $baseDir . '/app/View/Components/AppLayout.php',
     'App\\View\\Components\\GuestLayout' => $baseDir . '/app/View/Components/GuestLayout.php',
     'Arcanedev\\NoCaptcha\\Contracts\\NoCaptchaInterface' => $vendorDir . '/arcanedev/no-captcha/src/Contracts/NoCaptchaInterface.php',
