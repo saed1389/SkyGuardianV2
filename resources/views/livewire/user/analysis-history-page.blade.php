@@ -18,10 +18,12 @@
                                         <i class="fas fa-database me-1"></i>
                                         {{ $stats['total_analyses'] ?? 0 }} <span data-key="t-analyses">Analyses</span>
                                     </span>
+
                                     <button wire:click="exportAll" wire:loading.attr="disabled" class="btn btn-sm btn-success" title="Export All Filtered Data" data-key-title="t-export-all-data">
                                         <i class="fas fa-file-excel" wire:loading.class="fa-spin"></i>
                                         <span data-key="t-export-all">Export All</span>
                                     </button>
+
                                     <button wire:click="refreshData" wire:loading.attr="disabled" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-redo" wire:loading.class="fa-spin"></i>
                                         <span data-key="t-refresh">Refresh</span>
@@ -159,7 +161,8 @@
                     </div>
                 </div>
 
-                <div class="row mb-4" wire:ignore>
+                <!-- Charts Section - Remove wire:ignore from the entire section -->
+                <div class="row mb-4">
                     <div class="col-xl-8">
                         <div class="card">
                             <div class="card-header bg-light">
@@ -670,6 +673,7 @@
                             </div>
                         </div>
 
+                        <!-- JSON Data (Collapsible) -->
                         @if($selectedAnalysis->enhanced_stats || $selectedAnalysis->scoring_breakdown || $selectedAnalysis->final_assessment)
                             <div class="row mb-4">
                                 <div class="col-12">
@@ -755,6 +759,7 @@
         </div>
     @endif
 
+    <!-- Export Loading Modal -->
     @if($exporting)
         <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered">
@@ -780,15 +785,161 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script>
+
             let trendChart = null;
             let riskChart = null;
 
+            function getNestedProperty(obj, path) {
+                return path.split('.').reduce((current, key) => {
+                    return current && current[key] !== undefined ? current[key] : null;
+                }, obj);
+            }
+
+            function applyPageTranslations(translations) {
+
+                document.querySelectorAll('[data-key]').forEach(element => {
+                    const key = element.getAttribute('data-key');
+                    const translation = getNestedProperty(translations, key);
+                    if (translation) {
+                        if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+                            element.placeholder = translation;
+                        } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.value = translation;
+                        } else if (element.hasAttribute('title')) {
+                            element.setAttribute('title', translation);
+                        } else {
+                            element.textContent = translation;
+                        }
+                    }
+                });
+
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    const translation = getNestedProperty(translations, key);
+                    if (translation) {
+                        if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+                            element.placeholder = translation;
+                        } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.value = translation;
+                        } else {
+                            element.textContent = translation;
+                        }
+                    }
+                });
+
+                document.querySelectorAll('[data-key-placeholder]').forEach(element => {
+                    const key = element.getAttribute('data-key-placeholder');
+                    const translation = getNestedProperty(translations, key);
+                    if (translation) {
+                        element.setAttribute('placeholder', translation);
+                    }
+                });
+
+                document.querySelectorAll('[data-key-title]').forEach(element => {
+                    const key = element.getAttribute('data-key-title');
+                    const translation = getNestedProperty(translations, key);
+                    if (translation) {
+                        element.setAttribute('title', translation);
+                    }
+                });
+            }
+
+            function loadPageTranslations(lang = null) {
+                const locale = lang || localStorage.getItem('user_locale') || 'en';
+                const translationPath = `/user/assets/lang/${locale}.json`;
+
+                return fetch(translationPath)
+                    .then(response => {
+                        if (!response.ok) {
+                            const altPath = `/assets/lang/${locale}.json`;
+                            return fetch(altPath);
+                        }
+                        return response;
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to load translations: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(translations => {
+                        applyPageTranslations(translations);
+                        return translations;
+                    })
+                    .catch(error => {
+                        console.error('Translation load error:', error);
+
+                        if (locale !== 'en') {
+                            return loadPageTranslations('en');
+                        }
+                    });
+            }
+
+            function preserveLocale() {
+                const currentLocale = localStorage.getItem('user_locale') || 'en';
+
+                document.body.setAttribute('data-locale', currentLocale);
+
+                if (window.Livewire) {
+                    window.Livewire.dispatch('locale-changed', { locale: currentLocale });
+                }
+
+                return currentLocale;
+            }
+
+            function reapplyTranslationsAfterUpdate() {
+                const currentLocale = preserveLocale();
+                setTimeout(() => {
+                    loadPageTranslations(currentLocale);
+                }, 100);
+            }
+
             document.addEventListener('livewire:initialized', function() {
+
+                preserveLocale();
+
+                loadPageTranslations();
+
                 initCharts();
 
                 Livewire.on('charts-updated', function() {
                     destroyCharts();
-                    setTimeout(initCharts, 100);
+                    setTimeout(() => {
+                        initCharts();
+                        reapplyTranslationsAfterUpdate();
+                    }, 500);
+                });
+
+                Livewire.hook('message.processed', (message, component) => {
+                    if (component.name.includes('analysis-history')) {
+                        setTimeout(() => {
+
+                            const trendContainer = document.querySelector("#trend-chart");
+                            const riskContainer = document.querySelector("#risk-chart");
+
+                            if (trendContainer && !trendContainer.querySelector('.apexcharts-canvas')) {
+                                destroyCharts();
+                                initCharts();
+                            }
+
+                            reapplyTranslationsAfterUpdate();
+                        }, 300);
+                    }
+                });
+
+                window.addEventListener('language-changed', function(event) {
+                    const locale = event.detail?.locale || localStorage.getItem('user_locale') || 'en';
+                    loadPageTranslations(locale);
+
+                    setTimeout(() => {
+                        destroyCharts();
+                        initCharts();
+                    }, 100);
+                });
+
+                document.addEventListener('locale-updated', function(e) {
+                    const locale = e.detail?.locale || localStorage.getItem('user_locale') || 'en';
+                    loadPageTranslations(locale);
                 });
 
                 function initCharts() {
@@ -796,79 +947,78 @@
                     if (trendData.dates && trendData.dates.length > 0) {
                         const trendContainer = document.querySelector("#trend-chart");
                         if (trendContainer) {
-                            trendContainer.innerHTML = '';
-
-                            trendChart = new ApexCharts(trendContainer, {
-                                series: [
-                                    {
-                                        name: '<span data-key="t-analysis-count">Analysis Count</span>',
-                                        type: 'column',
-                                        data: trendData.analysis_counts
-                                    },
-                                    {
-                                        name: '<span data-key="t-avg-aircraft">Avg Aircraft</span>',
-                                        type: 'line',
-                                        data: trendData.avg_aircraft
-                                    },
-                                    {
-                                        name: '<span data-key="t-avg-anomaly-score">Avg Anomaly Score</span>',
-                                        type: 'line',
-                                        data: trendData.avg_anomaly
-                                    }
-                                ],
-                                chart: {
-                                    height: 300,
-                                    type: 'line',
-                                    toolbar: {
-                                        show: true
-                                    },
-                                    events: {
-                                        mounted: function(chartContext, config) {
+                            if (!trendContainer.querySelector('.apexcharts-canvas')) {
+                                trendChart = new ApexCharts(trendContainer, {
+                                    series: [
+                                        {
+                                            name: 'Analysis Count',
+                                            type: 'column',
+                                            data: trendData.analysis_counts
                                         },
-                                        updated: function(chartContext, config) {
+                                        {
+                                            name: 'Avg Aircraft',
+                                            type: 'line',
+                                            data: trendData.avg_aircraft
+                                        },
+                                        {
+                                            name: 'Avg Anomaly Score',
+                                            type: 'line',
+                                            data: trendData.avg_anomaly
                                         }
-                                    }
-                                },
-                                stroke: {
-                                    width: [0, 2, 2]
-                                },
-                                colors: ['#0d6efd', '#fd7e14', '#dc3545'],
-                                dataLabels: {
-                                    enabled: false
-                                },
-                                markers: {
-                                    size: 4
-                                },
-                                xaxis: {
-                                    categories: trendData.dates
-                                },
-                                yaxis: [
-                                    {
-                                        title: {
-                                            text: 'Analysis Count'
+                                    ],
+                                    chart: {
+                                        height: 300,
+                                        type: 'line',
+                                        toolbar: {
+                                            show: true
+                                        },
+                                        events: {
+                                            mounted: function() {
+                                                reapplyTranslationsAfterUpdate();
+                                            }
                                         }
                                     },
-                                    {
-                                        opposite: true,
-                                        title: {
-                                            text: 'Aircraft' + ' / ' + 'Score'
-                                        }
-                                    }
-                                ],
-                                tooltip: {
-                                    shared: true,
-                                    intersect: false,
-                                    y: {
-                                        formatter: function (y) {
-                                            if (typeof y !== "undefined") {
-                                                return y.toFixed(1);
+                                    stroke: {
+                                        width: [0, 2, 2]
+                                    },
+                                    colors: ['#0d6efd', '#fd7e14', '#dc3545'],
+                                    dataLabels: {
+                                        enabled: false
+                                    },
+                                    markers: {
+                                        size: 4
+                                    },
+                                    xaxis: {
+                                        categories: trendData.dates
+                                    },
+                                    yaxis: [
+                                        {
+                                            title: {
+                                                text: 'Analysis Count'
                                             }
-                                            return y;
+                                        },
+                                        {
+                                            opposite: true,
+                                            title: {
+                                                text: 'Aircraft / Score'
+                                            }
+                                        }
+                                    ],
+                                    tooltip: {
+                                        shared: true,
+                                        intersect: false,
+                                        y: {
+                                            formatter: function (y) {
+                                                if (typeof y !== "undefined") {
+                                                    return y.toFixed(1);
+                                                }
+                                                return y;
+                                            }
                                         }
                                     }
-                                }
-                            });
-                            trendChart.render();
+                                });
+                                trendChart.render();
+                            }
                         }
                     }
 
@@ -876,56 +1026,55 @@
                     if (Object.keys(riskData).length > 0) {
                         const riskContainer = document.querySelector("#risk-chart");
                         if (riskContainer) {
-                            riskContainer.innerHTML = '';
-
-                            riskChart = new ApexCharts(riskContainer, {
-                                series: Object.values(riskData),
-                                chart: {
-                                    type: 'donut',
-                                    height: 300,
-                                    events: {
-                                        mounted: function(chartContext, config) {
-                                        },
-                                        updated: function(chartContext, config) {
+                            if (!riskContainer.querySelector('.apexcharts-canvas')) {
+                                riskChart = new ApexCharts(riskContainer, {
+                                    series: Object.values(riskData),
+                                    chart: {
+                                        type: 'donut',
+                                        height: 300,
+                                        events: {
+                                            mounted: function() {
+                                                reapplyTranslationsAfterUpdate();
+                                            }
                                         }
-                                    }
-                                },
-                                labels: Object.keys(riskData),
-                                colors: ['#28a745', '#ffc107', '#dc3545', '#6c757d'],
-                                legend: {
-                                    position: 'bottom'
-                                },
-                                plotOptions: {
-                                    pie: {
-                                        donut: {
-                                            size: '60%',
-                                            labels: {
-                                                show: true,
-                                                total: {
+                                    },
+                                    labels: Object.keys(riskData),
+                                    colors: ['#28a745', '#ffc107', '#dc3545', '#6c757d'],
+                                    legend: {
+                                        position: 'bottom'
+                                    },
+                                    plotOptions: {
+                                        pie: {
+                                            donut: {
+                                                size: '60%',
+                                                labels: {
                                                     show: true,
-                                                    label: "Total",
-                                                    color: '#6c757d',
-                                                    formatter: function(w) {
-                                                        return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                                    total: {
+                                                        show: true,
+                                                        label: "Total",
+                                                        color: '#6c757d',
+                                                        formatter: function(w) {
+                                                            return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
-                                    }
-                                },
-                                responsive: [{
-                                    breakpoint: 480,
-                                    options: {
-                                        chart: {
-                                            width: 200
-                                        },
-                                        legend: {
-                                            position: 'bottom'
+                                    },
+                                    responsive: [{
+                                        breakpoint: 480,
+                                        options: {
+                                            chart: {
+                                                width: 200
+                                            },
+                                            legend: {
+                                                position: 'bottom'
+                                            }
                                         }
-                                    }
-                                }]
-                            });
-                            riskChart.render();
+                                    }]
+                                });
+                                riskChart.render();
+                            }
                         }
                     }
                 }
@@ -935,6 +1084,7 @@
                         try {
                             trendChart.destroy();
                         } catch (e) {
+                            console.error('Error destroying trend chart:', e);
                         }
                         trendChart = null;
                     }
@@ -943,6 +1093,7 @@
                         try {
                             riskChart.destroy();
                         } catch (e) {
+                            console.error('Error destroying risk chart:', e);
                         }
                         riskChart = null;
                     }
@@ -951,31 +1102,15 @@
                 document.addEventListener('livewire:before-destroy', function() {
                     destroyCharts();
                 });
+            });
 
-                function showToast(type, title, message) {
-                    const toast = `
-                        <div class="toast align-items-center text-bg-${type} border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
-                            <div class="d-flex">
-                                <div class="toast-body">
-                                    <strong>${title}</strong><br>
-                                    ${message}
-                                </div>
-                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-                            </div>
-                        </div>
-                    `;
+            document.addEventListener('DOMContentLoaded', function() {
+                const savedLocale = localStorage.getItem('user_locale') || 'en';
+                loadPageTranslations(savedLocale);
 
-                    const container = document.createElement('div');
-                    container.className = 'position-fixed top-0 end-0 p-3';
-                    container.style.zIndex = '1060';
-                    container.innerHTML = toast;
-
-                    document.body.appendChild(container);
-
-                    setTimeout(() => {
-                        container.remove();
-                    }, 5000);
-                }
+                document.dispatchEvent(new CustomEvent('page-locale-loaded', {
+                    detail: { locale: savedLocale }
+                }));
             });
         </script>
     @endpush

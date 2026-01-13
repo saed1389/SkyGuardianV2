@@ -7,7 +7,8 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
 
 class AnalysisHistoryPage extends Component
 {
@@ -22,13 +23,17 @@ class AnalysisHistoryPage extends Component
     public $search = '';
     public $exporting = false;
 
-    // Chart data
+    public $currentLocale;
+
     public $chartData = [];
     public $riskDistribution = [];
     public $aircraftTrends = [];
 
     public function mount(): void
     {
+        $this->currentLocale = Session::get('user_locale', App::getLocale());
+        Session::put('user_locale', $this->currentLocale);
+
         $this->loadAnalyses();
         $this->loadStats();
         $this->loadChartData();
@@ -300,6 +305,13 @@ class AnalysisHistoryPage extends Component
             ->distinct()
             ->pluck('overall_risk')
             ->toArray();
+    }
+
+    public function updated($property): void
+    {
+        if ($property === 'currentLocale' && $this->currentLocale) {
+            Session::put('user_locale', $this->currentLocale);
+        }
     }
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View

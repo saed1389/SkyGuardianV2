@@ -10,28 +10,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SetLocale
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next)
     {
-        if (Session::has('locale')) {
-            $locale = Session::get('locale');
-            if (in_array($locale, ['en', 'tr', 'ee'])) {
-                App::setLocale($locale);
-                return $next($request);
-            }
+        if (Session::has('user_locale')) {
+            $locale = Session::get('user_locale');
+            App::setLocale($locale);
+        } elseif ($request->hasHeader('X-User-Locale')) {
+            $locale = $request->header('X-User-Locale');
+            App::setLocale($locale);
+            Session::put('user_locale', $locale);
+        } else {
+            App::setLocale(config('app.locale'));
         }
-
-        if ($request->hasCookie('app_locale')) {
-            $locale = $request->cookie('app_locale');
-            if (in_array($locale, ['en', 'tr', 'ee'])) {
-                App::setLocale($locale);
-                Session::put('locale', $locale);
-                return $next($request);
-            }
-        }
-
-        App::setLocale('en');
-        Session::put('locale', 'en');
-
         return $next($request);
     }
 }
