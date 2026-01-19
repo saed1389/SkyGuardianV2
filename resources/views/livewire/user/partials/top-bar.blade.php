@@ -251,9 +251,19 @@
     <script>
         let currentTranslations = null;
         let currentLocale = '{{ app()->getLocale() }}';
+        let translationObserver = null;
 
+        // 1. Helper: Debounce to prevent performance issues on rapid DOM changes
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // 2. Core: Switch Language Function
         function switchLanguage(lang) {
-
             const flagMap = {
                 'en': '{{ asset("user/assets/images/flags/us.svg") }}',
                 'tr': '{{ asset("user/assets/images/flags/tr.svg") }}',
@@ -263,6 +273,7 @@
             const langImg = document.getElementById('header-lang-img');
             const originalSrc = langImg.src;
 
+            // Visual update immediately
             if (flagMap[lang]) {
                 langImg.src = flagMap[lang];
             }
@@ -270,6 +281,10 @@
             localStorage.setItem('user_locale', lang);
             currentLocale = lang;
 
+            // Load JSON translations immediately for UI speed
+            loadTranslations(lang);
+
+            // Send request to backend to persist session
             const formData = new FormData();
             formData.append('lang', lang);
 
@@ -283,279 +298,207 @@
                 body: formData
             })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.status);
-                    }
+                    if (!response.ok) throw new Error('Network response error');
                     return response.json();
                 })
                 .then(data => {
-
                     if (data.success) {
-                        const dropdownBtn = document.querySelector('.header-item [data-bs-toggle="dropdown"]');
-                        if (dropdownBtn) {
-                            const bsDropdown = bootstrap.Dropdown.getInstance(dropdownBtn);
-                            if (bsDropdown) bsDropdown.hide();
-                        }
+                        showToast('t-language-changed', 'success', { language: lang.toUpperCase() });
 
-                        showToast('t-language-changed', 'success', {
-                            language: lang === 'en' ? 'English' :
-                                lang === 'tr' ? 'Turkish' :
-                                    'Estonian'
-                        });
-
-                        loadTranslations(lang);
-
-                        window.dispatchEvent(new CustomEvent('language-changed', {
-                            detail: { locale: lang }
-                        }));
-
+                        // Dispatch event so other components know language changed
+                        window.dispatchEvent(new CustomEvent('language-changed', { detail: { locale: lang } }));
                     } else {
-                        langImg.src = originalSrc;
-                        localStorage.setItem('user_locale', currentLocale);
-                        showToast(data.message || 'Failed to change language', 'error');
+                        revertLanguage(originalSrc);
                     }
                 })
                 .catch(error => {
-                    langImg.src = originalSrc;
-                    localStorage.setItem('user_locale', currentLocale);
-                    showToast('An error occurred. Please try again.', 'error');
+                    console.error(error);
+                    revertLanguage(originalSrc);
                 });
         }
 
-        function refreshDropdownTranslations() {
-            if (!currentTranslations) return;
-
-            document.querySelectorAll('.dropdown-menu.show').forEach(dropdown => {
-
-                dropdown.querySelectorAll('[data-i18n]').forEach(element => {
-                    const key = element.getAttribute('data-i18n');
-                    const translation = getNestedProperty(currentTranslations, key);
-                    if (translation) {
-                        element.textContent = translation;
-                    }
-                });
-
-                dropdown.querySelectorAll('[data-key]').forEach(element => {
-                    const key = element.getAttribute('data-key');
-                    const translation = getNestedProperty(currentTranslations, key);
-                    if (translation) {
-                        element.textContent = translation;
-                    }
-                });
-            });
+        // 3. Helper: Revert language on failure
+        function revertLanguage(originalSrc) {
+            const langImg = document.getElementById('header-lang-img');
+            if(langImg) langImg.src = originalSrc;
+            localStorage.setItem('user_locale', '{{ app()->getLocale() }}');
+            showToast('t-error-occurred', 'error');
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-
-            document.querySelectorAll('.dropdown').forEach(dropdown => {
-                dropdown.addEventListener('shown.bs.dropdown', function() {
-                    setTimeout(() => {
-                        refreshDropdownTranslations();
-                    }, 10);
-                });
-            });
-
-            window.addEventListener('language-changed', function() {
-                setTimeout(() => {
-                    refreshDropdownTranslations();
-                }, 100);
-            });
-        });
-
+        // 4. Core: Load Translations from JSON
         function loadTranslations(lang) {
+            // Adjust this path if your JSON files are in a different location
             const translationPath = `/user/assets/lang/${lang}.json`;
 
             fetch(translationPath)
                 .then(response => {
-                    if (!response.ok) {
-                        const altPath = `/assets/lang/${lang}.json`;
-                        return fetch(altPath);
-                    }
+                    // Fallback path if needed
+                    if (!response.ok) return fetch(`/assets/lang/${lang}.json`);
                     return response;
                 })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Failed to load translations: ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error('Translation file not found');
                     return response.json();
                 })
                 .then(translations => {
                     currentTranslations = translations;
                     applyTranslations(translations);
                 })
-                .catch(error => {
-                    if (lang !== 'en') {
-                        loadTranslations('en');
-                    }
-                });
+                .catch(err => console.error('Translation load error:', err));
         }
 
+        // 5. Core: Apply Translations to DOM
         function applyTranslations(translations) {
+            if (!translations) return;
 
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                const translation = getNestedProperty(translations, key);
-                if (translation) {
-                    if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
-                        element.placeholder = translation;
-                    } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                        element.value = translation;
+            // Select all translatable elements
+            const elements = document.querySelectorAll('[data-i18n], [data-key], [data-i18n-title], [data-i18n-placeholder]');
+
+            elements.forEach(element => {
+                // Handle Title attribute
+                if (element.hasAttribute('data-i18n-title')) {
+                    const key = element.getAttribute('data-i18n-title');
+                    const text = getNestedProperty(translations, key);
+                    if (text) element.setAttribute('title', text);
+                }
+                // Handle Placeholder attribute
+                if (element.hasAttribute('data-i18n-placeholder')) {
+                    const key = element.getAttribute('data-i18n-placeholder');
+                    const text = getNestedProperty(translations, key);
+                    if (text) element.setAttribute('placeholder', text);
+                }
+                // Handle Text Content
+                applySingleTranslation(element, translations);
+            });
+        }
+
+        // 6. Helper: Apply to single element
+        function applySingleTranslation(element, translations) {
+            const key = element.getAttribute('data-i18n') || element.getAttribute('data-key');
+            if (!key) return;
+
+            const translation = getNestedProperty(translations, key);
+            if (translation) {
+                if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+                    element.placeholder = translation;
+                } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.value = translation;
+                } else {
+                    // Safety: If element has icon children, prevent overwriting them unless explicitly allowed
+                    if(element.children.length > 0 && !element.hasAttribute('data-text-only')) {
+                        // Try to find a text node to replace, or append if safe.
+                        // For now, simpler to assume data-key is on the text container specifically.
+                        // If you have <button><i class="icon"></i> Text</button>, put data-key on a <span> around Text.
+                        element.textContent = translation;
                     } else {
                         element.textContent = translation;
                     }
                 }
-            });
-
-            document.querySelectorAll('[data-key]').forEach(element => {
-                const key = element.getAttribute('data-key');
-                const translation = getNestedProperty(translations, key);
-                if (translation) {
-                    element.textContent = translation;
-                }
-            });
-
-            document.querySelectorAll('[data-i18n-title]').forEach(element => {
-                const key = element.getAttribute('data-i18n-title');
-                const translation = getNestedProperty(translations, key);
-                if (translation) {
-                    element.setAttribute('title', translation);
-                }
-            });
-
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
-                const key = element.getAttribute('data-i18n-placeholder');
-                const translation = getNestedProperty(translations, key);
-                if (translation) {
-                    element.setAttribute('placeholder', translation);
-                }
-            });
-
-            refreshDropdownTranslations();
+            }
         }
 
-
+        // 7. Helper: Get nested JSON property (e.g., 'messages.welcome')
         function getNestedProperty(obj, path) {
+            if(!path) return null;
             return path.split('.').reduce((current, key) => {
                 return current && current[key] !== undefined ? current[key] : null;
             }, obj);
         }
 
+        // 8. Helper: Toast Notification
         function showToast(keyOrMessage, type = 'info', params = {}) {
-
             let message = keyOrMessage;
 
+            // Try to translate the message itself
             if (keyOrMessage.startsWith('t-') && currentTranslations) {
-                const translation = getNestedProperty(currentTranslations, keyOrMessage);
-                if (translation) {
-                    message = translation;
-
-                    Object.keys(params).forEach(paramKey => {
-                        const placeholder = `{${paramKey}}`;
-                        if (message.includes(placeholder)) {
-                            message = message.replace(new RegExp(placeholder, 'g'), params[paramKey]);
-                        }
-                    });
-                } else {
-
-                    const fallbackMessages = {
-                        't-an-error-occurred': 'An error occurred. Please try again.',
-                        't-language-changed': 'Language changed to {language}',
-                        't-failed-to-change-language': 'Failed to change language',
-                        't-network-error': 'Network error. Please try again.',
-                        't-translations-loaded': 'Translations loaded successfully',
-                        't-weather-updated': 'Weather data updated',
-                        't-profile-updated': 'Profile updated successfully',
-                        't-settings-saved': 'Settings saved successfully'
-                    };
-                    message = fallbackMessages[keyOrMessage] || keyOrMessage;
+                const trans = getNestedProperty(currentTranslations, keyOrMessage);
+                if (trans) {
+                    message = trans;
+                    Object.keys(params).forEach(k => message = message.replace(`{${k}}`, params[k]));
                 }
             }
 
-            document.querySelectorAll('.locale-toast').forEach(toast => toast.remove());
+            // Remove existing toasts
+            document.querySelectorAll('.locale-toast').forEach(t => t.remove());
 
             const toast = document.createElement('div');
             toast.className = `alert alert-${type} alert-dismissible fade show position-fixed locale-toast`;
-            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; max-width: 400px;';
+            toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+
+            const icon = type === 'success' ? 'bx-check-circle' : type === 'error' ? 'bx-error' : 'bx-info-circle';
+
             toast.innerHTML = `
-        <div class="d-flex align-items-center">
-            <i class='bx ${type === 'success' ? 'bx-check-circle text-success me-2' :
-                type === 'error' || type === 'danger' ? 'bx-error text-danger me-2' :
-                    type === 'warning' ? 'bx-error text-warning me-2' :
-                        'bx-info-circle text-info me-2'}'></i>
-            <span class="flex-grow-1">${message}</span>
-            <button type="button" class="btn-close ms-2" data-bs-dismiss="alert"></button>
-        </div>
-    `;
+            <div class="d-flex align-items-center">
+                <i class='bx ${icon} fs-4 me-2'></i>
+                <span class="flex-grow-1">${message}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
             document.body.appendChild(toast);
-
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.remove();
-                }
-            }, 3000);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        function reapplyTranslations() {
-            if (currentTranslations) {
-                applyTranslations(currentTranslations);
-            }
-        }
-
+        // 9. Main Execution Block
         document.addEventListener('DOMContentLoaded', function() {
 
-            const savedLocale = localStorage.getItem('user_locale');
-            const serverLocale = '{{ app()->getLocale() }}';
+            // A. Initial Load
+            const savedLocale = localStorage.getItem('user_locale') || '{{ app()->getLocale() }}';
 
-            const localeToUse = savedLocale || serverLocale;
+            const flagMap = {
+                'en': '{{ asset("user/assets/images/flags/us.svg") }}',
+                'tr': '{{ asset("user/assets/images/flags/tr.svg") }}',
+                'ee': '{{ asset("user/assets/images/flags/estonia.svg") }}'
+            };
+            const langImg = document.getElementById('header-lang-img');
+            if (langImg && flagMap[savedLocale]) langImg.src = flagMap[savedLocale];
 
-            if (savedLocale && savedLocale !== serverLocale) {
+            loadTranslations(savedLocale);
 
-                const flagMap = {
-                    'en': '{{ asset("user/assets/images/flags/us.svg") }}',
-                    'tr': '{{ asset("user/assets/images/flags/tr.svg") }}',
-                    'ee': '{{ asset("user/assets/images/flags/estonia.svg") }}'
-                };
+            // B. MutationObserver (THE FIX for Modals)
+            // This watches the DOM for *new* elements (like your modal) and translates them instantly
+            if (translationObserver) translationObserver.disconnect();
 
-                const langImg = document.getElementById('header-lang-img');
-                if (langImg && flagMap[savedLocale]) {
-                    langImg.src = flagMap[savedLocale];
+            translationObserver = new MutationObserver(debounce(function(mutations) {
+                if (!currentTranslations) return;
+
+                let shouldUpdate = false;
+                for(let mutation of mutations) {
+                    // If nodes were added (like opening a modal)
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        shouldUpdate = true;
+                        break;
+                    }
                 }
-            }
 
-            loadTranslations(localeToUse);
-
-            setTimeout(() => {
-                if (currentTranslations) {
+                if (shouldUpdate) {
                     applyTranslations(currentTranslations);
                 }
-            }, 100);
+            }, 50)); // 50ms delay to batch updates
 
-            document.addEventListener('livewire:update', function() {
-                setTimeout(() => {
-                    reapplyTranslations();
-                }, 50);
-            });
+            // Start observing the entire body
+            translationObserver.observe(document.body, { childList: true, subtree: true });
 
-            document.addEventListener('livewire:element-updated', function(event) {
-                setTimeout(() => {
-                    reapplyTranslations();
-                }, 50);
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const weatherDropdown = document.querySelector('#weatherDropdown .dropdown-menu');
-            if (weatherDropdown) {
-                weatherDropdown.style.inset = 'unset';
-                weatherDropdown.style.width = '240px';
-                weatherDropdown.style.left = 'auto';
-                weatherDropdown.style.right = '0';
-                weatherDropdown.style.top = '100%';
-                weatherDropdown.style.transform = 'translateY(10px)';
-                weatherDropdown.classList.add('weather-dropdown-fixed');
+            // C. Livewire Hooks (Backup)
+            // Listen for Livewire updates to catch things the observer might miss (like value updates)
+            if (typeof Livewire !== 'undefined') {
+                // Livewire v3
+                if (Livewire.hook) {
+                    Livewire.hook('morph.updated', ({ el, component }) => {
+                        if (currentTranslations) applyTranslations(currentTranslations);
+                    });
+                }
+                // Livewire v2
+                else {
+                    document.addEventListener('livewire:update', function() {
+                        if (currentTranslations) applyTranslations(currentTranslations);
+                    });
+                }
             }
 
+            // Also listen for standard Livewire events
+            document.addEventListener('livewire:initialized', () => {
+                if (currentTranslations) applyTranslations(currentTranslations);
+            });
         });
     </script>
 @endpush
