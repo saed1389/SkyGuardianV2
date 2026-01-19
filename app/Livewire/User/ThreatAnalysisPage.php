@@ -30,23 +30,15 @@ class ThreatAnalysisPage extends Component
     public $selectedAlerts = [];
     public $selectAll = false;
     public $bulkAction = '';
-
-    // Language properties
     public $currentLocale = 'en';
-
-    // Filters
     public $filterLevel = 'all';
     public $filterDate = '';
     public $search = '';
     public $perPage = 15;
     public $sortField = 'ai_timestamp';
     public $sortDirection = 'desc';
-
-    // Stats refresh timer
     public $autoRefresh = false;
     public $refreshInterval = 60;
-
-    // Cache keys
     protected $statsCacheKey = 'threat_analysis_stats_v2';
 
     protected $queryString = [
@@ -58,9 +50,8 @@ class ThreatAnalysisPage extends Component
         'sortDirection' => ['except' => 'desc'],
     ];
 
-    public function mount()
+    public function mount(): void
     {
-        // Set current locale from session
         $this->currentLocale = Session::get('locale', 'en');
         App::setLocale($this->currentLocale);
 
@@ -68,7 +59,7 @@ class ThreatAnalysisPage extends Component
         $this->loadLatestAlert();
     }
 
-    public function loadLatestAlert()
+    public function loadLatestAlert(): void
     {
         $this->latestAlert = cache()->remember($this->statsCacheKey . '_latest', 60, function() {
             $alert = SkyguardianAiAlerts::latest('ai_timestamp')->first();
@@ -76,7 +67,7 @@ class ThreatAnalysisPage extends Component
         });
     }
 
-    public function loadStats()
+    public function loadStats(): void
     {
         $this->stats = cache()->remember($this->statsCacheKey, 300, function() {
             $today = Carbon::today();
@@ -120,24 +111,21 @@ class ThreatAnalysisPage extends Component
         });
     }
 
-    // Apply translation to a single alert
     private function applyTranslation($alert)
     {
         if (!$alert || $this->currentLocale === 'en') {
             return $alert;
         }
 
-        // Check if we have a translation in the database
         $translationColumn = 'analysis_' . $this->currentLocale;
 
         if (isset($alert->$translationColumn) && !empty($alert->$translationColumn)) {
             $translation = json_decode($alert->$translationColumn, true);
 
             if ($translation) {
-                // Clone the alert to avoid modifying the original
+
                 $translatedAlert = clone $alert;
 
-                // Apply translations if available
                 foreach ($translation as $key => $value) {
                     if (property_exists($translatedAlert, $key) && !empty($value)) {
                         $translatedAlert->$key = $value;
@@ -147,12 +135,10 @@ class ThreatAnalysisPage extends Component
                 return $translatedAlert;
             }
         }
-
         return $alert;
     }
 
-    // Get alerts with translations applied
-    public function getAlertsProperty()
+    public function getAlertsProperty(): \Illuminate\Pagination\LengthAwarePaginator
     {
         $query = SkyguardianAiAlerts::query();
 
@@ -181,7 +167,6 @@ class ThreatAnalysisPage extends Component
 
         $alerts = $query->paginate($this->perPage);
 
-        // Apply translations to each alert
         $alerts->getCollection()->transform(function ($alert) {
             return $this->applyTranslation($alert);
         });
@@ -189,7 +174,7 @@ class ThreatAnalysisPage extends Component
         return $alerts;
     }
 
-    public function sortBy($field)
+    public function sortBy($field): void
     {
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
@@ -201,13 +186,13 @@ class ThreatAnalysisPage extends Component
         $this->resetPage();
     }
 
-    public function viewDetails($alertId)
+    public function viewDetails($alertId): void
     {
         $this->selectedAlertId = $alertId;
         $this->showDetailsModal = true;
     }
 
-    public function closeModal()
+    public function closeModal(): void
     {
         $this->showDetailsModal = false;
         $this->selectedAlertId = null;
@@ -223,27 +208,25 @@ class ThreatAnalysisPage extends Component
         return $this->applyTranslation($alert);
     }
 
-    public function changeLanguage($locale)
+    public function changeLanguage($locale): void
     {
         if (in_array($locale, ['en', 'tr', 'et'])) {
             $this->currentLocale = $locale;
             Session::put('locale', $locale);
             App::setLocale($locale);
 
-            // Refresh the view
             $this->refreshData();
 
-            // Dispatch event for JavaScript to handle language change
             $this->dispatch('language-changed', locale: $locale);
         }
     }
 
-    public function applyFilters()
+    public function applyFilters(): void
     {
         $this->resetPage();
     }
 
-    public function resetFilters()
+    public function resetFilters(): void
     {
         $this->filterLevel = 'all';
         $this->filterDate = '';
@@ -256,7 +239,7 @@ class ThreatAnalysisPage extends Component
         $this->selectAll = false;
     }
 
-    public function refreshData()
+    public function refreshData(): void
     {
         cache()->forget($this->statsCacheKey);
         cache()->forget($this->statsCacheKey . '_latest');
@@ -267,7 +250,7 @@ class ThreatAnalysisPage extends Component
         $this->dispatch('alert-refreshed');
     }
 
-    public function toggleAutoRefresh()
+    public function toggleAutoRefresh(): void
     {
         $this->autoRefresh = !$this->autoRefresh;
 
@@ -278,13 +261,13 @@ class ThreatAnalysisPage extends Component
         }
     }
 
-    public function updatedPage()
+    public function updatedPage(): void
     {
         $this->selectedAlerts = [];
         $this->selectAll = false;
     }
 
-    public function toggleSelectAll()
+    public function toggleSelectAll(): void
     {
         if ($this->selectAll) {
             $this->selectedAlerts = $this->alerts->pluck('id')->toArray();
@@ -293,7 +276,7 @@ class ThreatAnalysisPage extends Component
         }
     }
 
-    public function updatedSelectedAlerts()
+    public function updatedSelectedAlerts(): void
     {
         $this->selectAll = count($this->selectedAlerts) === $this->alerts->count();
     }
@@ -324,7 +307,7 @@ class ThreatAnalysisPage extends Component
         $this->selectAll = false;
     }
 
-    public function showExportModal()
+    public function showExportModal(): void
     {
         $this->showExportModal = true;
     }
@@ -378,7 +361,7 @@ class ThreatAnalysisPage extends Component
         return Excel::download(new AlertsExport($query), $filename . '.xlsx');
     }
 
-    public function exportSingleAlert($alertId)
+    public function exportSingleAlert($alertId): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $alert = SkyguardianAiAlerts::findOrFail($alertId);
         $filename = 'alert-' . ($alert->analysis_id ?? $alert->id) . '-' . now()->format('Y-m-d');
@@ -436,7 +419,7 @@ class ThreatAnalysisPage extends Component
         return $query;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
         $this->loading = true;
         $alerts = $this->getAlertsProperty();

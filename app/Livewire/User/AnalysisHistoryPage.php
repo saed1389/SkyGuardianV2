@@ -22,9 +22,7 @@ class AnalysisHistoryPage extends Component
     public $filterRisk = 'all';
     public $search = '';
     public $exporting = false;
-
     public $currentLocale;
-
     public $chartData = [];
     public $riskDistribution = [];
     public $aircraftTrends = [];

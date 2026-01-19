@@ -443,7 +443,7 @@
                             <div class="col-md-4">
                                 <div class="card bg-danger bg-opacity-10">
                                     <div class="card-body">
-                                        <h6 class="text-muted mb-3" data-key="t-classification">CLASSIFICATION</h6>
+                                        <h6 class="text-muted mb-3 text-uppercase" data-key="t-classification">CLASSIFICATION</h6>
                                         <div class="mb-3">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <span data-key="t-military">Military</span>

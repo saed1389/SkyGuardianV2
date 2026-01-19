@@ -15,22 +15,15 @@ class ReportsPage extends Component
     public $activeReportType = 'daily';
     public $reportData = null;
     public $showReportModal = false;
-
-    // Date range
     public $startDate;
     public $endDate;
-
-    // Filters for specific reports
     public $reportFilterCountry = 'all';
     public $reportFilterType = 'all';
     public $reportFilterThreatLevel = 'all';
-
-    // Report statistics
     public $stats = [];
 
-    public function mount()
+    public function mount(): void
     {
-        // Set default date range (last 7 days)
         $this->endDate = Carbon::today()->format('Y-m-d');
         $this->startDate = Carbon::today()->subDays(7)->format('Y-m-d');
 
@@ -38,11 +31,10 @@ class ReportsPage extends Component
         $this->loadStats();
     }
 
-    public function loadReports()
+    public function loadReports(): void
     {
         $this->loading = true;
 
-        // Get existing saved reports from analyses table
         $this->reports = DB::table('skyguardian_analyses')
             ->select([
                 'id',
@@ -67,9 +59,8 @@ class ReportsPage extends Component
         $this->loading = false;
     }
 
-    public function loadStats()
+    public function loadStats(): void
     {
-        // Calculate statistics for the selected date range
         $query = DB::table('skyguardian_analyses')
             ->where('analysis_time', '>=', $this->startDate)
             ->where('analysis_time', '<=', $this->endDate . ' 23:59:59');
@@ -86,7 +77,7 @@ class ReportsPage extends Component
         ];
     }
 
-    public function generateReport($type = null)
+    public function generateReport($type = null): void
     {
         $this->generatingReport = true;
 
@@ -100,7 +91,7 @@ class ReportsPage extends Component
         $this->generatingReport = false;
     }
 
-    private function generateReportData($type)
+    private function generateReportData($type): array
     {
         $start = Carbon::parse($this->startDate);
         $end = Carbon::parse($this->endDate . ' 23:59:59');
@@ -126,9 +117,8 @@ class ReportsPage extends Component
         }
     }
 
-    private function generateDailyReport($start, $end)
+    private function generateDailyReport($start, $end): array
     {
-        // Daily summaries
         $dailyData = DB::table('skyguardian_analyses')
             ->select(
                 DB::raw('DATE(analysis_time) as date'),
@@ -144,7 +134,6 @@ class ReportsPage extends Component
             ->orderBy('date', 'desc')
             ->get();
 
-        // Aircraft activity
         $aircraftActivity = DB::table('skyguardian_positions as p')
             ->select(
                 DB::raw('DATE(p.position_time) as date'),
@@ -158,7 +147,6 @@ class ReportsPage extends Component
             ->orderBy('date', 'desc')
             ->get();
 
-        // Top aircraft by activity
         $topAircraft = DB::table('skyguardian_positions as p')
             ->select(
                 'a.hex',
@@ -193,9 +181,8 @@ class ReportsPage extends Component
         ];
     }
 
-    private function generateMilitaryReport($start, $end)
+    private function generateMilitaryReport($start, $end): array
     {
-        // Military aircraft activity
         $militaryData = DB::table('skyguardian_aircraft as a')
             ->select(
                 'a.country',
@@ -211,7 +198,6 @@ class ReportsPage extends Component
             ->orderBy('total_aircraft', 'desc')
             ->get();
 
-        // Military positions
         $positions = DB::table('skyguardian_positions as p')
             ->select(
                 DB::raw('DATE(p.position_time) as date'),
@@ -226,7 +212,6 @@ class ReportsPage extends Component
             ->orderBy('date', 'desc')
             ->get();
 
-        // High threat military aircraft
         $highThreat = DB::table('skyguardian_aircraft as a')
             ->select(
                 'a.hex',
@@ -263,9 +248,8 @@ class ReportsPage extends Component
         ];
     }
 
-    private function generateThreatReport($start, $end)
+    private function generateThreatReport($start, $end): array
     {
-        // Threat analysis data
         $threatData = DB::table('skyguardian_analyses')
             ->select(
                 DB::raw('DATE(analysis_time) as date'),
@@ -281,7 +265,6 @@ class ReportsPage extends Component
             ->orderBy('date', 'desc')
             ->get();
 
-        // AI Alerts
         $aiAlerts = DB::table('skyguardian_ai_alerts')
             ->select(
                 'trigger_level',
@@ -296,7 +279,6 @@ class ReportsPage extends Component
             ->orderBy('ai_timestamp', 'desc')
             ->get();
 
-        // Threat level distribution
         $threatDistribution = DB::table('skyguardian_aircraft')
             ->select(
                 'threat_level',
@@ -326,9 +308,8 @@ class ReportsPage extends Component
         ];
     }
 
-    private function generateAircraftReport($start, $end)
+    private function generateAircraftReport($start, $end): array
     {
-        // Aircraft statistics
         $aircraftStats = DB::table('skyguardian_aircraft')
             ->select(
                 DB::raw('COUNT(*) as total_aircraft'),
@@ -340,7 +321,6 @@ class ReportsPage extends Component
             ->whereBetween('created_at', [$start, $end])
             ->first();
 
-        // Countries with most aircraft
         $countries = DB::table('skyguardian_aircraft')
             ->select(
                 'country',
@@ -355,7 +335,6 @@ class ReportsPage extends Component
             ->limit(10)
             ->get();
 
-        // Aircraft types
         $types = DB::table('skyguardian_aircraft')
             ->select(
                 'type',
@@ -369,7 +348,6 @@ class ReportsPage extends Component
             ->limit(15)
             ->get();
 
-        // Activity timeline
         $activity = DB::table('skyguardian_positions as p')
             ->select(
                 DB::raw('DATE(p.position_time) as date'),
@@ -402,9 +380,8 @@ class ReportsPage extends Component
         ];
     }
 
-    private function generateComprehensiveReport($start, $end)
+    private function generateComprehensiveReport($start, $end): array
     {
-        // Combine data from all report types
         $daily = $this->generateDailyReport($start, $end);
         $military = $this->generateMilitaryReport($start, $end);
         $threat = $this->generateThreatReport($start, $end);
@@ -424,7 +401,7 @@ class ReportsPage extends Component
         ];
     }
 
-    private function generateExecutiveSummary($daily, $military, $threat, $aircraft)
+    private function generateExecutiveSummary($daily, $military, $threat, $aircraft): string
     {
         $totalDays = $daily['stats']['total_days'] ?? 0;
         $avgAircraft = $daily['stats']['avg_daily_aircraft'] ?? 0;
@@ -457,19 +434,19 @@ class ReportsPage extends Component
         return $summary;
     }
 
-    public function closeReport()
+    public function closeReport(): void
     {
         $this->showReportModal = false;
         $this->reportData = null;
     }
 
-    public function applyDateRange()
+    public function applyDateRange(): void
     {
         $this->loadReports();
         $this->loadStats();
     }
 
-    public function resetFilters()
+    public function resetFilters(): void
     {
         $this->startDate = Carbon::today()->subDays(7)->format('Y-m-d');
         $this->endDate = Carbon::today()->format('Y-m-d');
@@ -479,18 +456,16 @@ class ReportsPage extends Component
         $this->applyDateRange();
     }
 
-    public function exportReport($format = 'pdf')
+    public function exportReport($format = 'pdf'): void
     {
         // TODO: Implement export functionality
-        // This would generate PDF, Excel, or CSV based on the format
 
         session()->flash('message', "Report export to {$format} format is coming soon!");
 
-        // For now, just simulate export
         $this->dispatch('report-exported');
     }
 
-    public function getCountryOptions()
+    public function getCountryOptions(): array
     {
         return DB::table('skyguardian_aircraft')
             ->whereNotNull('country')
@@ -501,7 +476,7 @@ class ReportsPage extends Component
             ->toArray();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
         return view('livewire.user.reports-page', [
             'countryOptions' => $this->getCountryOptions(),

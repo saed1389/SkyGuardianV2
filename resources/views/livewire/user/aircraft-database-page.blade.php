@@ -2,57 +2,59 @@
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
-                <!-- Page Header -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="d-flex justify-content-between align-items-center">
                             <h1 class="h3 mb-0">
-                                <i class="fas fa-database me-2"></i>Aircraft Database
+                                <i class="fas fa-database me-2"></i><span data-key="t-aircraft-database">Aircraft Database</span>
                             </h1>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge bg-primary">
                                     <i class="fas fa-plane me-1"></i>
-                                    {{ $stats['total'] ?? 0 }} Aircraft
+                                    {{ $stats['total'] ?? 0 }} <span data-key="t-aircraft">Aircraft</span>
                                 </span>
+
+                                <button wire:click="exportData" wire:loading.attr="disabled" class="btn btn-sm btn-success">
+                                    <i class="fas fa-file-excel me-1"></i>
+                                    <span wire:loading.remove wire:target="exportData" data-key="t-export-list">Export List</span>
+                                    <span wire:loading wire:target="exportData">...</span>
+                                </button>
+
                                 <button wire:click="refreshData" wire:loading.attr="disabled"
                                         class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-redo"></i> Refresh
+                                    <i class="fas fa-redo"></i> <span data-key="t-refresh">Refresh</span>
                                 </button>
                             </div>
                         </div>
-                        <p class="text-muted mb-0">Comprehensive database of all tracked aircraft with detailed information</p>
+                        <p class="text-muted mb-0" data-key="t-comprehensive-database-of-all-tracked-aircraft-with-detailed-information">Comprehensive database of all tracked aircraft with detailed information</p>
                     </div>
                 </div>
 
-                <!-- Summary Stats -->
                 <div class="row mb-4">
                     <div class="col-md-2">
                         <div class="card bg-primary bg-opacity-10 border-primary">
                             <div class="card-body text-center">
                                 <div class="display-6 fw-bold text-primary">{{ $stats['total'] ?? 0 }}</div>
-                                <small class="text-muted">Total Aircraft</small>
+                                <small class="text-muted" data-key="t-total-aircraft">Total Aircraft</small>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-2">
                         <div class="card bg-danger bg-opacity-10 border-danger">
                             <div class="card-body text-center">
                                 <div class="display-6 fw-bold text-danger">{{ $stats['military'] ?? 0 }}</div>
-                                <small class="text-muted">Military</small>
+                                <small class="text-muted" data-key="t-military">Military</small>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-2">
                         <div class="card bg-warning bg-opacity-10 border-warning">
                             <div class="card-body text-center">
                                 <div class="display-6 fw-bold text-warning">{{ $stats['drones'] ?? 0 }}</div>
-                                <small class="text-muted">Drones</small>
+                                <small class="text-muted" data-key="t-drones">Drones</small>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-2">
                         <div class="card bg-info bg-opacity-10 border-info">
                             <div class="card-body text-center">
@@ -61,83 +63,74 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-2">
                         <div class="card bg-success bg-opacity-10 border-success">
                             <div class="card-body text-center">
                                 <div class="display-6 fw-bold text-success">{{ $stats['active_24h'] ?? 0 }}</div>
-                                <small class="text-muted">Active (24h)</small>
+                                <small class="text-muted" data-key="t-active-24h">Active (24h)</small>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-2">
                         <div class="card bg-secondary bg-opacity-10 border-secondary">
                             <div class="card-body text-center">
                                 <div class="display-6 fw-bold text-secondary">{{ $stats['countries'] ?? 0 }}</div>
-                                <small class="text-muted">Countries</small>
+                                <small class="text-muted" data-key="t-countries">Countries</small>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Filters -->
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="row g-3">
                                     <div class="col-md-2">
-                                        <label class="form-label">Aircraft Type</label>
+                                        <label class="form-label" data-key="t-aircraft-type">Aircraft Type</label>
                                         <select wire:model.live="filterType" wire:change="applyFilters" class="form-select">
-                                            <option value="all">All Types</option>
-                                            <option value="military">Military</option>
-                                            <option value="civil">Civil</option>
-                                            <option value="drone">Drones</option>
+                                            <option value="all" data-key="t-all-types">All Types</option>
+                                            <option value="military" data-key="t-military">Military</option>
+                                            <option value="civil" data-key="t-civil">Civil</option>
+                                            <option value="drone" data-key="t-drones">Drones</option>
                                             <option value="nato">NATO</option>
                                         </select>
                                     </div>
-
                                     <div class="col-md-2">
-                                        <label class="form-label">Country</label>
+                                        <label class="form-label" data-key="t-country">Country</label>
                                         <select wire:model.live="filterCountry" wire:change="applyFilters" class="form-select">
-                                            <option value="all">All Countries</option>
+                                            <option value="all" data-key="t-all-countries">All Countries</option>
                                             @foreach($countryOptions as $country)
                                                 <option value="{{ $country }}">{{ $country }}</option>
                                             @endforeach
                                         </select>
                                     </div>
-
                                     <div class="col-md-2">
-                                        <label class="form-label">Threat Level</label>
+                                        <label class="form-label" data-key="t-threat-level">Threat Level</label>
                                         <select wire:model.live="filterThreatLevel" wire:change="applyFilters" class="form-select">
-                                            <option value="all">All Levels</option>
-                                            <option value="4">High (4-5)</option>
-                                            <option value="3">Medium (3)</option>
-                                            <option value="1">Low (1-2)</option>
+                                            <option value="all" data-key="t-all-levels">All Levels</option>
+                                            <option value="4" data-key="t-high-threat-(4-5)">High (4-5)</option>
+                                            <option value="3" data-key="t-medium-threat-(3)">Medium (3)</option>
+                                            <option value="1" data-key="t-low-threat-(1-2)">Low (1-2)</option>
                                         </select>
                                     </div>
-
                                     <div class="col-md-2">
-                                        <label class="form-label">Status</label>
+                                        <label class="form-label" data-key="t-status">Status</label>
                                         <select wire:model.live="filterStatus" wire:change="applyFilters" class="form-select">
-                                            <option value="all">All Status</option>
-                                            <option value="active">Active (24h)</option>
-                                            <option value="inactive">Inactive</option>
+                                            <option value="all" data-key="t-all-status">All Status</option>
+                                            <option value="active" data-key="t-active-24h">Active (24h)</option>
+                                            <option value="inactive" data-key="t-inactive">Inactive</option>
                                         </select>
                                     </div>
-
                                     <div class="col-md-3">
-                                        <label class="form-label">Search Aircraft</label>
+                                        <label class="form-label" data-key="t-search-aircraft">Search Aircraft</label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <i class="fas fa-search"></i>
                                             </span>
-                                            <input type="text" wire:model.live.debounce.300ms="search"
-                                                   class="form-control" placeholder="Hex, callsign, type, country...">
+                                            <input type="text" wire:model.live.debounce.300ms="search" class="form-control" placeholder="Hex, callsign, type, country...">
                                         </div>
                                     </div>
-
                                     <div class="col-md-1 d-flex align-items-end">
                                         <button wire:click="resetFilters" class="btn btn-outline-secondary w-100">
                                             <i class="fas fa-times"></i>
@@ -149,15 +142,14 @@
                     </div>
                 </div>
 
-                <!-- Aircraft Table -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0">Aircraft Registry</h5>
+                                    <h5 class="card-title mb-0" data-key="t-aircraft-registry">Aircraft Registry</h5>
                                     <span class="badge bg-light text-dark">
-                                        Page {{ $currentPage }} of {{ $totalPages }} ({{ $totalAircraft }} total)
+                                        <span data-key="t-page">Page</span> {{ $currentPage }} of {{ $totalPages }} ({{ $totalAircraft }} <span data-key="t-total">total</span>)
                                     </span>
                                 </div>
                             </div>
@@ -165,9 +157,9 @@
                                 @if($loading)
                                     <div class="text-center py-5">
                                         <div class="spinner-border text-primary" role="status">
-                                            <span class="visually-hidden">Loading...</span>
+                                            <span class="visually-hidden" data-key="t-loading">Loading...</span>
                                         </div>
-                                        <p class="mt-2">Loading aircraft data...</p>
+                                        <p class="mt-2" data-key="t-loading-aircraft-data">Loading aircraft data...</p>
                                     </div>
                                 @else
                                     <div class="table-responsive">
@@ -176,7 +168,7 @@
                                             <tr>
                                                 <th style="width: 80px;">
                                                     <a href="javascript:void(0)" wire:click="sort('hex')" class="text-dark text-decoration-none">
-                                                        Hex
+                                                        <span data-key="t-hex">Hex</span>
                                                         @if($sortBy === 'hex')
                                                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
                                                         @else
@@ -186,7 +178,7 @@
                                                 </th>
                                                 <th style="width: 120px;">
                                                     <a href="javascript:void(0)" wire:click="sort('callsign')" class="text-dark text-decoration-none">
-                                                        Callsign
+                                                        <span data-key="t-callsign">Callsign</span>
                                                         @if($sortBy === 'callsign')
                                                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
                                                         @else
@@ -196,7 +188,7 @@
                                                 </th>
                                                 <th style="width: 150px;">
                                                     <a href="javascript:void(0)" wire:click="sort('type')" class="text-dark text-decoration-none">
-                                                        Type / Name
+                                                        <span data-key="t-type-name">Type / Name</span>
                                                         @if($sortBy === 'type')
                                                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
                                                         @else
@@ -206,7 +198,7 @@
                                                 </th>
                                                 <th style="width: 120px;">
                                                     <a href="javascript:void(0)" wire:click="sort('country')" class="text-dark text-decoration-none">
-                                                        Country
+                                                        <span data-key="t-country">Country</span>
                                                         @if($sortBy === 'country')
                                                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
                                                         @else
@@ -214,10 +206,10 @@
                                                         @endif
                                                     </a>
                                                 </th>
-                                                <th style="width: 100px;">Classification</th>
+                                                <th style="width: 100px;"><span data-key="t-classification">Classification</span></th>
                                                 <th style="width: 100px;">
                                                     <a href="javascript:void(0)" wire:click="sort('threat_level')" class="text-dark text-decoration-none">
-                                                        Threat
+                                                        <span data-key="t-threat">Threat</span>
                                                         @if($sortBy === 'threat_level')
                                                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
                                                         @else
@@ -227,7 +219,7 @@
                                                 </th>
                                                 <th style="width: 150px;">
                                                     <a href="javascript:void(0)" wire:click="sort('last_seen')" class="text-dark text-decoration-none">
-                                                        Last Seen
+                                                        <span data-key="t-last-seen">Last Seen</span>
                                                         @if($sortBy === 'last_seen')
                                                             <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }} ms-1"></i>
                                                         @else
@@ -235,8 +227,8 @@
                                                         @endif
                                                     </a>
                                                 </th>
-                                                <th style="width: 150px;">Last Position</th>
-                                                <th style="width: 80px;">Actions</th>
+                                                <th style="width: 150px;"><span data-key="t-last-position">Last Position</span></th>
+                                                <th style="width: 80px;"><span data-key="t-actions">Actions</span></th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -264,26 +256,25 @@
                                                     <td>
                                                         <div class="d-flex flex-wrap gap-1">
                                                             @if($ac->is_military)
-                                                                <span class="badge bg-danger">Military</span>
+                                                                <span class="badge bg-danger" data-key="t-military">Military</span>
                                                             @else
-                                                                <span class="badge bg-primary">Civil</span>
+                                                                <span class="badge bg-primary" data-key="t-civil">Civil</span>
                                                             @endif
                                                             @if($ac->is_drone)
-                                                                <span class="badge bg-warning">Drone</span>
+                                                                <span class="badge bg-warning" data-key="t-drone">Drone</span>
                                                             @endif
                                                             @if($ac->is_friendly)
-                                                                <span class="badge bg-success">Friendly</span>
+                                                                <span class="badge bg-success" data-key="t-friendly">Friendly</span>
                                                             @endif
                                                             @if($ac->is_potential_threat)
-                                                                <span class="badge bg-danger">Threat</span>
+                                                                <span class="badge bg-danger" data-key="t-threat">Threat</span>
                                                             @endif
                                                         </div>
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center">
                                                             <div class="progress flex-grow-1 me-2" style="height: 8px;">
-                                                                <div class="progress-bar bg-{{ $ac->threat_level >= 4 ? 'danger' : ($ac->threat_level >= 3 ? 'warning' : 'success') }}"
-                                                                     style="width: {{ $ac->threat_level * 20 }}%"></div>
+                                                                <div class="progress-bar bg-{{ $ac->threat_level >= 4 ? 'danger' : ($ac->threat_level >= 3 ? 'warning' : 'success') }}" style="width: {{ $ac->threat_level * 20 }}%"></div>
                                                             </div>
                                                             <strong>{{ $ac->threat_level }}</strong>
                                                         </div>
@@ -297,30 +288,29 @@
                                                                 {{ \Carbon\Carbon::parse($ac->last_seen)->diffForHumans() }}
                                                             </small>
                                                         @else
-                                                            <span class="text-muted">Never</span>
+                                                            <span class="text-muted" data-key="t-never">Never</span>
                                                         @endif
                                                     </td>
                                                     <td>
                                                         @if($ac->latitude && $ac->longitude)
                                                             <div>
-                                                                <small class="text-muted d-block">Position:</small>
+                                                                <small class="text-muted d-block"><span data-key="t-position">Position</span>:</small>
                                                                 <code>{{ number_format($ac->latitude, 4) }}, {{ number_format($ac->longitude, 4) }}</code>
                                                             </div>
                                                             <div>
-                                                                <small class="text-muted d-block">Time:</small>
+                                                                <small class="text-muted d-block"><span data-key="t-time">Time</span>:</small>
                                                                 <small>{{ $ac->position_time ? \Carbon\Carbon::parse($ac->position_time)->diffForHumans() : 'N/A' }}</small>
                                                             </div>
                                                             @if($ac->in_estonia)
-                                                                <span class="badge bg-success mt-1">In Estonia</span>
+                                                                <span class="badge bg-success mt-1" data-key="t-in-estonia">In Estonia</span>
                                                             @endif
                                                         @else
-                                                            <span class="text-muted">No position data</span>
+                                                            <span class="text-muted" data-key="t-no-position-data">No position data</span>
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        <button wire:click="viewAircraftDetails('{{ $ac->hex }}')"
-                                                                class="btn btn-sm btn-outline-primary">
-                                                            <i class="fas fa-eye"></i> View
+                                                        <button wire:click="viewAircraftDetails('{{ $ac->hex }}')" class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-eye"></i> <span data-key="t-view">View</span>
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -329,7 +319,7 @@
                                                     <td colspan="9" class="text-center py-4">
                                                         <div class="text-muted">
                                                             <i class="fas fa-plane-slash fa-2x mb-2"></i>
-                                                            <p>No aircraft found matching your criteria</p>
+                                                            <p data-key="t-no-aircraft-found-matching-your-criteria">No aircraft found matching your criteria</p>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -344,7 +334,7 @@
                                 <div class="card-footer">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <small class="text-muted">
-                                            Showing {{ (($currentPage - 1) * $perPage) + 1 }} to {{ min($currentPage * $perPage, $totalAircraft) }} of {{ $totalAircraft }} aircraft
+                                            <span data-key="t-showing">Showing</span> {{ (($currentPage - 1) * $perPage) + 1 }} to {{ min($currentPage * $perPage, $totalAircraft) }} of {{ $totalAircraft }} <span data-key="t-aircraft">aircraft</span>
                                         </small>
 
                                         <nav aria-label="Page navigation">
@@ -397,7 +387,7 @@
                                         </nav>
 
                                         <div class="d-flex align-items-center gap-2">
-                                            <small class="text-muted">Per page:</small>
+                                            <small class="text-muted"><span data-key="t-per-page">Per page</span>:</small>
                                             <select wire:model.live="perPage" wire:change="applyFilters" class="form-select form-select-sm" style="width: auto;">
                                                 <option value="10">10</option>
                                                 <option value="20">20</option>
@@ -418,36 +408,34 @@
         </div>
     </div>
 
-    <!-- Aircraft Details Modal -->
     @if($showDetailsModal && $selectedAircraft)
-        <div class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);" wire:ignore.self>
+        <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0,0,0,0.5);" aria-modal="true" role="dialog">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title">
-                            <i class="fas fa-plane me-2"></i>
-                            Aircraft Details
-                            <span class="badge bg-light text-dark ms-2">HEX: {{ $selectedAircraft->hex }}</span>
+                            <i class="fas fa-plane me-2 text-white"></i>
+                            <span class="text-white" data-key="t-aircraft-details">Aircraft Details</span>
+                            <span class="badge bg-light text-dark ms-2"><span data-key="t-hex">HEX</span>: {{ $selectedAircraft->hex }}</span>
                         </h5>
                         <button type="button" class="btn-close btn-close-white" wire:click="closeModal"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Basic Information -->
                         <div class="row mb-4">
                             <div class="col-md-4">
                                 <div class="card bg-light">
                                     <div class="card-body">
-                                        <h6 class="text-muted mb-3">BASIC INFORMATION</h6>
+                                        <h6 class="text-muted mb-3 text-uppercase" data-key="t-basic-information">BASIC INFORMATION</h6>
                                         <div class="mb-3">
-                                            <small class="text-muted d-block">Hex Code</small>
+                                            <small class="text-muted d-block" data-key="t-hex-code">Hex Code</small>
                                             <div class="h4 font-monospace fw-bold">{{ $selectedAircraft->hex }}</div>
                                         </div>
                                         <div class="mb-3">
-                                            <small class="text-muted d-block">Callsign</small>
+                                            <small class="text-muted d-block" data-key="t-callsign">Callsign</small>
                                             <div class="h5">{{ $selectedAircraft->callsign ?? 'N/A' }}</div>
                                         </div>
                                         <div class="mb-3">
-                                            <small class="text-muted d-block">Registration</small>
+                                            <small class="text-muted d-block" data-key="t-registration">Registration</small>
                                             <div class="h5">{{ $selectedAircraft->registration ?? 'N/A' }}</div>
                                         </div>
                                     </div>
@@ -457,22 +445,22 @@
                             <div class="col-md-4">
                                 <div class="card bg-info bg-opacity-10">
                                     <div class="card-body">
-                                        <h6 class="text-muted mb-3">AIRCRAFT SPECIFICATIONS</h6>
+                                        <h6 class="text-muted mb-3" data-key="t-aircraft-specification">AIRCRAFT SPECIFICATIONS</h6>
                                         <div class="mb-3">
-                                            <small class="text-muted d-block">Type Code</small>
-                                            <div class="h5">{{ $selectedAircraft->type ?? 'Unknown' }}</div>
+                                            <small class="text-muted d-block" data-key="t-type-code">Type Code</small>
+                                            <div class="h5">{!! $selectedAircraft->type ?? '<span data-key="t-unknown">Unknown</span>' !!}</div>
                                         </div>
                                         <div class="mb-3">
-                                            <small class="text-muted d-block">Aircraft Name</small>
-                                            <div class="h5">{{ $selectedAircraft->aircraft_name ?? 'Unknown' }}</div>
+                                            <small class="text-muted d-block" data-key="t-aircraft-name">Aircraft Name</small>
+                                            <div class="h5">{!! $selectedAircraft->aircraft_name ?? '<span data-key="t-unknown">Unknown</span>' !!}</div>
                                         </div>
                                         <div class="mb-3">
-                                            <small class="text-muted d-block">Category</small>
-                                            <div class="h5">{{ $selectedAircraft->category ?? 'Unknown' }}</div>
+                                            <small class="text-muted d-block" data-key="t-category">Category</small>
+                                            <div class="h5">{!! $selectedAircraft->category ?? '<span data-key="t-unknown">Unknown</span>' !!}</div>
                                         </div>
                                         <div class="mb-3">
-                                            <small class="text-muted d-block">Role</small>
-                                            <div class="h5">{{ $selectedAircraft->role ?? 'Unknown' }}</div>
+                                            <small class="text-muted d-block" data-key="t-role">Role</small>
+                                            <div class="h5">{!! $selectedAircraft->role ?? '<span data-key="t-unknown">Unknown</span>' !!}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -481,37 +469,37 @@
                             <div class="col-md-4">
                                 <div class="card bg-{{ $selectedAircraft->is_military ? 'danger' : 'primary' }} bg-opacity-10">
                                     <div class="card-body">
-                                        <h6 class="text-muted mb-3">CLASSIFICATION</h6>
+                                        <h6 class="text-muted mb-3 text-uppercase" data-key="t-classification">CLASSIFICATION</h6>
                                         <div class="d-flex flex-column gap-2">
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <span>Military</span>
+                                                <span data-key="t-military">Military</span>
                                                 <span class="badge bg-{{ $selectedAircraft->is_military ? 'danger' : 'secondary' }}">
-                                                {{ $selectedAircraft->is_military ? 'YES' : 'NO' }}
-                                            </span>
+                                                    {!! $selectedAircraft->is_military ? '<span class="text-uppercase" data-key="t-yes">YES</span>' : '<span class="text-uppercase" data-key="t-no">NO</span>' !!}
+                                                </span>
                                             </div>
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <span>Drone</span>
+                                                <span data-key="t-drone">Drone</span>
                                                 <span class="badge bg-{{ $selectedAircraft->is_drone ? 'warning' : 'secondary' }}">
-                                                {{ $selectedAircraft->is_drone ? 'YES' : 'NO' }}
-                                            </span>
+                                                    {!!   $selectedAircraft->is_drone ? '<span class="text-uppercase" data-key="t-yes">YES</span>' : '<span class="text-uppercase" data-key="t-no">NO</span>' !!}
+                                                </span>
                                             </div>
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <span>NATO</span>
                                                 <span class="badge bg-{{ $selectedAircraft->is_nato ? 'info' : 'secondary' }}">
-                                                {{ $selectedAircraft->is_nato ? 'YES' : 'NO' }}
-                                            </span>
+                                                    {!! $selectedAircraft->is_nato ? '<span class="text-uppercase" data-key="t-yes">YES</span>' : '<span class="text-uppercase" data-key="t-no">NO</span>' !!}
+                                                </span>
                                             </div>
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <span>Friendly</span>
+                                                <span data-key="t-friendly">Friendly</span>
                                                 <span class="badge bg-{{ $selectedAircraft->is_friendly ? 'success' : 'secondary' }}">
-                                                {{ $selectedAircraft->is_friendly ? 'YES' : 'NO' }}
-                                            </span>
+                                                    {!! $selectedAircraft->is_friendly ? '<span class="text-uppercase" data-key="t-yes">YES</span>' : '<span class="text-uppercase" data-key="t-no">NO</span>' !!}
+                                                </span>
                                             </div>
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <span>Potential Threat</span>
+                                                <span data-key="t-potential-threat">Potential Threat</span>
                                                 <span class="badge bg-{{ $selectedAircraft->is_potential_threat ? 'danger' : 'secondary' }}">
-                                                {{ $selectedAircraft->is_potential_threat ? 'YES' : 'NO' }}
-                                            </span>
+                                                    {!! $selectedAircraft->is_potential_threat ? '<span class="text-uppercase" data-key="t-yes">YES</span>' : '<span class="text-uppercase" data-key="t-no">NO</span>' !!}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -519,18 +507,17 @@
                             </div>
                         </div>
 
-                        <!-- Country and Threat -->
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h6 class="mb-0">Country Information</h6>
+                                        <h6 class="mb-0" data-key="t-country-information">Country Information</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="text-center">
-                                            <div class="display-4 fw-bold">{{ $selectedAircraft->country ?? 'Unknown' }}</div>
+                                            <div class="display-4 fw-bold">{!! $selectedAircraft->country ?? '<span data-key="t-unknown">Unknown</span>' !!}</div>
                                             <div class="mt-3">
-                                                <span class="badge bg-secondary">Country of Origin</span>
+                                                <span class="badge bg-secondary" data-key="t-country-of-origin">Country of Origin</span>
                                             </div>
                                         </div>
                                     </div>
@@ -540,21 +527,20 @@
                             <div class="col-md-6">
                                 <div class="card bg-{{ $selectedAircraft->threat_level >= 4 ? 'danger' : ($selectedAircraft->threat_level >= 3 ? 'warning' : 'success') }} bg-opacity-10">
                                     <div class="card-header">
-                                        <h6 class="mb-0">Threat Assessment</h6>
+                                        <h6 class="mb-0" data-key="t-threat-assessment">Threat Assessment</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="text-center">
                                             <div class="display-4 fw-bold text-{{ $selectedAircraft->threat_level >= 4 ? 'danger' : ($selectedAircraft->threat_level >= 3 ? 'warning' : 'success') }}">
-                                                Level {{ $selectedAircraft->threat_level }}
+                                                <span data-key="t-level">Level</span> {{ $selectedAircraft->threat_level }}
                                             </div>
                                             <div class="mt-3">
                                                 <div class="progress" style="height: 12px;">
-                                                    <div class="progress-bar bg-{{ $selectedAircraft->threat_level >= 4 ? 'danger' : ($selectedAircraft->threat_level >= 3 ? 'warning' : 'success') }}"
-                                                         style="width: {{ $selectedAircraft->threat_level * 20 }}%"></div>
+                                                    <div class="progress-bar bg-{{ $selectedAircraft->threat_level >= 4 ? 'danger' : ($selectedAircraft->threat_level >= 3 ? 'warning' : 'success') }}" style="width: {{ $selectedAircraft->threat_level * 20 }}%"></div>
                                                 </div>
                                             </div>
                                             <div class="mt-3">
-                                                <small class="text-muted">Threat scale: 1 (Low) to 5 (Critical)</small>
+                                                <small class="text-muted"><span data-key="t-threat-scale-1-Low-to-5-critical">Threat scale: 1 (Low) to 5 (Critical)</span></small>
                                             </div>
                                         </div>
                                     </div>
@@ -562,29 +548,28 @@
                             </div>
                         </div>
 
-                        <!-- Timeline -->
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h6 class="mb-0">Activity Timeline</h6>
+                                        <h6 class="mb-0" data-key="t-activity-timeline">Activity Timeline</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="mb-3">
-                                                    <small class="text-muted d-block">First Seen</small>
+                                                    <small class="text-muted d-block" data-key="t-first_seen">First Seen</small>
                                                     @if(isset($selectedAircraft->first_seen) && $selectedAircraft->first_seen->position_time)
                                                         <div class="h5">{{ \Carbon\Carbon::parse($selectedAircraft->first_seen->position_time)->format('Y-m-d') }}</div>
                                                         <small class="text-muted">{{ \Carbon\Carbon::parse($selectedAircraft->first_seen->position_time)->format('H:i:s') }}</small>
                                                     @else
-                                                        <div class="text-muted">Unknown</div>
+                                                        <div class="text-muted" data-key="t-unknown">Unknown</div>
                                                     @endif
                                                 </div>
                                             </div>
                                             <div class="col-6">
                                                 <div class="mb-3">
-                                                    <small class="text-muted d-block">Last Seen</small>
+                                                    <small class="text-muted d-block" data-key="t-last-seen">Last Seen</small>
                                                     @if($selectedAircraft->last_seen)
                                                         <div class="h5">{{ \Carbon\Carbon::parse($selectedAircraft->last_seen)->format('Y-m-d') }}</div>
                                                         <small class="text-muted">{{ \Carbon\Carbon::parse($selectedAircraft->last_seen)->format('H:i:s') }}</small>
@@ -593,13 +578,13 @@
                                                     {{ \Carbon\Carbon::parse($selectedAircraft->last_seen)->diffForHumans() }}
                                                 </span>
                                                     @else
-                                                        <div class="text-muted">Unknown</div>
+                                                        <div class="text-muted" data-key="t-unknown">Unknown</div>
                                                     @endif
                                                 </div>
                                             </div>
                                             <div class="col-12">
                                                 <div class="mb-3">
-                                                    <small class="text-muted d-block">Database Entry</small>
+                                                    <small class="text-muted d-block" data-key="t-database-entry">Database Entry</small>
                                                     <div>{{ \Carbon\Carbon::parse($selectedAircraft->created_at)->format('Y-m-d H:i:s') }}</div>
                                                     <small class="text-muted">{{ \Carbon\Carbon::parse($selectedAircraft->created_at)->diffForHumans() }}</small>
                                                 </div>
@@ -612,53 +597,53 @@
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-header">
-                                        <h6 class="mb-0">Latest Position</h6>
+                                        <h6 class="mb-0" data-key="t-latest-position">Latest Position</h6>
                                     </div>
                                     <div class="card-body">
                                         @if(isset($selectedAircraft->latest_position))
                                             <div class="row">
                                                 <div class="col-6">
                                                     <div class="mb-3">
-                                                        <small class="text-muted d-block">Coordinates</small>
+                                                        <small class="text-muted d-block" data-key="t-coordinates">Coordinates</small>
                                                         <code class="h6">{{ number_format($selectedAircraft->latest_position->latitude, 4) }}, {{ number_format($selectedAircraft->latest_position->longitude, 4) }}</code>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="mb-3">
-                                                        <small class="text-muted d-block">Altitude</small>
+                                                        <small class="text-muted d-block" data-key="t-altitude">Altitude</small>
                                                         <div class="h5">{{ round($selectedAircraft->latest_position->altitude) }} m</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="mb-3">
-                                                        <small class="text-muted d-block">Speed</small>
+                                                        <small class="text-muted d-block" data-key="t-speed">Speed</small>
                                                         <div class="h5">{{ round($selectedAircraft->latest_position->speed) }} km/h</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="mb-3">
-                                                        <small class="text-muted d-block">Heading</small>
+                                                        <small class="text-muted d-block" data-key="t-heading">Heading</small>
                                                         <div class="h5">{{ round($selectedAircraft->latest_position->heading) }}°</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-12">
                                                     <div class="d-flex flex-wrap gap-2">
                                                         @if($selectedAircraft->latest_position->in_estonia)
-                                                            <span class="badge bg-success">In Estonia</span>
+                                                            <span class="badge bg-success" data-key="t-in-estonia">In Estonia</span>
                                                         @endif
                                                         @if($selectedAircraft->latest_position->near_sensitive)
-                                                            <span class="badge bg-danger">Near Sensitive Area</span>
+                                                            <span class="badge bg-danger" data-key="t-near-sensitive-area">Near Sensitive Area</span>
                                                         @endif
                                                         @if($selectedAircraft->latest_position->near_military_base)
-                                                            <span class="badge bg-warning">Near Military Base</span>
+                                                            <span class="badge bg-warning" data-key="t-near-military-base">Near Military Base</span>
                                                         @endif
                                                         @if($selectedAircraft->latest_position->near_border)
-                                                            <span class="badge bg-info">Near Border</span>
+                                                            <span class="badge bg-info" data-key="t-near-border">Near Border</span>
                                                         @endif
                                                     </div>
                                                     <div class="mt-2">
                                                         <small class="text-muted">
-                                                            Position time: {{ \Carbon\Carbon::parse($selectedAircraft->latest_position->position_time)->format('Y-m-d H:i:s') }}
+                                                            <span data-key="t-position-time">Position time</span>: {{ \Carbon\Carbon::parse($selectedAircraft->latest_position->position_time)->format('Y-m-d H:i:s') }}
                                                         </small>
                                                     </div>
                                                 </div>
@@ -666,7 +651,7 @@
                                         @else
                                             <div class="text-center py-3">
                                                 <i class="fas fa-map-marker-alt fa-2x text-muted mb-2"></i>
-                                                <p class="text-muted mb-0">No position data available</p>
+                                                <p class="text-muted mb-0" data-key="t-no-position-data-available">No position data available</p>
                                             </div>
                                         @endif
                                     </div>
@@ -674,26 +659,25 @@
                             </div>
                         </div>
 
-                        <!-- Position History -->
                         @if(isset($selectedAircraft->positions) && count($selectedAircraft->positions) > 0)
                             <div class="row">
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h6 class="mb-0">Recent Position History (Last 50 positions)</h6>
+                                            <h6 class="mb-0" data-key="t-recent-position-history-last-50-positions">Recent Position History (Last 50 positions)</h6>
                                         </div>
                                         <div class="card-body p-0">
                                             <div class="table-responsive">
                                                 <table class="table table-sm mb-0">
                                                     <thead>
                                                     <tr>
-                                                        <th>Time</th>
-                                                        <th>Position</th>
-                                                        <th>Altitude</th>
-                                                        <th>Speed</th>
-                                                        <th>Heading</th>
-                                                        <th>Threat</th>
-                                                        <th>Status</th>
+                                                        <th data-key="t-time">Time</th>
+                                                        <th data-key="t-position">Position</th>
+                                                        <th data-key="t-altitude">Altitude</th>
+                                                        <th data-key="t-speed">Speed</th>
+                                                        <th data-key="t-heading">Heading</th>
+                                                        <th data-key="t-threat">Threat</th>
+                                                        <th data-key="t-status">Status</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -716,7 +700,7 @@
                                                             </td>
                                                             <td>
                                                                 @if($position->in_estonia)
-                                                                    <span class="badge bg-success">In Estonia</span>
+                                                                    <span class="badge bg-success" data-key="t-in-estonia">In Estonia</span>
                                                                 @endif
                                                             </td>
                                                         </tr>
@@ -730,14 +714,13 @@
                             </div>
                         @endif
 
-                        <!-- Metadata (Collapsible) -->
                         @if($selectedAircraft->metadata)
                             <div class="row mt-4">
                                 <div class="col-12">
                                     <div class="card">
                                         <div class="card-header">
                                             <button class="btn btn-sm btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#metadataCollapse">
-                                                <i class="fas fa-code me-1"></i> View Raw Metadata
+                                                <i class="fas fa-code me-1"></i> <span data-key="t-view-raw-metadata">View Raw Metadata</span>
                                             </button>
                                         </div>
                                         <div class="collapse" id="metadataCollapse">
@@ -752,13 +735,13 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" wire:click="closeModal">
-                            <i class="fas fa-times me-1"></i> Close
+                            <i class="fas fa-times me-1"></i> <span data-key="t-close">Close</span>
                         </button>
-                        <button type="button" class="btn btn-primary">
-                            <i class="fas fa-flag me-1"></i> Flag for Monitoring
-                        </button>
-                        <button type="button" class="btn btn-success">
-                            <i class="fas fa-download me-1"></i> Export Data
+
+                        <button type="button" class="btn btn-success" wire:click="exportSingleAircraft" wire:loading.attr="disabled">
+                            <i class="fas fa-download me-1"></i>
+                            <span wire:loading.remove wire:target="exportSingleAircraft" data-key="t-export-data">Export Data</span>
+                            <span wire:loading wire:target="exportSingleAircraft" data-key="t-exporting">Exporting...</span>
                         </button>
                     </div>
                 </div>
@@ -768,54 +751,6 @@
 
     @push('styles')
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-        <style>
-            .bg-opacity-10 {
-                background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
-            }
-            .bg-danger.bg-opacity-10 {
-                background-color: rgba(220, 53, 69, 0.1) !important;
-            }
-            .bg-warning.bg-opacity-10 {
-                background-color: rgba(255, 193, 7, 0.1) !important;
-            }
-            .bg-info.bg-opacity-10 {
-                background-color: rgba(13, 202, 240, 0.1) !important;
-            }
-            .bg-success.bg-opacity-10 {
-                background-color: rgba(25, 135, 84, 0.1) !important;
-            }
-            .font-monospace {
-                font-family: 'Courier New', monospace;
-            }
-            .table-danger {
-                background-color: rgba(220, 53, 69, 0.05) !important;
-            }
-            .table-warning {
-                background-color: rgba(255, 193, 7, 0.05) !important;
-            }
-            .modal-content {
-                max-height: 90vh;
-            }
-            .modal-body {
-                max-height: 70vh;
-                overflow-y: auto;
-            }
-            pre {
-                background-color: #f8f9fa;
-                border: 1px solid #dee2e6;
-                border-radius: 4px;
-                padding: 10px;
-                margin: 0;
-            }
-            .page-link {
-                cursor: pointer;
-            }
-            .sortable {
-                cursor: pointer;
-            }
-            .sortable:hover {
-                background-color: rgba(0, 0, 0, 0.03);
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('user/assets/css/pages/aircraft-database.css') }}" />
     @endpush
 </div>

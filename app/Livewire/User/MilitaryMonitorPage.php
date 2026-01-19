@@ -9,42 +9,31 @@ use Carbon\Carbon;
 
 class MilitaryMonitorPage extends Component
 {
-    use WithPagination; // 2. Use Trait
-
-    protected $paginationTheme = 'bootstrap'; // 3. Set Theme
-
-    // Data containers
-    public $militaryAircraft = []; // Keep this for Map/Stats (Full List)
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
+    public $militaryAircraft = [];
     public $activePositions = [];
     public $stats = [];
     public $loading = false;
     public $selectedAircraft = null;
     public $showDetailsModal = false;
-
-    // Filters
     public $filterCountry = 'all';
     public $filterThreatLevel = 'all';
     public $filterStatus = 'all';
     public $filterType = 'all';
     public $search = '';
-    public $perPage = 10; // Items per page
-
-    // Time range
+    public $perPage = 10;
     public $timeRange = '1hour';
-
-    // Map settings
     public $centerLat = 59.42;
     public $centerLon = 24.83;
     public $zoomLevel = 8;
 
-    public function mount()
+    public function mount(): void
     {
-        // Load full dataset for Map and Stats initially
         $this->refreshData();
     }
 
-    // New helper to reuse the query logic
-    private function getFilteredAircraftQuery()
+    private function getFilteredAircraftQuery(): \Illuminate\Database\Query\Builder
     {
         $query = DB::table('skyguardian_aircraft as a')
             ->where('a.is_military', true)
@@ -77,21 +66,18 @@ class MilitaryMonitorPage extends Component
         return $query;
     }
 
-    // This loads the FULL list for the Map and Stats only
-    public function loadMilitaryAircraft()
+    public function loadMilitaryAircraft(): void
     {
         $this->loading = true;
 
-        // Use the helper to get all results
         $this->militaryAircraft = $this->getFilteredAircraftQuery()->get();
 
-        // Get active positions for map markers
         $this->loadActivePositions();
 
         $this->loading = false;
     }
 
-    public function loadActivePositions()
+    public function loadActivePositions(): void
     {
         $timeThreshold = match($this->timeRange) {
             '1hour' => Carbon::now()->subHour(),
@@ -104,7 +90,7 @@ class MilitaryMonitorPage extends Component
         $hexCodes = $this->militaryAircraft->pluck('hex')->toArray();
 
         if (!empty($hexCodes)) {
-            // Optimized query for latest positions
+
             $positions = DB::table('skyguardian_positions as p')
                 ->select('p.*')
                 ->whereIn('p.hex', $hexCodes)
@@ -129,15 +115,12 @@ class MilitaryMonitorPage extends Component
         }
     }
 
-    public function loadStats()
+    public function loadStats(): void
     {
-        // ... (Keep existing stats logic exactly as is) ...
-        // Total military aircraft
         $totalMilitary = DB::table('skyguardian_aircraft')
             ->where('is_military', true)
             ->count();
 
-        // Active in last 24 hours
         $activeLast24h = DB::table('skyguardian_aircraft as a')
             ->join('skyguardian_positions as p', 'a.hex', '=', 'p.hex')
             ->where('a.is_military', true)
@@ -145,7 +128,6 @@ class MilitaryMonitorPage extends Component
             ->distinct('a.hex')
             ->count('a.hex');
 
-        // By threat level
         $threatLevels = DB::table('skyguardian_aircraft')
             ->select('threat_level', DB::raw('COUNT(*) as count'))
             ->where('is_military', true)
@@ -155,7 +137,6 @@ class MilitaryMonitorPage extends Component
             ->pluck('count', 'threat_level')
             ->toArray();
 
-        // By country
         $countries = DB::table('skyguardian_aircraft')
             ->select('country', DB::raw('COUNT(*) as count'))
             ->where('is_military', true)
@@ -167,19 +148,16 @@ class MilitaryMonitorPage extends Component
             ->pluck('count', 'country')
             ->toArray();
 
-        // Drones
         $drones = DB::table('skyguardian_aircraft')
             ->where('is_military', true)
             ->where('is_drone', true)
             ->count();
 
-        // NATO aircraft
         $nato = DB::table('skyguardian_aircraft')
             ->where('is_military', true)
             ->where('is_nato', true)
             ->count();
 
-        // Latest military activity
         $latestActivity = DB::table('skyguardian_positions as p')
             ->join('skyguardian_aircraft as a', 'p.hex', '=', 'a.hex')
             ->where('a.is_military', true)
@@ -198,12 +176,11 @@ class MilitaryMonitorPage extends Component
         ];
     }
 
-    // Helper to format data for the View Loop
-    public function formatAircraftForTable($aircraftCollection)
+    public function formatAircraftForTable($aircraftCollection): array
     {
         $formatted = [];
         foreach ($aircraftCollection as $aircraft) {
-            // We use the already loaded activePositions if available to save queries
+
             $position = $this->activePositions[$aircraft->hex] ?? null;
 
             $formatted[] = (object) [
@@ -215,14 +192,13 @@ class MilitaryMonitorPage extends Component
         return $formatted;
     }
 
-    // When filters change, reset to page 1
-    public function applyFilters()
+    public function applyFilters(): void
     {
         $this->resetPage();
         $this->refreshData();
     }
 
-    public function resetFilters()
+    public function resetFilters(): void
     {
         $this->resetPage();
         $this->filterCountry = 'all';
@@ -234,15 +210,15 @@ class MilitaryMonitorPage extends Component
         $this->refreshData();
     }
 
-    public function refreshData()
+    public function refreshData(): void
     {
-        $this->loadMilitaryAircraft(); // Updates Map Data (Full List)
+        $this->loadMilitaryAircraft();
         $this->loadStats();
         $this->dispatch('map-refreshed', markers: $this->getMapMarkersData());
     }
 
-    // Keep existing accessors and helpers
-    public function viewAircraftDetails($hex) { /* ... keep existing ... */
+    public function viewAircraftDetails($hex): void
+    {
         $this->selectedAircraft = DB::table('skyguardian_aircraft')
             ->where('hex', $hex)
             ->first();
@@ -259,16 +235,17 @@ class MilitaryMonitorPage extends Component
                 ->orderBy('position_time', 'desc')
                 ->first();
         }
-
         $this->showDetailsModal = true;
     }
 
-    public function closeModal() { /* ... keep existing ... */
+    public function closeModal(): void
+    {
         $this->showDetailsModal = false;
         $this->selectedAircraft = null;
     }
 
-    public function getCountryOptions() { /* ... keep existing ... */
+    public function getCountryOptions(): array
+    {
         return DB::table('skyguardian_aircraft')
             ->where('is_military', true)
             ->whereNotNull('country')
@@ -279,15 +256,14 @@ class MilitaryMonitorPage extends Component
             ->toArray();
     }
 
-    // Logic for the Map (Needs ALL items, not just paginated ones)
-    public function getAircraftPositionsProperty()
+    public function getAircraftPositionsProperty(): array
     {
         return $this->formatAircraftForTable($this->militaryAircraft);
     }
 
-    public function getMapMarkersData() { /* ... keep existing ... */
+    public function getMapMarkersData(): array
+    {
         $markers = [];
-        // Use the property that has ALL aircraft
         foreach ($this->getAircraftPositionsProperty() as $item) {
             if ($item->position && $item->position->latitude && $item->position->longitude) {
                 $markers[] = [
@@ -313,12 +289,10 @@ class MilitaryMonitorPage extends Component
         return $markers;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
-        // 1. Get Paginated Result
         $paginatedAircraft = $this->getFilteredAircraftQuery()->paginate($this->perPage);
 
-        // 2. Format the items on the current page (attach positions)
         $paginatedCollection = $paginatedAircraft->getCollection()->map(function($aircraft) {
             $position = $this->activePositions[$aircraft->hex] ?? null;
             return (object) [
@@ -328,15 +302,12 @@ class MilitaryMonitorPage extends Component
             ];
         });
 
-        // 3. Set the modified collection back
         $paginatedAircraft->setCollection($paginatedCollection);
 
         return view('livewire.user.military-monitor-page', [
             'countryOptions' => $this->getCountryOptions(),
             'paginatedAircraft' => $paginatedAircraft,
             'mapMarkersData' => $this->getMapMarkersData(),
-
-            // 👇 ADD THIS LINE BACK 👇
             'aircraftPositions' => $this->aircraftPositions,
         ])->layout('components.layouts.userApp');
     }

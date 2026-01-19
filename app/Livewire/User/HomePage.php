@@ -10,7 +10,6 @@ class HomePage extends Component
 {
     public $loading = false;
     public $autoRefreshEnabled = true;
-
     public $stats = [];
     public $recentAlerts = [];
     public $activeAircraft = [];
@@ -18,7 +17,6 @@ class HomePage extends Component
     public $todayAnalyses = [];
     public $threatTrends = [];
     public $mapMarkers = [];
-
     public $aircraftTypes = [];
 
     public function mount(): void

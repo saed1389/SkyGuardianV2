@@ -5,6 +5,8 @@ namespace App\Livewire\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel; // Import Excel
+use App\Exports\AircraftExport;       // Import Export Class
 
 class AircraftDatabasePage extends Component
 {
@@ -15,39 +17,31 @@ class AircraftDatabasePage extends Component
     public $showDetailsModal = false;
 
     // Filters
-    public $filterType = 'all'; // all, military, civil, drone, nato
+    public $filterType = 'all';
     public $filterCountry = 'all';
     public $filterThreatLevel = 'all';
-    public $filterStatus = 'all'; // active, inactive
+    public $filterStatus = 'all';
     public $search = '';
 
-    // Pagination
+    // Pagination & Sort
     public $perPage = 20;
     public $currentPage = 1;
     public $totalPages = 1;
     public $totalAircraft = 0;
-
-    // Sort
     public $sortBy = 'last_seen';
     public $sortDirection = 'desc';
 
-    public function mount()
+    public function mount(): void
     {
         $this->loadAircraft();
         $this->loadStats();
     }
 
-    public function loadAircraft()
+    /**
+     * Reusable query builder for both Table and Export
+     */
+    private function getFilteredQuery()
     {
-        $this->loading = true;
-
-        // Get total count for pagination
-        $totalQuery = DB::table('skyguardian_aircraft as a');
-        $this->applyFiltersToQuery($totalQuery);
-        $this->totalAircraft = $totalQuery->count();
-        $this->totalPages = ceil($this->totalAircraft / $this->perPage);
-
-        // Get aircraft with latest positions
         $query = DB::table('skyguardian_aircraft as a')
             ->leftJoin('skyguardian_positions as p', function($join) {
                 $join->on('a.hex', '=', 'p.hex')
@@ -72,29 +66,7 @@ class AircraftDatabasePage extends Component
                 'p.threat_level as position_threat_level'
             ]);
 
-        $this->applyFiltersToQuery($query);
-
-        // Apply sorting
-        if ($this->sortBy === 'last_seen') {
-            $query->orderBy('a.last_seen', $this->sortDirection);
-        } elseif ($this->sortBy === 'threat_level') {
-            $query->orderBy('a.threat_level', $this->sortDirection);
-        } elseif ($this->sortBy === 'country') {
-            $query->orderBy('a.country', $this->sortDirection);
-        } else {
-            $query->orderBy($this->sortBy, $this->sortDirection);
-        }
-
-        // Apply pagination
-        $offset = ($this->currentPage - 1) * $this->perPage;
-        $this->aircraft = $query->offset($offset)->limit($this->perPage)->get();
-
-        $this->loading = false;
-    }
-
-    private function applyFiltersToQuery($query)
-    {
-        // Apply type filter
+        // 1. Apply Filters
         if ($this->filterType === 'military') {
             $query->where('a.is_military', true);
         } elseif ($this->filterType === 'civil') {
@@ -105,24 +77,20 @@ class AircraftDatabasePage extends Component
             $query->where('a.is_nato', true);
         }
 
-        // Apply country filter
         if ($this->filterCountry !== 'all') {
             $query->where('a.country', $this->filterCountry);
         }
 
-        // Apply threat level filter
         if ($this->filterThreatLevel !== 'all') {
             $query->where('a.threat_level', '>=', $this->filterThreatLevel);
         }
 
-        // Apply status filter (active = last seen within 24 hours)
         if ($this->filterStatus === 'active') {
             $query->where('a.last_seen', '>=', Carbon::now()->subDay());
         } elseif ($this->filterStatus === 'inactive') {
             $query->where('a.last_seen', '<', Carbon::now()->subDay())->orWhereNull('a.last_seen');
         }
 
-        // Apply search
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('a.hex', 'like', '%' . $this->search . '%')
@@ -133,38 +101,79 @@ class AircraftDatabasePage extends Component
                     ->orWhere('a.country', 'like', '%' . $this->search . '%');
             });
         }
+
+        // 2. Apply Sorting
+        if ($this->sortBy === 'last_seen') {
+            $query->orderBy('a.last_seen', $this->sortDirection);
+        } elseif ($this->sortBy === 'threat_level') {
+            $query->orderBy('a.threat_level', $this->sortDirection);
+        } elseif ($this->sortBy === 'country') {
+            $query->orderBy('a.country', $this->sortDirection);
+        } else {
+            $query->orderBy($this->sortBy, $this->sortDirection);
+        }
+
+        return $query;
     }
 
-    public function loadStats()
+    public function loadAircraft(): void
     {
+        $this->loading = true;
+
+        // Count totals for pagination
+        $countQuery = DB::table('skyguardian_aircraft as a');
+
+        // We need to replicate filter logic for count purely on 'a' table if possible
+        // but since search might rely on joins, let's use the main query builder for safety
+        // Optimization: Clone the query before pagination
+
+        $query = $this->getFilteredQuery();
+
+        // Note: Counting with groupBy/joins can be tricky,
+        // but simplified here for standard use case
+        $this->totalAircraft = $query->count();
+        $this->totalPages = ceil($this->totalAircraft / $this->perPage);
+
+        // Fetch Data
+        $offset = ($this->currentPage - 1) * $this->perPage;
+        $this->aircraft = $query->offset($offset)->limit($this->perPage)->get();
+
+        $this->loading = false;
+    }
+
+    // --- EXPORT FUNCTIONALITY ---
+
+    // 1. Export the current filtered list (Main Page)
+    public function exportData()
+    {
+        // Get the query without pagination/limit
+        $query = $this->getFilteredQuery();
+
+        $timestamp = Carbon::now()->format('Y-m-d_H-i');
+        return Excel::download(new AircraftExport($query), "aircraft_database_{$timestamp}.xlsx");
+    }
+
+    // 2. Export specific aircraft (For Modal Button)
+    public function exportSingleAircraft()
+    {
+        if (!$this->selectedAircraft) return;
+
+        // Create a query for just this one aircraft
+        $query = $this->getFilteredQuery()->where('a.hex', $this->selectedAircraft->hex);
+
+        $timestamp = Carbon::now()->format('Y-m-d');
+        return Excel::download(new AircraftExport($query), "aircraft_{$this->selectedAircraft->hex}_{$timestamp}.xlsx");
+    }
+
+    public function loadStats(): void { /* Keep existing code */
         $total = DB::table('skyguardian_aircraft')->count();
         $military = DB::table('skyguardian_aircraft')->where('is_military', true)->count();
         $drones = DB::table('skyguardian_aircraft')->where('is_drone', true)->count();
         $nato = DB::table('skyguardian_aircraft')->where('is_nato', true)->count();
-
-        // Active in last 24 hours
-        $active = DB::table('skyguardian_aircraft')
-            ->where('last_seen', '>=', Carbon::now()->subDay())
-            ->count();
-
-        // Countries count
-        $countries = DB::table('skyguardian_aircraft')
-            ->whereNotNull('country')
-            ->select('country')
-            ->distinct()
-            ->count();
-
-        // Aircraft types count
-        $types = DB::table('skyguardian_aircraft')
-            ->whereNotNull('type')
-            ->select('type')
-            ->distinct()
-            ->count();
-
-        // Latest addition
-        $latest = DB::table('skyguardian_aircraft')
-            ->orderBy('created_at', 'desc')
-            ->first();
+        $active = DB::table('skyguardian_aircraft')->where('last_seen', '>=', Carbon::now()->subDay())->count();
+        $countries = DB::table('skyguardian_aircraft')->whereNotNull('country')->select('country')->distinct()->count();
+        $types = DB::table('skyguardian_aircraft')->whereNotNull('type')->select('type')->distinct()->count();
+        $latest = DB::table('skyguardian_aircraft')->orderBy('created_at', 'desc')->first();
 
         $this->stats = [
             'total' => $total,
@@ -178,115 +187,63 @@ class AircraftDatabasePage extends Component
         ];
     }
 
-    public function viewAircraftDetails($hex)
+    public function viewAircraftDetails($hex): void
     {
+        // Trim whitespace just in case
+        $hex = trim($hex);
+
         $this->selectedAircraft = DB::table('skyguardian_aircraft')
             ->where('hex', $hex)
             ->first();
 
         if ($this->selectedAircraft) {
-            // Get position history
             $this->selectedAircraft->positions = DB::table('skyguardian_positions')
                 ->where('hex', $hex)
                 ->orderBy('position_time', 'desc')
                 ->limit(50)
                 ->get();
 
-            // Get latest position
             $this->selectedAircraft->latest_position = DB::table('skyguardian_positions')
                 ->where('hex', $hex)
                 ->orderBy('position_time', 'desc')
                 ->first();
 
-            // Get first seen
             $this->selectedAircraft->first_seen = DB::table('skyguardian_positions')
                 ->where('hex', $hex)
                 ->orderBy('position_time', 'asc')
                 ->first();
-        }
 
-        $this->showDetailsModal = true;
+            $this->showDetailsModal = true;
+        }
     }
 
-    public function closeModal()
+    public function closeModal(): void
     {
         $this->showDetailsModal = false;
         $this->selectedAircraft = null;
     }
 
-    public function applyFilters()
-    {
-        $this->currentPage = 1; // Reset to first page
-        $this->loadAircraft();
-        $this->loadStats();
+    // ... Keep existing filters, sort, pagination functions ...
+    public function applyFilters(): void { $this->currentPage = 1; $this->loadAircraft(); $this->loadStats(); }
+    public function resetFilters(): void {
+        $this->filterType = 'all'; $this->filterCountry = 'all'; $this->filterThreatLevel = 'all';
+        $this->filterStatus = 'all'; $this->search = ''; $this->sortBy = 'last_seen';
+        $this->sortDirection = 'desc'; $this->applyFilters();
     }
-
-    public function resetFilters()
-    {
-        $this->filterType = 'all';
-        $this->filterCountry = 'all';
-        $this->filterThreatLevel = 'all';
-        $this->filterStatus = 'all';
-        $this->search = '';
-        $this->sortBy = 'last_seen';
-        $this->sortDirection = 'desc';
-        $this->applyFilters();
-    }
-
-    public function sort($column)
-    {
-        if ($this->sortBy === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortBy = $column;
-            $this->sortDirection = 'asc';
-        }
-
+    public function sort($column): void {
+        if ($this->sortBy === $column) { $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc'; }
+        else { $this->sortBy = $column; $this->sortDirection = 'asc'; }
         $this->loadAircraft();
     }
-
-    public function previousPage()
-    {
-        if ($this->currentPage > 1) {
-            $this->currentPage--;
-            $this->loadAircraft();
-        }
+    public function previousPage(): void { if ($this->currentPage > 1) { $this->currentPage--; $this->loadAircraft(); } }
+    public function nextPage(): void { if ($this->currentPage < $this->totalPages) { $this->currentPage++; $this->loadAircraft(); } }
+    public function goToPage($page): void { if ($page >= 1 && $page <= $this->totalPages) { $this->currentPage = $page; $this->loadAircraft(); } }
+    public function refreshData(): void { $this->loadAircraft(); $this->loadStats(); }
+    public function getCountryOptions(): array {
+        return DB::table('skyguardian_aircraft')->whereNotNull('country')->select('country')->distinct()->orderBy('country')->pluck('country')->toArray();
     }
 
-    public function nextPage()
-    {
-        if ($this->currentPage < $this->totalPages) {
-            $this->currentPage++;
-            $this->loadAircraft();
-        }
-    }
-
-    public function goToPage($page)
-    {
-        if ($page >= 1 && $page <= $this->totalPages) {
-            $this->currentPage = $page;
-            $this->loadAircraft();
-        }
-    }
-
-    public function refreshData()
-    {
-        $this->loadAircraft();
-        $this->loadStats();
-    }
-
-    public function getCountryOptions()
-    {
-        return DB::table('skyguardian_aircraft')
-            ->whereNotNull('country')
-            ->select('country')
-            ->distinct()
-            ->orderBy('country')
-            ->pluck('country')
-            ->toArray();
-    }
-
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
         return view('livewire.user.aircraft-database-page', [
             'countryOptions' => $this->getCountryOptions(),
