@@ -5,8 +5,8 @@ namespace App\Livewire\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Maatwebsite\Excel\Facades\Excel; // Import Excel
-use App\Exports\AircraftExport;       // Import Export Class
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AircraftExport;
 
 class AircraftDatabasePage extends Component
 {
@@ -15,15 +15,11 @@ class AircraftDatabasePage extends Component
     public $stats = [];
     public $selectedAircraft = null;
     public $showDetailsModal = false;
-
-    // Filters
     public $filterType = 'all';
     public $filterCountry = 'all';
     public $filterThreatLevel = 'all';
     public $filterStatus = 'all';
     public $search = '';
-
-    // Pagination & Sort
     public $perPage = 20;
     public $currentPage = 1;
     public $totalPages = 1;
@@ -40,7 +36,7 @@ class AircraftDatabasePage extends Component
     /**
      * Reusable query builder for both Table and Export
      */
-    private function getFilteredQuery()
+    private function getFilteredQuery(): \Illuminate\Database\Query\Builder
     {
         $query = DB::table('skyguardian_aircraft as a')
             ->leftJoin('skyguardian_positions as p', function($join) {
@@ -66,7 +62,6 @@ class AircraftDatabasePage extends Component
                 'p.threat_level as position_threat_level'
             ]);
 
-        // 1. Apply Filters
         if ($this->filterType === 'military') {
             $query->where('a.is_military', true);
         } elseif ($this->filterType === 'civil') {
@@ -102,7 +97,6 @@ class AircraftDatabasePage extends Component
             });
         }
 
-        // 2. Apply Sorting
         if ($this->sortBy === 'last_seen') {
             $query->orderBy('a.last_seen', $this->sortDirection);
         } elseif ($this->sortBy === 'threat_level') {
@@ -120,52 +114,38 @@ class AircraftDatabasePage extends Component
     {
         $this->loading = true;
 
-        // Count totals for pagination
         $countQuery = DB::table('skyguardian_aircraft as a');
-
-        // We need to replicate filter logic for count purely on 'a' table if possible
-        // but since search might rely on joins, let's use the main query builder for safety
-        // Optimization: Clone the query before pagination
 
         $query = $this->getFilteredQuery();
 
-        // Note: Counting with groupBy/joins can be tricky,
-        // but simplified here for standard use case
         $this->totalAircraft = $query->count();
         $this->totalPages = ceil($this->totalAircraft / $this->perPage);
 
-        // Fetch Data
         $offset = ($this->currentPage - 1) * $this->perPage;
         $this->aircraft = $query->offset($offset)->limit($this->perPage)->get();
 
         $this->loading = false;
     }
 
-    // --- EXPORT FUNCTIONALITY ---
-
-    // 1. Export the current filtered list (Main Page)
-    public function exportData()
+    public function exportData(): \Symfony\Component\HttpFoundation\BinaryFileResponse
     {
-        // Get the query without pagination/limit
         $query = $this->getFilteredQuery();
 
         $timestamp = Carbon::now()->format('Y-m-d_H-i');
         return Excel::download(new AircraftExport($query), "aircraft_database_{$timestamp}.xlsx");
     }
 
-    // 2. Export specific aircraft (For Modal Button)
     public function exportSingleAircraft()
     {
         if (!$this->selectedAircraft) return;
 
-        // Create a query for just this one aircraft
         $query = $this->getFilteredQuery()->where('a.hex', $this->selectedAircraft->hex);
 
         $timestamp = Carbon::now()->format('Y-m-d');
         return Excel::download(new AircraftExport($query), "aircraft_{$this->selectedAircraft->hex}_{$timestamp}.xlsx");
     }
 
-    public function loadStats(): void { /* Keep existing code */
+    public function loadStats(): void {
         $total = DB::table('skyguardian_aircraft')->count();
         $military = DB::table('skyguardian_aircraft')->where('is_military', true)->count();
         $drones = DB::table('skyguardian_aircraft')->where('is_drone', true)->count();
@@ -189,7 +169,6 @@ class AircraftDatabasePage extends Component
 
     public function viewAircraftDetails($hex): void
     {
-        // Trim whitespace just in case
         $hex = trim($hex);
 
         $this->selectedAircraft = DB::table('skyguardian_aircraft')
@@ -223,7 +202,6 @@ class AircraftDatabasePage extends Component
         $this->selectedAircraft = null;
     }
 
-    // ... Keep existing filters, sort, pagination functions ...
     public function applyFilters(): void { $this->currentPage = 1; $this->loadAircraft(); $this->loadStats(); }
     public function resetFilters(): void {
         $this->filterType = 'all'; $this->filterCountry = 'all'; $this->filterThreatLevel = 'all';
