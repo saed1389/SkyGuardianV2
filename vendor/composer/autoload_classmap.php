@@ -6,8 +6,10 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Exports\\AircraftExport' => $baseDir . '/app/Exports/AircraftExport.php',
     'App\\Exports\\AlertsExport' => $baseDir . '/app/Exports/AlertsExport.php',
     'App\\Exports\\AnalysesExport' => $baseDir . '/app/Exports/AnalysesExport.php',
+    'App\\Exports\\ReportExport' => $baseDir . '/app/Exports/ReportExport.php',
     'App\\Http\\Controllers\\Api\\AirspaceController' => $baseDir . '/app/Http/Controllers/Api/AirspaceController.php',
     'App\\Http\\Controllers\\Auth\\AuthenticatedSessionController' => $baseDir . '/app/Http/Controllers/Auth/AuthenticatedSessionController.php',
     'App\\Http\\Controllers\\Auth\\ConfirmablePasswordController' => $baseDir . '/app/Http/Controllers/Auth/ConfirmablePasswordController.php',
