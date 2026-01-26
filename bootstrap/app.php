@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'api/n8n/save-image',
+            'n8n/save-image', // Add this too just in case
+        ]);
         $middleware->alias([
             'role' => Role::class,
             'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
