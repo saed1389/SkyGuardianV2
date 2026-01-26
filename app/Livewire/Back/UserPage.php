@@ -17,23 +17,19 @@ class UserPage extends Component
     public $memberModalTitle = 'Members List';
     public $editingUserId = null;
     public $viewingAdminId = null;
-
-    // Form fields
     public $name = '';
     public $email = '';
     public $password = '';
     public $password_confirmation = '';
     public $phone = '';
-    public $status = 1; // Default to Active
+    public $status = 1;
     public $last_login = '';
     public $airport = '';
     public $lat = '';
     public $lon = '';
 
-    // Search
     public $search = '';
 
-    // For members list
     public $members = [];
     public $adminName = '';
 
@@ -43,7 +39,7 @@ class UserPage extends Component
         'deleteCancelled' => 'cancelDelete',
     ];
 
-    protected function rules()
+    protected function rules(): array
     {
         $rules = [
             'name' => 'required|min:3',
@@ -56,24 +52,21 @@ class UserPage extends Component
             'lon' => 'nullable|numeric',
         ];
 
-        // Password rules based on add/edit
         if (!$this->editingUserId) {
-            // Add mode: password required
+
             $rules['password'] = 'required|min:8|confirmed';
             $rules['password_confirmation'] = 'required';
         } else {
-            // Edit mode: password optional
             $rules['password'] = 'nullable|min:8|confirmed';
             $rules['password_confirmation'] = 'nullable';
 
-            // Email unique except current user
             $rules['email'] = 'required|email|unique:users,email,' . $this->editingUserId;
         }
 
         return $rules;
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
         $users = User::when($this->search, function ($query) {
             return $query->where(function ($q) {
@@ -81,7 +74,7 @@ class UserPage extends Component
                     ->orWhere('email', 'like', '%' . $this->search . '%')
                     ->orWhere('airport', 'like', '%' . $this->search . '%');
             });
-        })->where('admin_id', 0) // Assuming admin users have different role
+        })->where('admin_id', 0)
         ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -90,8 +83,7 @@ class UserPage extends Component
         ]);
     }
 
-    // View Members for a specific admin
-    public function openMemberModal($adminId)
+    public function openMemberModal($adminId): void
     {
         $admin = User::findOrFail($adminId);
 
@@ -105,7 +97,7 @@ class UserPage extends Component
         $this->showMemberModal = true;
     }
 
-    public function openAddModal()
+    public function openAddModal(): void
     {
         $this->resetForm();
         $this->modalTitle = 'Add User';
@@ -113,7 +105,7 @@ class UserPage extends Component
         $this->showModal = true;
     }
 
-    public function openEditModal($id)
+    public function openEditModal($id): void
     {
         $user = User::findOrFail($id);
 
@@ -131,11 +123,10 @@ class UserPage extends Component
         $this->showModal = true;
     }
 
-    public function saveUser()
+    public function saveUser(): void
     {
         $validated = $this->validate();
 
-        // Prepare user data
         $userData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -146,29 +137,25 @@ class UserPage extends Component
             'lon' => $validated['lon'],
         ];
 
-        // Handle last login date
         if (!empty($validated['last_login'])) {
             $userData['last_login'] = $validated['last_login'];
         }
 
-        // Handle password if provided
         if (!empty($validated['password'])) {
             $userData['password'] = Hash::make($validated['password']);
         }
 
         if ($this->editingUserId) {
-            // Update existing user
+
             $user = User::findOrFail($this->editingUserId);
             $user->update($userData);
             session()->flash('message', 'User updated successfully.');
         } else {
-            // Create new user (password is required)
             $userData['password'] = Hash::make($validated['password']);
-            $userData['role'] = 'admin'; // Or whatever role you need
+            $userData['role'] = 'admin';
             User::create($userData);
             session()->flash('message', 'User created successfully.');
 
-            // Reset to page 1 when adding new user
             $this->resetPage();
         }
 
@@ -176,7 +163,7 @@ class UserPage extends Component
         $this->dispatch('refreshTable');
     }
 
-    public function deleteUser($id = null)
+    public function deleteUser($id = null): void
     {
         if ($id === null) {
             $id = $this->deleteUserId;
@@ -190,36 +177,36 @@ class UserPage extends Component
         $this->deleteUserId = null;
     }
 
-    public function confirmDelete($id)
+    public function confirmDelete($id): void
     {
         $this->deleteUserId = $id;
         $this->dispatch('showDeleteConfirmation', $id);
     }
 
-    public function cancelDelete()
+    public function cancelDelete(): void
     {
         $this->deleteUserId = null;
     }
 
-    public function closeModal()
+    public function closeModal(): void
     {
         $this->showModal = false;
         $this->resetForm();
     }
 
-    public function memberModalClose()
+    public function memberModalClose(): void
     {
         $this->showMemberModal = false;
         $this->reset(['viewingAdminId', 'members', 'adminName']);
     }
 
-    private function resetForm()
+    private function resetForm(): void
     {
         $this->reset([
             'name', 'email', 'password', 'password_confirmation',
             'phone', 'status', 'last_login', 'airport', 'lat', 'lon', 'editingUserId'
         ]);
         $this->resetValidation();
-        $this->status = 1; // Reset to Active
+        $this->status = 1;
     }
 }

@@ -4,7 +4,6 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
         <style>
-            /* Livewire Pagination Styles */
             .pagination {
                 display: flex;
                 padding-left: 0;
@@ -41,7 +40,6 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
             <script>
                 document.addEventListener('livewire:initialized', () => {
-                    // Listen for delete confirmation request
                     Livewire.on('showDeleteConfirmation', (userId) => {
                         Swal.fire({
                             title: 'Are you sure?',
@@ -228,7 +226,6 @@
                 </div>
             </div>
 
-            <!-- Add/Edit Modal -->
             @if($showModal)
                 <div class="modal fade show" tabindex="-1" aria-labelledby="userModalLabel" aria-modal="true" role="dialog" style="display: block; z-index: 1056">
                     <div class="modal-dialog modal-dialog-centered modal-lg">

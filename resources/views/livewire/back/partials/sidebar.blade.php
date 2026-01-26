@@ -27,6 +27,19 @@
                     </div>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarBlog" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
+                        <i class="ri-newspaper-fill"></i> <span data-key="t-users">Blog &nbsp; <span class="rounded"> {{ $blogCount ?? '' }}</span></span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarBlog">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.blog-list') }}" class="nav-link" data-key="t-user-list"> Blog List </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
 
 
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-components">Components</span></li>
