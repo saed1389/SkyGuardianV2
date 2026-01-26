@@ -107,5 +107,15 @@
     "blog_title": "Lennunduse Ülevaated",
     "blog_subtitle": "Viimased uudised, tehnoloogia uuendused ja turvaprotokollid SkyGuardianilt.",
     "published-on" : "Avaldatud",
-    "share" : "Jaga"
+    "share" : "Jaga",
+    "about_hero_title" : "Globaalse taeva kindlustamine",
+    "about_hero_subtitle" : "Eesti inseneriteadus kohtub lennundusinnovatsiooniga.",
+    "about_story_title" : "Meie lugu",
+    "about_story_p1" : "Tartus 2026. aastal asutatud SkyGuardian sündis lihtsast tähelepanekust: maailma radarisüsteemid polnud droonirevolutsiooniks valmis.",
+    "about_story_p2" : "Me ühendasime raadiosagedussignaali intelligentsuse masinõppega, et luua jälgimissüsteem, mis mitte ainult ei näe droone, vaid ka mõistab neid.",
+    "milestone_1" : "SkyGuardian asutati Tartus",
+    "milestone_2" : "Edukad ohu tuvastamised",
+    "milestone_3" : "Kaitstud riigid",
+    "milestone_4" : "Tuvastamise täpsus",
+    "tech_title" : "Meie partnerid ja standardid"
 }

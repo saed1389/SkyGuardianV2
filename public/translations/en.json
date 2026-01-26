@@ -107,5 +107,15 @@
     "blog_title": "Aviation Insights",
     "blog_subtitle": "Latest news, technology updates, and security protocols from SkyGuardian.",
     "published-on" : "Published on",
-    "share" : "share"
+    "share" : "share",
+    "about_hero_title" : "Securing the Global Sky",
+    "about_hero_subtitle" : "Estonian engineering meets aerospace innovation.",
+    "about_story_title" : "Our Story",
+    "about_story_p1" : "Founded in Tartu in 2026, SkyGuardian was born from a simple observation: the world's radar systems weren't ready for the drone revolution.",
+    "about_story_p2" : "We combined RF Signal Intelligence with Machine Learning to create a monitoring system that doesn't just see drones—it understands them.",
+    "milestone_1" : "SkyGuardian Founded in Tartu",
+    "milestone_2" : "Successful Threat Detections",
+    "milestone_3" : "Countries Protected",
+    "milestone_4" : "Detection Accuracy",
+    "tech_title" : "Our Partners & Standards"
 }

@@ -107,5 +107,15 @@
     "blog_title": "Havacılık Görüşleri",
     "blog_subtitle": "SkyGuardian'dan en son haberler, teknoloji güncellemeleri ve güvenlik protokolleri.",
     "published-on" : "Yayınlanma tarihi",
-    "share" : "Paylaş"
+    "share" : "Paylaş",
+    "about_hero_title" : "Küresel Gökyüzünün Güvenliğini Sağlamak",
+    "about_hero_subtitle" : "Estonya mühendisliği, havacılık ve uzay inovasyonuyla buluşuyor.",
+    "about_story_title" : "Bizim Hikayemiz",
+    "about_story_p1" : "2026 yılında Tartu'da kurulan SkyGuardian, basit bir gözlemden doğdu: dünyanın radar sistemleri drone devrimine hazır değildi.",
+    "about_story_p2" : "Radyo Frekansı Sinyal Zekasını Makine Öğrenimiyle birleştirerek, sadece dronları görmekle kalmayıp onları anlayabilen bir izleme sistemi oluşturduk.",
+    "milestone_1" : "SkyGuardian Tartu'da kuruldu.",
+    "milestone_2" : "Başarılı Tehdit Tespitleri",
+    "milestone_3" : "Korunan Ülkeler",
+    "milestone_4" : "Algılama Doğruluğu",
+    "tech_title" : "Ortaklarımız ve Standartlarımız"
 }

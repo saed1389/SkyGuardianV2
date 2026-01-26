@@ -19,7 +19,7 @@
             <div class="footer-section">
                 <h4 data-translate="footer_company">Company</h4>
                 <ul>
-                    <li><a href="#" data-translate="footer_about">About</a></li>
+                    <li><a href="{{ route('about-page') }}" data-translate="footer_about">About</a></li>
                     <li><a href="{{ route('blog.index') }}" data-translate="footer_blog">Blog</a></li>
                     <li><a href="#" data-translate="footer_careers">Careers</a></li>
                     <li><a href="#" data-translate="footer_contact">Contact</a></li>
