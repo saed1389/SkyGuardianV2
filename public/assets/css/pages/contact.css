@@ -1,0 +1,17 @@
+.contact-header { margin-top: 60px; padding: 80px 20px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center; color: white; text-align: center; }
+.contact-header h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; margin-bottom: 15px; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; max-width: 1200px; margin: 60px auto; gap: 40px; padding: 0 20px; }
+.contact-box { background: #f9fafb; padding: clamp(25px, 5vw, 50px); border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+.contact-details h3 { margin-bottom: 30px; font-size: 28px; font-weight: 700; color: #111827; }
+.detail-item { margin-bottom: 30px; }
+.detail-item label { display: block; font-size: 11px; text-transform: uppercase; color: var(--primary-blue); font-weight: 800; margin-bottom: 8px; letter-spacing: 1px; }
+.detail-item p { font-size: 18px; font-weight: 500; color: #374151; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: #374151; }
+.form-input { width: 100%; padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 16px; transition: all 0.3s ease; background: white; }
+.form-input:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(0, 114, 206, 0.1); }
+@media (max-width: 992px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 60px; margin: 40px auto; }
+    .contact-header { padding: 60px 20px; }
+    .contact-details { text-align: center; }
+}

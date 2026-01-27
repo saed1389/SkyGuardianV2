@@ -1,6 +1,6 @@
 <div>
         @push('landStyles')
-            <link href="{{ asset('assets/css/index.css') }}" rel="stylesheet" type="text/css" />
+            <link href="{{ asset('assets/css/general.css') }}" rel="stylesheet" type="text/css" />
             <script type="application/ld+json">
                 {
                   "@@context": "https://schema.org",

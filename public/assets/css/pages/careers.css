@@ -1,0 +1,17 @@
+.careers-container { margin-top: 60px; display: grid; grid-template-columns: 1fr; min-height: 90vh; }
+.careers-visual { padding: 60px 20px; background: var(--gray-900); color: white; display: flex; flex-direction: column; justify-content: center; }
+.careers-visual h1 { font-size: clamp(32px, 8vw, 52px); line-height: 1.1; margin-bottom: 20px; }
+.careers-visual p { font-size: clamp(16px, 4vw, 18px); opacity: 0.7; line-height: 1.6; }
+.careers-form { padding: 40px 20px; background: white; }
+.file-upload { border: 2px dashed var(--gray-200); padding: 30px 15px; text-align: center; border-radius: 12px; cursor: pointer; transition: 0.3s; background: var(--gray-50);}
+.file-upload:hover { border-color: var(--primary-blue); background: var(--white); }
+.file-upload span { font-size: 14px; color: var(--gray-600); }
+.benefit-list { list-style: none; margin-top: 25px; }
+.benefit-list li { margin-bottom: 15px; display: flex; align-items: flex-start; gap: 10px; opacity: 0.8; font-size: 15px; }
+.benefit-list li::before { content: '→'; color: var(--primary-blue); font-weight: bold; flex-shrink: 0; }
+.form-input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--gray-200); font-size: 16px; }
+@media (min-width: 992px) {
+    .careers-container { grid-template-columns: 1fr 1fr; }
+    .careers-visual { padding: 100px 60px; }
+    .careers-form { padding: 100px 60px; }
+}

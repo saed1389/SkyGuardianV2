@@ -7,7 +7,7 @@
                 </div>
                 <p style="color: var(--gray-300); font-size: 14px;" data-translate="footer_desc">Advanced airspace monitoring and management solutions.</p>
             </div>
-            <div class="footer-section">
+            {{--<div class="footer-section">
                 <h4 data-translate="footer_product">Product</h4>
                 <ul>
                     <li><a href="#" data-translate="footer_features">Features</a></li>
@@ -15,14 +15,14 @@
                     <li><a href="#" data-translate="footer_security">Security</a></li>
                     <li><a href="#" data-translate="footer_updates">Updates</a></li>
                 </ul>
-            </div>
+            </div>--}}
             <div class="footer-section">
                 <h4 data-translate="footer_company">Company</h4>
                 <ul>
                     <li><a href="{{ route('about-page') }}" data-translate="footer_about">About</a></li>
                     <li><a href="{{ route('blog.index') }}" data-translate="footer_blog">Blog</a></li>
-                    <li><a href="#" data-translate="footer_careers">Careers</a></li>
-                    <li><a href="#" data-translate="footer_contact">Contact</a></li>
+                    <li><a href="{{ route('careers-page') }}" data-translate="footer_careers">Careers</a></li>
+                    <li><a href="{{ route('contact-page') }}" data-translate="footer_contact">Contact</a></li>
                 </ul>
             </div>
             <div class="footer-section">

@@ -53,6 +53,19 @@
                     </div>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarSetting" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
+                        <i class="ri-settings-2-fill"></i> <span data-key="t-users">Setting</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarSetting">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.partners-list') }}" class="nav-link" data-key="t-user-list"> Partners List </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
 
                 <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-system">System</span></li>
 
