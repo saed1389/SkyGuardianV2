@@ -13,6 +13,18 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
+            $table->longText('privacy_en')->nullable();
+            $table->longText('privacy_tr')->nullable();
+            $table->longText('privacy_ee')->nullable();
+            $table->longText('term_en')->nullable();
+            $table->longText('term_tr')->nullable();
+            $table->longText('term_ee')->nullable();
+            $table->longText('license_en')->nullable();
+            $table->longText('license_tr')->nullable();
+            $table->longText('license_ee')->nullable();
+            $table->longText('compliance_en')->nullable();
+            $table->longText('compliance_tr')->nullable();
+            $table->longText('compliance_ee')->nullable();
             $table->timestamps();
         });
     }

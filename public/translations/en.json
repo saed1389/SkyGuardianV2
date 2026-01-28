@@ -87,8 +87,8 @@
     "footer_careers": "Careers",
     "footer_contact": "Contact",
     "footer_legal": "Legal",
-    "footer_privacy": "Privacy",
-    "footer_terms": "Terms",
+    "footer_privacy": "Privacy policy",
+    "footer_terms": "Terms & Conditions",
     "footer_license": "License",
     "footer_compliance": "Compliance",
     "footer_rights": "All rights reserved.",
@@ -135,5 +135,6 @@
     "benefit_1" : "Competitive salary + Equity options",
     "benefit_2" : "Relocation support to Tartu",
     "benefit_3" : "Flexible remote work policy",
-    "benefit_4" : "Modern tech stack & hardware"
+    "benefit_4" : "Modern tech stack & hardware",
+    "legal_subtitle" : "How we protect and manage your data at SkyGuardian."
 }

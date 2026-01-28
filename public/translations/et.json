@@ -87,7 +87,7 @@
     "footer_careers": "Karjäär",
     "footer_contact": "Kontakt",
     "footer_legal": "Juriidiline",
-    "footer_privacy": "Privaatsus",
+    "footer_privacy": "Privaatsuspoliitika",
     "footer_terms": "Tingimused",
     "footer_license": "Litsents",
     "footer_compliance": "Vastavus",
@@ -135,5 +135,6 @@
     "benefit_1" : "Konkurentsivõimeline palk + aktsiaoptsioonid",
     "benefit_2" : "Ümberasumise toetus Tartusse",
     "benefit_3" : "Paindlik kaugtööpoliitika",
-    "benefit_4" : "Kaasaegne tehnoloogia ja riistvara"
+    "benefit_4" : "Kaasaegne tehnoloogia ja riistvara",
+    "legal_subtitle" : "Kuidas me SkyGuardianis teie andmeid kaitseme ja haldame."
 }

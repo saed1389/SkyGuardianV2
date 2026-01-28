@@ -60,7 +60,7 @@
                     <div class="collapse menu-dropdown" id="sidebarSetting">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('admin.partners-list') }}" class="nav-link" data-key="t-user-list"> Partners List </a>
+                                <a href="{{ route('admin.settings.dynamic-page') }}" class="nav-link" data-key="t-user-list"> Dynamic Pages </a>
                             </li>
                         </ul>
                     </div>

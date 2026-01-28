@@ -87,8 +87,8 @@
     "footer_careers": "Kariyer",
     "footer_contact": "İletişim",
     "footer_legal": "Yasal",
-    "footer_privacy": "Gizlilik",
-    "footer_terms": "Şartlar",
+    "footer_privacy": "Gizlilik politikası",
+    "footer_terms": "Şartlar ve Koşullar",
     "footer_license": "Lisans",
     "footer_compliance": "Uyumluluk",
     "footer_rights": "Tüm hakları saklıdır.",
@@ -135,5 +135,6 @@
     "benefit_1" : "Rekabetçi maaş + Hisse senedi opsiyonları",
     "benefit_2" : "Tartu'ya taşınma desteği",
     "benefit_3" : "Esnek uzaktan çalışma politikası",
-    "benefit_4" : "Modern teknoloji yığını ve donanımı"
+    "benefit_4" : "Modern teknoloji yığını ve donanımı",
+    "legal_subtitle" : "SkyGuardian'da verilerinizi nasıl koruyor ve yönetiyoruz?"
 }
