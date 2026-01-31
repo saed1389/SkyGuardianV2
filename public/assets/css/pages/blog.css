@@ -1,21 +1,281 @@
-.blog-header { margin-top: 70px; background: var(--gray-100); padding: 80px 20px; text-align: center; }
-.blog-header h1 { font-size: 48px; margin-bottom: 20px; color: var(--black); }
-.blog-header p { font-size: 18px; color: var(--gray-600); max-width: 600px; margin: 0 auto; }
-.blog-controls { max-width: 1200px; margin: -30px auto 50px; padding: 20px; background: var(--white); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; gap: 20px; flex-wrap: wrap; align-items: center; justify-content: space-between; position: relative; z-index: 10; }
-.categories { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
-.cat-btn { background: none; border: 1px solid var(--gray-200); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 500; color: var(--gray-600); transition: all 0.2s; white-space: nowrap; }
-.cat-btn.active, .cat-btn:hover { background: var(--primary-blue); color: var(--white); border-color: var(--primary-blue); }
-.search-box input { padding: 10px 15px; border: 1px solid var(--gray-200); border-radius: 8px; width: 250px; }
-.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto 80px; padding: 0 20px; }
-.post-card { background: var(--white); border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s; text-decoration: none; color: inherit; display: block; border: 1px solid var(--gray-100); }
-.post-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-.post-image { width: 100%; }
-.post-content { padding: 25px; }
-.lang-dynamic { display: none; }
-.lang-dynamic.lang-en { display: block; }
-span.lang-dynamic.lang-en { display: inline; }
-.post-meta { font-size: 12px; color: var(--primary-blue); font-weight: 600; text-transform: uppercase; margin-bottom: 10px; }
-.post-title { font-size: 22px; font-weight: bold; margin-bottom: 10px; line-height: 1.3; color: var(--gray-900); }
-.post-excerpt { color: var(--gray-600); font-size: 15px; margin-bottom: 20px; line-height: 1.6; }
-.post-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--gray-100); padding-top: 15px; font-size: 13px; color: var(--gray-600); }
-.pagination-container { text-align: center; margin-bottom: 80px; }
+/* --- HERO SECTION --- */
+.blog-header {
+    margin-top: 60px;
+    background: var(--gray-50);
+    padding: 100px 20px 140px; /* Extra padding bottom for the overlap */
+    text-align: center;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.blog-header h1 {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--black);
+    letter-spacing: -1px;
+}
+
+.blog-header p {
+    font-size: 18px;
+    color: var(--gray-600);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* --- CONTROLS (Search & Categories) - NOT STICKY --- */
+.blog-controls {
+    max-width: 1200px;
+    margin: -60px auto 60px; /* Negative margin pulls it up into header */
+    padding: 20px;
+
+    background: #ffffff;
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    position: relative; /* Ensures it is NOT sticky */
+    z-index: 10;
+}
+
+/* Category Buttons */
+.categories {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+}
+
+.cat-btn {
+    background: transparent;
+    border: 1px solid var(--gray-200);
+    padding: 10px 24px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gray-600);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.cat-btn:hover {
+    background: var(--gray-50);
+    color: var(--black);
+    border-color: var(--gray-300);
+}
+
+.cat-btn.active {
+    background: var(--primary-blue);
+    color: white;
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 12px rgba(0, 114, 206, 0.3);
+}
+
+/* Search Box */
+.search-box input {
+    padding: 12px 20px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 100px;
+    width: 280px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+.search-box input:focus {
+    outline: none;
+    background: white;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.1);
+}
+
+/* --- BLOG GRID --- */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto 80px;
+    padding: 0 20px;
+}
+
+.post-card {
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--gray-100);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.post-image {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+}
+
+.post-content {
+    padding: 30px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Typography */
+.post-meta {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--primary-blue);
+    margin-bottom: 12px;
+}
+
+.post-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    line-height: 1.3;
+    color: var(--gray-900);
+}
+
+.post-excerpt {
+    color: var(--gray-600);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    flex-grow: 1;
+}
+
+.post-footer {
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-100);
+    font-size: 13px;
+    color: var(--gray-500);
+    display: flex;
+    justify-content: space-between;
+}
+
+/* --- MODERN PAGINATION (The part you asked for) --- */
+.pagination-container {
+    position: relative !important; /* Stop it from floating */
+    clear: both;
+    width: 100%;
+    margin: 60px auto 100px;
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+}
+
+/* The white "pill" container */
+.pagination-container nav {
+    position: static !important; /* Cancels 'fixed' or 'sticky' */
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+
+    /* Restore your styling */
+    background: white;
+    padding: 8px;
+    border-radius: 100px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    border: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Standardize links and the active span */
+.pagination-container a,
+.pagination-container span {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gray-500);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+/* Hover effect */
+.pagination-container a:hover {
+    background: var(--gray-50);
+    color: var(--black);
+    transform: scale(1.05);
+}
+
+/* Active Page Style (Blue Circle) */
+.pagination-container span[aria-current="page"] {
+    background: var(--primary-blue);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 114, 206, 0.4);
+    pointer-events: none; /* Can't click active page */
+}
+
+/* Disabled state (like 'Previous' when on page 1) */
+.pagination-container span[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* SVG Arrows (Next/Prev icons) */
+.pagination-container svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor; /* Inherits text color */
+}
+
+/* Hide the "Showing 1 to 10 of 50 results" text */
+.pagination-container p.text-sm {
+    display: none;
+}
+.pagination-container .hidden {
+    display: none;
+}
+
+/* --- MOBILE ADJUSTMENTS --- */
+@media (max-width: 768px) {
+    .blog-controls {
+        margin-top: -30px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    .search-box input { width: 100%; }
+    .search-box input:focus { width: 100%; }
+    .categories { padding-bottom: 10px; }
+
+    .blog-grid { grid-template-columns: 1fr; }
+
+    .pagination-container nav {
+        padding: 5px;
+        gap: 4px;
+    }
+    .pagination-container a,
+    .pagination-container span {
+        width: 34px;
+        height: 34px;
+        font-size: 13px;
+    }
+}

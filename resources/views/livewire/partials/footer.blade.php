@@ -28,10 +28,10 @@
             <div class="footer-section">
                 <h4 data-translate="footer_legal">Legal</h4>
                 <ul>
-                    <li><a href="#" data-translate="footer_privacy">Privacy</a></li>
-                    <li><a href="#" data-translate="footer_terms">Terms</a></li>
-                    <li><a href="#" data-translate="footer_license">License</a></li>
-                    <li><a href="#" data-translate="footer_compliance">Compliance</a></li>
+                    <li><a href="{{ route('privacy-page') }}" data-translate="footer_privacy">Privacy Policy</a></li>
+                    <li><a href="{{ route('term-page') }}" data-translate="footer_terms">Terms & Conditions</a></li>
+                    <li><a href="{{ route('license-page') }}" data-translate="footer_license">License</a></li>
+                    <li><a href="{{ route('compliance-page') }}" data-translate="footer_compliance">Compliance</a></li>
                 </ul>
             </div>
         </div>

@@ -100,7 +100,7 @@
     "modal_contact_desc": "Saa kohandatud hinnapakkumine oma organisatsioonile.",
     "form_name": "Täisnimi",
     "form_email": "E-posti Aadress",
-    "form_company": "Ettevõte",
+    "form_company": "Ettevõte (valikuline)",
     "form_message": "Sõnum",
     "form_submit_demo": "Planeeri Demo",
     "form_submit_contact": "Saada Sõnum",
@@ -136,5 +136,14 @@
     "benefit_2" : "Ümberasumise toetus Tartusse",
     "benefit_3" : "Paindlik kaugtööpoliitika",
     "benefit_4" : "Kaasaegne tehnoloogia ja riistvara",
-    "legal_subtitle" : "Kuidas me SkyGuardianis teie andmeid kaitseme ja haldame."
+    "legal_subtitle" : "Kuidas me SkyGuardianis teie andmeid kaitseme ja haldame.",
+    "error_title" : "Kadunud õhuruumis?",
+    "error_desc" : "Otsitavaid koordinaate pole olemas. See leht võib olla teisaldatud või tegevuse lõpetatud.",
+    "error_btn_home" : "Tagasi avalehele",
+    "error_btn_contact" : "Teata probleemist",
+    "form_sending" : "Saadetakse...",
+    "form_message_send" : "Sõnum edukalt saadetud.",
+    "form_demo_send" : "Demopäring on kätte saadud. Võtame teiega peagi ühendust.",
+    "form_verifying" : "Kinnitamine...",
+    "career_message" : "Avaldus edukalt saadetud!"
 }

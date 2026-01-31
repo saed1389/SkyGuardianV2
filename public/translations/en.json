@@ -100,7 +100,7 @@
     "modal_contact_desc": "Get a custom quote for your organization.",
     "form_name": "Full Name",
     "form_email": "Email Address",
-    "form_company": "Company",
+    "form_company": "Company (Optional)",
     "form_message": "Message",
     "form_submit_demo": "Schedule Demo",
     "form_submit_contact": "Send Message",
@@ -121,7 +121,7 @@
     "contact_title": "Get in Touch",
     "contact_subtitle": "Global support for local airspace security.",
     "contact_info_h3": "Contact Information",
-    "contact_office_label": "Tallinn HQ",
+    "contact_office_label": "Tartu HQ",
     "contact_email_label": "Email",
     "contact_phone_label": "Phone",
     "form_send": "Send Message",
@@ -136,5 +136,14 @@
     "benefit_2" : "Relocation support to Tartu",
     "benefit_3" : "Flexible remote work policy",
     "benefit_4" : "Modern tech stack & hardware",
-    "legal_subtitle" : "How we protect and manage your data at SkyGuardian."
+    "legal_subtitle" : "How we protect and manage your data at SkyGuardian.",
+    "error_title" : "Lost in Airspace?",
+    "error_desc" : "The coordinates you're looking for don't exist. This page might have been moved or decommissioned.",
+    "error_btn_home" : "Back to Homepage",
+    "error_btn_contact" : "Report Issue",
+    "form_sending" : "Sending...",
+    "form_message_send" : "Message sent successfully.",
+    "form_demo_send" : "Demo request received. We will contact you shortly.",
+    "form_verifying" : "Verifying...",
+    "career_message" : "Application sent successfully!"
 }

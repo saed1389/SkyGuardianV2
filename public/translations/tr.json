@@ -100,7 +100,7 @@
     "modal_contact_desc": "Kuruluşunuz için özel teklif alın.",
     "form_name": "Ad Soyad",
     "form_email": "E-posta Adresi",
-    "form_company": "Şirket",
+    "form_company": "Şirket (İsteğe bağlı)",
     "form_message": "Mesaj",
     "form_submit_demo": "Demo Planla",
     "form_submit_contact": "Mesaj Gönder",
@@ -136,5 +136,14 @@
     "benefit_2" : "Tartu'ya taşınma desteği",
     "benefit_3" : "Esnek uzaktan çalışma politikası",
     "benefit_4" : "Modern teknoloji yığını ve donanımı",
-    "legal_subtitle" : "SkyGuardian'da verilerinizi nasıl koruyor ve yönetiyoruz?"
+    "legal_subtitle" : "SkyGuardian'da verilerinizi nasıl koruyor ve yönetiyoruz?",
+    "error_title" : "Hava sahasında mı kayboldunuz?",
+    "error_desc" : "Aradığınız koordinatlar mevcut değil. Bu sayfa taşınmış veya kullanımdan kaldırılmış olabilir.",
+    "error_btn_home" : "Ana sayfaya geri dön",
+    "error_btn_contact" : "Sorun Bildir",
+    "form_sending" : "Gönderiliyor...",
+    "form_message_send" : "Mesaj başarıyla gönderildi.",
+    "form_demo_send" : "Demo talebiniz alındı. Kısa süre içinde sizinle iletişime geçeceğiz.",
+    "form_verifying" : "Doğrulanıyor...",
+    "career_message" : "Başvuru başarıyla gönderildi!"
 }
