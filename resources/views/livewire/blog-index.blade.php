@@ -48,7 +48,7 @@
         </div>
 
         <div class="pagination-container">
-            {{ $posts->links() }}
+            {{ $posts->links('vendor.pagination.custom') }}
         </div>
     </div>
     @livewire('partials.contact')
