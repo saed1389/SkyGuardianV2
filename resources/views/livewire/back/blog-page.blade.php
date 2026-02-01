@@ -4,11 +4,13 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
         <style>
-            .pagination { display: flex; padding-left: 0; list-style: none; border-radius: 0.375rem; }
-            .page-item.active .page-link { z-index: 3; color: #fff; background-color: #405189; border-color: #405189; }
-            .page-link { position: relative; display: block; color: #405189; text-decoration: none; background-color: #fff; border: 1px solid #dee2e6; padding: 0.375rem 0.75rem; margin-left: -1px; }
-            .page-link:hover { z-index: 2; color: #405189; background-color: #e9ecef; border-color: #dee2e6; }
-            .form-switch .form-check-input { width: 2.5em; height: 1.25em; cursor: pointer; }
+            .pagination-container { margin: 60px 0 100px; display: flex; justify-content: center; width: 100%; }
+            .custom-pagination { background: #ffffff; border-radius: 50px; padding: 8px 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid var(--gray-200); display: flex; align-items: center; gap: 8px; }
+            .page-item { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: transparent; border: none; font-family: inherit; font-weight: 700; font-size: 14px; color: var(--gray-500); cursor: pointer; transition: all 0.2s ease; }
+            .page-item:hover:not(.active):not(.disabled) { background: var(--gray-50); color: var(--black); transform: translateY(-2px); }
+            .page-item.active { background: var(--primary-blue); color: blue; box-shadow: 0 4px 12px rgba(0, 114, 206, 0.4); cursor: default; }
+            .page-item.disabled { opacity: 0.3; cursor: not-allowed; }
+            .page-item svg { width: 18px; height: 18px; stroke-width: 2.5px; }
         </style>
     @endpush
 
@@ -142,7 +144,7 @@
                                         </table>
                                     </div>
                                     <div class="mt-3">
-                                        {{ $blogs->links() }}
+                                        {{ $blogs->links('vendor.pagination.custom') }}
                                     </div>
                                 </div>
                             </div>

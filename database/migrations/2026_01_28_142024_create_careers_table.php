@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->text('referrer')->nullable();
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
     }

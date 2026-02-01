@@ -29,12 +29,12 @@
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarBlog" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
-                        <i class="ri-newspaper-fill"></i> <span data-key="t-users">Blog &nbsp; <span class="rounded"> {{ $blogCount ?? '' }}</span></span>
+                        <i class="ri-newspaper-fill"></i> <span data-key="t-blog">Blog &nbsp; <span class="rounded"> {{ $blogCount ?? '' }}</span></span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarBlog">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('admin.blog-list') }}" class="nav-link" data-key="t-user-list"> Blog List </a>
+                                <a href="{{ route('admin.blog-list') }}" class="nav-link" data-key="t-blog-list"> Blog List </a>
                             </li>
                         </ul>
                     </div>
@@ -42,20 +42,40 @@
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarPartners" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
-                        <i class="ri-user-2-fill"></i> <span data-key="t-users">Partners</span>
+                        <i class="ri-user-2-fill"></i> <span data-key="t-partners">Partners</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarPartners">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('admin.partners-list') }}" class="nav-link" data-key="t-user-list"> Partners List </a>
+                                <a href="{{ route('admin.partners-list') }}" class="nav-link" data-key="t-partner-list"> Partners List </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="#sidebarMessage" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
+                        <i class="ri-message-2-fill"></i> <span data-key="t-message">Messages</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarMessage">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('admin.messages.contact-message') }}" class="nav-link" data-key="t-contact-message"> Contact Messages </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.messages.request-demo') }}" class="nav-link" data-key="t-request-demo"> Request a Demo </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.messages.contact-sales') }}" class="nav-link" data-key="t-contact-sales"> Contact Sales </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.messages.careers') }}" class="nav-link" data-key="t-careers"> Careers </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarSetting" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarAuth">
-                        <i class="ri-settings-2-fill"></i> <span data-key="t-users">Setting</span>
+                        <i class="ri-settings-2-fill"></i> <span data-key="t-setting">Setting</span>
                     </a>
                     <div class="collapse menu-dropdown" id="sidebarSetting">
                         <ul class="nav nav-sm flex-column">
