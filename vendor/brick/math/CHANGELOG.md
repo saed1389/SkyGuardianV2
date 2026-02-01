@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.14.3](https://github.com/brick/math/releases/tag/0.14.3) - 2026-02-01
+
+✨ **New features**
+
+- New method: `BigInteger::lcm()`
+- New method: `BigInteger::lcmAll()`
+- New method: `BigRational::toRepeatingDecimalString()`
+
+🐛 **Bug fixes**
+
+- `BigInteger::gcdAll()` / `gcdMultiple()` could return a negative result when used with a single negative number
+
 ## [0.14.2](https://github.com/brick/math/releases/tag/0.14.2) - 2026-01-30
 
 🗑️ **Deprecations**
