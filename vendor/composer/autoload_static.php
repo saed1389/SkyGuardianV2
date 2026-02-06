@@ -826,6 +826,7 @@ class ComposerStaticInitc514d8f7b9fc5970bdd94287905ef584
         'App\\Models\\SkyguardianCorridors' => __DIR__ . '/../..' . '/app/Models/SkyguardianCorridors.php',
         'App\\Models\\SkyguardianErrors' => __DIR__ . '/../..' . '/app/Models/SkyguardianErrors.php',
         'App\\Models\\SkyguardianFlights' => __DIR__ . '/../..' . '/app/Models/SkyguardianFlights.php',
+        'App\\Models\\SkyguardianNatoReports' => __DIR__ . '/../..' . '/app/Models/SkyguardianNatoReports.php',
         'App\\Models\\SkyguardianPositions' => __DIR__ . '/../..' . '/app/Models/SkyguardianPositions.php',
         'App\\Models\\SkyguardianStatistics' => __DIR__ . '/../..' . '/app/Models/SkyguardianStatistics.php',
         'App\\Models\\SkyguardianWeather' => __DIR__ . '/../..' . '/app/Models/SkyguardianWeather.php',

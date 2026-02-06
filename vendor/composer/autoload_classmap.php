@@ -80,6 +80,7 @@ return array(
     'App\\Models\\SkyguardianCorridors' => $baseDir . '/app/Models/SkyguardianCorridors.php',
     'App\\Models\\SkyguardianErrors' => $baseDir . '/app/Models/SkyguardianErrors.php',
     'App\\Models\\SkyguardianFlights' => $baseDir . '/app/Models/SkyguardianFlights.php',
+    'App\\Models\\SkyguardianNatoReports' => $baseDir . '/app/Models/SkyguardianNatoReports.php',
     'App\\Models\\SkyguardianPositions' => $baseDir . '/app/Models/SkyguardianPositions.php',
     'App\\Models\\SkyguardianStatistics' => $baseDir . '/app/Models/SkyguardianStatistics.php',
     'App\\Models\\SkyguardianWeather' => $baseDir . '/app/Models/SkyguardianWeather.php',

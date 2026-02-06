@@ -7,7 +7,7 @@
                     "item": [
                         {
                             "mode": "everyX",
-                            "value": 1,
+                            "value": 30,
                             "unit": "minutes"
                         }
                     ]
@@ -17,10 +17,10 @@
             "type": "n8n-nodes-base.cron",
             "typeVersion": 1,
             "position": [
-                102496,
-                16928
+                109040,
+                17696
             ],
-            "id": "ff3da627-dcc7-4c7f-a128-d8d498add93b"
+            "id": "ab0598c8-724a-4871-98ab-dc480323cd6b"
         },
         {
             "parameters": {
@@ -33,26 +33,27 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                102736,
-                16768
+                109280,
+                17536
             ],
-            "id": "3de54972-67b9-48b6-a748-deb94213ca57"
+            "id": "c50f848e-5be8-4388-b54a-0dcb408b368a"
         },
         {
             "parameters": {
-                "url": "http://10.141.75.49:5000/scan-result",
+                "url": "https://lifelong-tanya-lifelessly.ngrok-free.dev/scan-result",
                 "options": {
-                    "timeout": 15000
+                    "timeout": 500000
                 }
             },
             "name": "Raspberry Pi - RF Scan",
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                102700,
-                17500
+                109280,
+                18304
             ],
-            "id": "rpi-rf-scan-node"
+            "id": "72cd0e24-67ec-4cbd-8e93-f07c1e634bde",
+            "disabled": true
         },
         {
             "parameters": {
@@ -65,10 +66,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                102736,
-                16928
+                109280,
+                17696
             ],
-            "id": "2dc1ef92-fcb5-4b4c-97fa-68cf75003105"
+            "id": "a88bd2b8-909c-4a92-ad9a-57853588fd9d"
         },
         {
             "parameters": {
@@ -81,10 +82,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                102736,
-                17120
+                109280,
+                17888
             ],
-            "id": "ac574918-fe23-433c-9c3b-e1a760bed693"
+            "id": "f87e57dd-39d9-4875-a389-98f9a87ecc2a"
         },
         {
             "parameters": {
@@ -97,101 +98,101 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                102736,
-                17312
+                109280,
+                18080
             ],
-            "id": "f38b4e3e-ede0-46c5-957d-47689a04ce1f"
+            "id": "5d2a23f4-aa4d-43e1-8d35-6cc5758a9a46"
         },
         {
             "parameters": {
-                "functionCode": "// Error handling for failed API calls\nconst items = $input.all();\nconst errorItems = [];\nconst successfulItems = [];\n\nitems.forEach((item, index) => {\n  if (item.json.error) {\n    errorItems.push({\n      source: ['ADSB.lol Local', 'ADSB.lol Military', 'OpenSky Local', 'OpenSky Global'][index],\n      error: item.json.error,\n      timestamp: new Date().toISOString()\n    });\n  } else if (item.json) {\n    successfulItems.push(item);\n  }\n});\n\nconst workflowData = $workflow.staticData || {};\nif (!workflowData.apiErrors) workflowData.apiErrors = [];\nif (errorItems.length > 0) {\n  workflowData.apiErrors.push(...errorItems);\n  if (workflowData.apiErrors.length > 100) {\n    workflowData.apiErrors = workflowData.apiErrors.slice(-100);\n  }\n}\n\nif (successfulItems.length === 0) {\n  return [{\n    json: {\n      error: 'All API calls failed',\n      timestamp: new Date().toISOString(),\n      requires_retry: true\n    }\n  }];\n}\n\nreturn successfulItems;"
+                "functionCode": "const items = $input.all();\nconst errorItems = [];\nconst successfulItems = [];\n\nitems.forEach((item, index) => {\n  if (item.json.error) {\n    errorItems.push({\n      source: ['ADSB.lol Local', 'ADSB.lol Military', 'OpenSky Local', 'OpenSky Global'][index],\n      error: item.json.error,\n      timestamp: new Date().toISOString()\n    });\n  } else if (item.json) {\n    successfulItems.push(item);\n  }\n});\n\nconst workflowData = $workflow.staticData || {};\nif (!workflowData.apiErrors) workflowData.apiErrors = [];\nif (errorItems.length > 0) {\n  workflowData.apiErrors.push(...errorItems);\n  \n  if (workflowData.apiErrors.length > 100) {\n    workflowData.apiErrors = workflowData.apiErrors.slice(-100);\n  }\n}\n\nif (successfulItems.length === 0) {\n  return [{\n    json: {\n      error: 'All API calls failed',\n      timestamp: new Date().toISOString(),\n      requires_retry: true\n    }\n  }];\n}\n\nreturn successfulItems;"
             },
             "name": "Error Handler & Validation",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103344,
-                16928
+                109888,
+                17712
             ],
-            "id": "0d996cea-c47e-46c2-b5e2-af9f7f4e3425"
+            "id": "bdbe1b24-61a0-4577-9dd1-b59ab0fb84ca"
         },
         {
             "parameters": {
-                "functionCode": "// SKYGUARDIAN - DEDUPLICATE & ENRICH (FINAL VERSION)\nconst items = $input.all();\nconst aircraftMap = new Map();\nconst confirmedMilitarySet = new Set();\nconst now = new Date();\n\nconst ESTONIA_BOUNDS = { latMin: 57.5, latMax: 60.0, lonMin: 21.5, lonMax: 28.5 };\nconst MILITARY_TYPE_CODES = new Set(['F16', 'F15', 'F35', 'SU27', 'SU57', 'MIG29', 'C130', 'C17', 'A400', 'IL76', 'UH60', 'AH64', 'MI24', 'E3', 'MQ9']);\n\nfunction isMilitaryAircraft(ac) {\n  const typeCode = (ac.t || ac.type || '').toUpperCase().trim();\n  const hex = (ac.hex || '').toLowerCase();\n  if (typeCode && MILITARY_TYPE_CODES.has(typeCode)) return true;\n  if (hex.startsWith('ae') || hex.startsWith('af')) return true;\n  if (hex.startsWith('15') && !typeCode.includes('A3') && !typeCode.includes('B7')) return true;\n  return false;\n}\n\n// Processing logic simplified for brevity - retains original logic\n// ... (Original logic for ADSB, OpenSky processing goes here)\n// Assuming full logic from previous prompt resides here\n\nreturn [{\n  json: {\n    uniqueAircraft: [], // Placeholder for full logic\n    stats: {}, \n    timestamp: now.toISOString()\n  }\n}];"
+                "functionCode": "// ============================================================================\n// SKYGUARDIAN - DEDUPLICATE & ENRICH (FINAL 2026 VERSION)\n// Russian hex 15 fix + callsign + confidence + drone support + Estonia focus\n// ============================================================================\n\nconst items = $input.all();\nconst aircraftMap = new Map();\nconst confirmedMilitarySet = new Set();\nconst now = new Date();\n\n// Configuration\nconst ESTONIA_BOUNDS = {\n  latMin: 57.5, latMax: 60.0,\n  lonMin: 21.5, lonMax: 28.5\n};\n\nconst SENSITIVE_LOCATIONS = [\n  { name: 'Tallinn Airport', lat: 59.4133, lon: 24.8328, radius: 5 },\n  { name: 'Ämari Air Base', lat: 59.2603, lon: 24.2084, radius: 10 },\n  { name: 'Paldiski Port', lat: 59.3567, lon: 24.0531, radius: 8 },\n  { name: 'Government District', lat: 59.4361, lon: 24.7453, radius: 3 },\n  { name: 'NATO HQ Tallinn', lat: 59.4308, lon: 24.7714, radius: 2 },\n  { name: 'Narva Border', lat: 59.3789, lon: 28.2019, radius: 15 }\n];\n\n// Military type codes\nconst MILITARY_TYPE_CODES = new Set([\n  'F16', 'F15', 'F18', 'F22', 'F35', 'SU27', 'SU30', 'SU35', 'SU57',\n  'MIG29', 'MIG31', 'MIG35', 'EUFI', 'GRIF', 'RFAL', 'J10', 'J20',\n  'B52', 'B1', 'B2', 'TU95', 'TU22', 'TU160',\n  'C130', 'C17', 'C5', 'A400', 'IL76', 'AN124', 'AN26', 'CN35', 'C295',\n  'KC135', 'KC10', 'KC46', 'A310', 'IL78',\n  'H60', 'UH60', 'AH64', 'CH47', 'CH53', 'MI8', 'MI17', 'MI24', 'MI26', 'MI28',\n  'NH90', 'EC725', 'AW101', 'AW139',\n  'E3', 'E3CF', 'E3TF', 'E2', 'P3', 'P8', 'RC135', 'U2', 'RQ4', 'MQ9',\n  'T38', 'T6', 'HAWK', 'MB339', 'L39', 'YK52'\n]);\n\n// Civilian type codes (expanded Russian civilian)\nconst CIVILIAN_TYPE_CODES = new Set([\n  'A318', 'A319', 'A320', 'A321', 'A20N', 'A21N', 'A332', 'A333', 'A338', 'A339',\n  'A342', 'A343', 'A345', 'A346', 'A359', 'A35K', 'A388',\n  'B737', 'B738', 'B739', 'B38M', 'B39M', 'B733', 'B734', 'B735', 'B736',\n  'B752', 'B753', 'B762', 'B763', 'B764', 'B772', 'B773', 'B77L', 'B77W', 'B788',\n  'B789', 'B78X', 'B748', 'B74S',\n  'E190', 'E195', 'E290', 'E295', 'E170', 'E175',\n  'CRJ2', 'CRJ7', 'CRJ9', 'CRJX',\n  'A220', 'BCS1', 'BCS3', 'CS100', 'CS300',\n  'AT72', 'AT75', 'AT76', 'DH8A', 'DH8B', 'DH8C', 'DH8D', 'DHC6', 'DHC8',\n  'SF34', 'SB20',\n  'GLF4', 'GLF5', 'GLF6', 'G280', 'GALX', 'C25A', 'C25B', 'C25C', 'C56X',\n  'C680', 'C700', 'C750', 'FA50', 'FA7X', 'FA8X',\n  'E135', 'E145', 'E35L', 'E550', 'E55P', 'PC12', 'PC24', 'TBM9',\n  'B744', 'B74F', 'MD11', 'A306', 'DC10',\n  'C208', 'C210', 'C172', 'C182', 'PA28', 'PA31', 'PA34', 'PA46', 'SR20', 'SR22',\n  'BE20', 'BE36', 'BE58',\n  'SU95', 'SU9', 'TU204', 'TU214', 'TU334', 'IL96', 'IL62', 'IL114', 'AN148', 'AN158',\n  'YAK40', 'YAK42'\n]);\n\n// Russian civilian callsign prefixes\nconst RUSSIAN_CIVIL_CALLSIGNS = /^(SU|S7|U6|UT|FV|N4|DP|WZ|KO|UN|AF|AY|BT|EV|HY|IO|JU|KC|LO|LY|PS|PZ|SU|TK|UL|UN|UT|UZ|W6|WZ|XC|XF|XL|XP|XS|XT|XY|XZ|YA|YB|YC|YD|YE|YF|YG|YH|YI|YJ|YK|YL|YM|YN|YO|YP|YQ|YR|YS|YT|YU|YV|YW|YX|YY|YZ|Z6|Z7|Z8|Z9)/i;\n\n// Military squawk codes\nconst MILITARY_SQUAWK_CODES = new Set(['0001', '0002', '0003', '0004', '0005', '0006', '0007', '4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '7777']);\n\n// Helper functions\nfunction calculateDistance(lat1, lon1, lat2, lon2) {\n  if (!lat1 || !lon1 || !lat2 || !lon2) return null;\n  const R = 6371;\n  const dLat = (lat2 - lat1) * Math.PI / 180;\n  const dLon = (lon2 - lon1) * Math.PI / 180;\n  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +\n            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *\n            Math.sin(dLon/2) * Math.sin(dLon/2);\n  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\n  return R * c;\n}\n\nfunction isInEstonia(lat, lon) {\n  if (!lat || !lon) return false;\n  return lat >= ESTONIA_BOUNDS.latMin && lat <= ESTONIA_BOUNDS.latMax &&\n         lon >= ESTONIA_BOUNDS.lonMin && lon <= ESTONIA_BOUNDS.lonMax;\n}\n\nfunction checkSensitiveLocation(lat, lon) {\n  if (!lat || !lon) return null;\n  for (const loc of SENSITIVE_LOCATIONS) {\n    const distance = calculateDistance(lat, lon, loc.lat, loc.lon);\n    if (distance !== null && distance <= loc.radius) {\n      return { name: loc.name, distance: Math.round(distance * 10) / 10 };\n    }\n  }\n  return null;\n}\n\nfunction getAltitudeLayer(altitude) {\n  if (!altitude) return 'unknown';\n  if (altitude < 3000) return 'low';\n  if (altitude < 10000) return 'medium';\n  if (altitude <= 50000) return 'high';\n  return 'above';\n}\n\n// Military detection function\nfunction isMilitaryAircraft(ac) {\n  const typeCode = (ac.t || ac.type || '').toUpperCase().trim();\n  const hex = (ac.hex || '').toLowerCase();\n  const squawk = ac.squawk || '';\n  const callsign = (ac.flight || '').toUpperCase();\n\n  // 1. Known civilian type → not military\n  if (typeCode && CIVILIAN_TYPE_CODES.has(typeCode)) {\n    return false;\n  }\n\n  // 2. Known military type → military\n  if (typeCode && MILITARY_TYPE_CODES.has(typeCode)) {\n    return true;\n  }\n\n  // 3. Military squawk → military\n  if (MILITARY_SQUAWK_CODES.has(squawk)) {\n    return true;\n  }\n\n  // 4. US/NATO hex → military\n  if (hex.startsWith('ae') || hex.startsWith('af') || hex.startsWith('a0') || hex.startsWith('a1')) {\n    return true;\n  }\n\n  // 5. Russian hex 15 – advanced filter\n  if (hex.startsWith('15')) {\n    if (callsign && RUSSIAN_CIVIL_CALLSIGNS.test(callsign)) {\n      return false; // Russian civilian airline\n    }\n    // If type code is civilian-like → civilian\n    if (typeCode && (CIVILIAN_TYPE_CODES.has(typeCode) || typeCode.includes('A3') || typeCode.includes('B7'))) {\n      return false;\n    }\n    // Default safety → military\n    return true;\n  }\n\n  // Default: not military\n  return false;\n}\n\n// Processing military feed\nif (items[1] && items[1].json?.ac) {\n  items[1].json.ac.forEach(ac => {\n    if (ac.hex && ac.lat && ac.lon && isInEstonia(ac.lat, ac.lon)) {\n      const hexLower = ac.hex.toLowerCase();\n      if (isMilitaryAircraft(ac)) {\n        confirmedMilitarySet.add(hexLower);\n        aircraftMap.set(hexLower, {\n          ...ac,\n          source: 'ADSB.lol Military (Validated)',\n          type: 'military',\n          timestamp: now.toISOString(),\n          isInEstonia: true,\n          nearSensitive: checkSensitiveLocation(ac.lat, ac.lon),\n          altitudeLayer: getAltitudeLayer(ac.alt_baro),\n          military_confidence: 'high'\n        });\n      }\n    }\n  });\n}\n\n// Local ADSB processing\nif (items[0] && items[0].json?.ac) {\n  items[0].json.ac.forEach(ac => {\n    if (!ac.hex || !ac.lat || !ac.lon || !isInEstonia(ac.lat, ac.lon)) return;\n    const hexLower = ac.hex.toLowerCase();\n    const isConfirmedMilitary = confirmedMilitarySet.has(hexLower);\n    const detectedAsMilitary = isMilitaryAircraft(ac);\n    const finalType = (isConfirmedMilitary || detectedAsMilitary) ? 'military' : 'civil';\n\n    const existing = aircraftMap.get(hexLower);\n    if (!existing || (ac.pos && ac.pos > (existing.pos || 0))) {\n      aircraftMap.set(hexLower, {\n        ...ac,\n        source: 'ADSB.lol',\n        type: finalType,\n        nearSensitive: checkSensitiveLocation(ac.lat, ac.lon),\n        timestamp: now.toISOString(),\n        isInEstonia: true,\n        altitudeLayer: getAltitudeLayer(ac.alt_baro),\n        military_confidence: isConfirmedMilitary ? 'high' : detectedAsMilitary ? 'medium' : 'low'\n      });\n    }\n  });\n}\n\n// OpenSky local processing\nif (items[2] && items[2].json?.states) {\n  items[2].json.states.forEach(state => {\n    if (!state || !state[0]) return;\n    const icao24 = state[0];\n    const lat = state[6];\n    const lon = state[5];\n    if (!lat || !lon || !isInEstonia(lat, lon)) return;\n\n    const hexLower = icao24.toLowerCase();\n    const isConfirmedMilitary = confirmedMilitarySet.has(hexLower);\n\n    if (!aircraftMap.has(hexLower)) {\n      const acData = {\n        hex: icao24,\n        lat,\n        lon,\n        alt_baro: state[7],\n        gs: state[9],\n        track: state[10],\n        squawk: state[14]\n      };\n      const detectedAsMilitary = isMilitaryAircraft(acData);\n      const finalType = (isConfirmedMilitary || detectedAsMilitary) ? 'military' : 'civil';\n\n      aircraftMap.set(hexLower, {\n        ...acData,\n        source: 'OpenSky',\n        type: finalType,\n        nearSensitive: checkSensitiveLocation(lat, lon),\n        timestamp: now.toISOString(),\n        isInEstonia: true,\n        altitudeLayer: getAltitudeLayer(state[7]),\n        military_confidence: isConfirmedMilitary ? 'high' : detectedAsMilitary ? 'medium' : 'low'\n      });\n    }\n  });\n}\n\n// OpenSky global processing (approaching)\nif (items[3] && items[3].json?.states) {\n  const TALLINN_LAT = 59.42;\n  const TALLINN_LON = 24.83;\n  items[3].json.states.forEach(state => {\n    if (!state || !state[0]) return;\n    const icao24 = state[0];\n    const lat = state[6];\n    const lon = state[5];\n    if (!lat || !lon) return;\n\n    const distanceToTallinn = calculateDistance(lat, lon, TALLINN_LAT, TALLINN_LON);\n    if (!distanceToTallinn || distanceToTallinn > 200) return;\n\n    const hexLower = icao24.toLowerCase();\n    const isConfirmedMilitary = confirmedMilitarySet.has(hexLower);\n    const inEstonia = isInEstonia(lat, lon);\n\n    if (!aircraftMap.has(hexLower)) {\n      const acData = {\n        hex: icao24,\n        lat,\n        lon,\n        alt_baro: state[7],\n        gs: state[9],\n        track: state[10],\n        squawk: state[14]\n      };\n      const detectedAsMilitary = isMilitaryAircraft(acData);\n      const finalType = (isConfirmedMilitary || detectedAsMilitary) ? 'military' : 'civil';\n\n      aircraftMap.set(hexLower, {\n        ...acData,\n        source: 'OpenSky Global',\n        type: finalType,\n        nearSensitive: inEstonia ? checkSensitiveLocation(lat, lon) : null,\n        timestamp: now.toISOString(),\n        isInEstonia: inEstonia,\n        approaching_estonia: !inEstonia && distanceToTallinn < 100,\n        distance_from_tallinn: Math.round(distanceToTallinn),\n        altitudeLayer: getAltitudeLayer(state[7]),\n        military_confidence: isConfirmedMilitary ? 'high' : detectedAsMilitary ? 'medium' : 'low'\n      });\n    }\n  });\n}\n\n// Final stats\nconst allAircraft = Array.from(aircraftMap.values());\nconst estoniaAircraft = allAircraft.filter(a => a.isInEstonia);\nconst approachingAircraft = allAircraft.filter(a => a.approaching_estonia);\n\nconst stats = {\n  total: estoniaAircraft.length,\n  military: estoniaAircraft.filter(a => a.type === 'military').length,\n  civil: estoniaAircraft.filter(a => a.type === 'civil').length,\n  drones: estoniaAircraft.filter(a => a.type === 'drone').length,\n  nearSensitive: estoniaAircraft.filter(a => a.nearSensitive).length,\n  highSpeed: estoniaAircraft.filter(a => a.gs && a.gs > 800).length,\n  lowAltitude: estoniaAircraft.filter(a => a.alt_baro && a.alt_baro < 1000).length,\n  approaching: approachingAircraft.length,\n  byAltitude: {\n    low: estoniaAircraft.filter(a => a.altitudeLayer === 'low').length,\n    medium: estoniaAircraft.filter(a => a.altitudeLayer === 'medium').length,\n    high: estoniaAircraft.filter(a => a.altitudeLayer === 'high').length\n  },\n  bySource: {\n    'ADSB.lol': estoniaAircraft.filter(a => a.source?.includes('ADSB')).length,\n    'OpenSky': estoniaAircraft.filter(a => a.source?.includes('OpenSky')).length\n  },\n  classification_confidence: {\n    high: estoniaAircraft.filter(a => a.military_confidence === 'high').length,\n    medium: estoniaAircraft.filter(a => a.military_confidence === 'medium').length,\n    low: estoniaAircraft.filter(a => a.military_confidence === 'low').length\n  }\n};\n\nconst totalRawData = (items[0]?.json?.ac?.length || 0) + (items[2]?.json?.states?.length || 0);\nconst deduplicationRate = totalRawData > 0 ? ((totalRawData - stats.total) / totalRawData * 100).toFixed(1) : 0;\n\nreturn [{\n  json: {\n    uniqueAircraft: estoniaAircraft,\n    approachingAircraft,\n    stats,\n    timestamp: now.toISOString(),\n    sources: ['ADSB.lol Local', 'ADSB.lol Military (Validated)', 'OpenSky Local', 'OpenSky Global'],\n    deduplication_rate: parseFloat(deduplicationRate),\n    processing_metrics: {\n      total_raw_aircraft: totalRawData,\n      deduplicated_count: stats.total,\n      confirmed_military: confirmedMilitarySet.size,\n      processing_time_ms: Date.now() - now.getTime(),\n      classification_method: 'Multi-criteria validation with Russian civilian aircraft fix'\n    }\n  }\n}];"
             },
             "name": "Deduplicate & Enrich",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103312,
-                17360
+                109856,
+                18128
             ],
-            "id": "90dcdc10-8849-4058-88f5-807b2a7e88c6"
+            "id": "706857d2-3ff9-4e82-9092-41c5105cf7d2"
         },
         {
             "parameters": {
-                "functionCode": "// ESTONIAN AIRSPACE TRACKING & CROSSING DETECTION\n// ... (Retains original logic from previous prompt)\nreturn $input.all();"
+                "functionCode": "// Track ALL aircraft crossing Estonian airspace with duplicate protection\nconst input = $input.first().json;\nconst uniqueAircraft = input.uniqueAircraft || [];\nconst now = new Date();\n\n// Get or initialize workflow data for comprehensive tracking\nlet workflowData = $workflow.staticData || {};\n\n// Initialize tracking structures if they don't exist\nif (!workflowData.estoniaAirspaceRegistry) workflowData.estoniaAirspaceRegistry = {};\nif (!workflowData.completedFlights) workflowData.completedFlights = [];\nif (!workflowData.activeCrossings) workflowData.activeCrossings = {};\nif (!workflowData.dailyStats) workflowData.dailyStats = {\n  date: new Date().toISOString().split('T')[0],\n  totalCrossings: 0,\n  militaryCrossings: 0,\n  droneCrossings: 0,\n  civilCrossings: 0,\n  uniqueAircraft: new Set()\n};\n\n// ESTONIA AIRSPACE DEFINITION (with buffer zone)\nconst ESTONIA_AIRSPACE = {\n  name: \"Estonian Flight Information Region (FIR)\",\n  bounds: {\n    latMin: 57.3,    // Southern buffer\n    latMax: 60.2,    // Northern buffer (includes islands)\n    lonMin: 21.3,    // Western buffer\n    lonMax: 28.7     // Eastern buffer\n  },\n  entryExitBuffer: 50, // km buffer for entry/exit detection\n  altitudeLayers: {\n    low: { min: 0, max: 3000 },      // Low altitude (GA, helicopters)\n    medium: { min: 3000, max: 10000 }, // Medium altitude (regional)\n    high: { min: 10000, max: 50000 }   // High altitude (commercial)\n  }\n};\n\n// Major airports and waypoints in/around Estonia\nconst AIRSPACE_WAYPOINTS = {\n  // Estonian Airports\n  \"TLL\": { name: \"Tallinn Airport (Lennart Meri)\", lat: 59.4133, lon: 24.8328, type: \"major\", country: \"EE\" },\n  \"TAY\": { name: \"Tartu Airport\", lat: 58.3075, lon: 26.6900, type: \"regional\", country: \"EE\" },\n  \"URE\": { name: \"Kuressaare Airport\", lat: 58.2299, lon: 22.5095, type: \"regional\", country: \"EE\" },\n  \"KDL\": { name: \"Kärdla Airport\", lat: 58.9908, lon: 22.8307, type: \"regional\", country: \"EE\" },\n  \"EPU\": { name: \"Pärnu Airport\", lat: 58.4190, lon: 24.4728, type: \"regional\", country: \"EE\" },\n  \"EMI\": { name: \"Ämari Air Base\", lat: 59.2603, lon: 24.2084, type: \"military\", country: \"EE\" },\n  \n  // Nearby International Airports\n  \"RIX\": { name: \"Riga International Airport\", lat: 56.9236, lon: 23.9711, type: \"major\", country: \"LV\" },\n  \"HEL\": { name: \"Helsinki Airport\", lat: 60.3172, lon: 24.9633, type: \"major\", country: \"FI\" },\n  \"LED\": { name: \"Pulkovo Airport (St. Petersburg)\", lat: 59.8000, lon: 30.2625, type: \"major\", country: \"RU\" },\n  \"ARN\": { name: \"Stockholm Arlanda\", lat: 59.6519, lon: 17.9186, type: \"major\", country: \"SE\" },\n  \n  // Border Crossing Points\n  \"EST-RUS-BORDER\": { name: \"Estonia-Russia Border\", lat: 59.3789, lon: 28.2019, type: \"border\", country: \"EE/RU\" },\n  \"EST-LAT-BORDER\": { name: \"Estonia-Latvia Border\", lat: 57.7742, lon: 26.0453, type: \"border\", country: \"EE/LV\" },\n  \"EST-FIN-GULF\": { name: \"Gulf of Finland Crossing\", lat: 59.8, lon: 24.5, type: \"maritime\", country: \"EE/FI\" },\n  \n  // NATOs and Military Waypoints\n  \"NATO-TLL\": { name: \"NATO HQ Tallinn\", lat: 59.4308, lon: 24.7714, type: \"military\", country: \"EE\" },\n  \"TAPA\": { name: \"Tapa Army Base\", lat: 59.2606, lon: 25.9583, type: \"military\", country: \"EE\" },\n  \"PALDISKI\": { name: \"Paldiski Port\", lat: 59.3567, lon: 24.0531, type: \"port\", country: \"EE\" }\n};\n\n// Helper functions\nfunction calculateDistance(lat1, lon1, lat2, lon2) {\n  if (!lat1 || !lon1 || !lat2 || !lon2) return null;\n  const R = 6371;\n  const dLat = (lat2 - lat1) * Math.PI / 180;\n  const dLon = (lon2 - lon1) * Math.PI / 180;\n  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +\n            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *\n            Math.sin(dLon/2) * Math.sin(dLon/2);\n  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\n  return R * c;\n}\n\nfunction isInEstonianAirspace(lat, lon) {\n  if (!lat || !lon) return false;\n  return lat >= ESTONIA_AIRSPACE.bounds.latMin && \n         lat <= ESTONIA_AIRSPACE.bounds.latMax && \n         lon >= ESTONIA_AIRSPACE.bounds.lonMin && \n         lon <= ESTONIA_AIRSPACE.bounds.lonMax;\n}\n\nfunction getNearestWaypoint(lat, lon) {\n  if (!lat || !lon) return null;\n  \n  let nearest = null;\n  let minDistance = Infinity;\n  \n  for (const [code, waypoint] of Object.entries(AIRSPACE_WAYPOINTS)) {\n    const distance = calculateDistance(lat, lon, waypoint.lat, waypoint.lon);\n    if (distance !== null && distance < minDistance && distance < 50) { // Within 50km\n      minDistance = distance;\n      nearest = { ...waypoint, code, distance: Math.round(distance) };\n    }\n  }\n  \n  return nearest;\n}\n\nfunction getAltitudeLayer(altitude) {\n  if (!altitude) return \"unknown\";\n  const { low, medium, high } = ESTONIA_AIRSPACE.altitudeLayers;\n  \n  if (altitude < low.max) return \"low\";\n  if (altitude < medium.max) return \"medium\";\n  if (altitude <= high.max) return \"high\";\n  return \"above\";\n}\n\nfunction generateFlightId(hex, timestamp) {\n  const date = new Date(timestamp);\n  const dateStr = date.toISOString().split('T')[0].replace(/-/g, '');\n  const hour = date.getHours().toString().padStart(2, '0');\n  return `${hex}_${dateStr}_${hour}`;\n}\n\nfunction detectEntryExit(aircraft, history, currentTime) {\n  const hex = aircraft.hex.toLowerCase();\n  const currentInAirspace = isInEstonianAirspace(aircraft.lat, aircraft.lon);\n  \n  if (!history[hex]) {\n    history[hex] = {\n      firstSeen: currentTime,\n      lastSeen: currentTime,\n      lastPosition: { lat: aircraft.lat, lon: aircraft.lon, alt: aircraft.alt_baro },\n      inAirspace: currentInAirspace,\n      entryEvents: [],\n      exitEvents: [],\n      totalCrossings: 0,\n      flightSegments: []\n    };\n  }\n  \n  const record = history[hex];\n  const previousInAirspace = record.inAirspace;\n  record.lastSeen = currentTime;\n  record.lastPosition = { lat: aircraft.lat, lon: aircraft.lon, alt: aircraft.alt_baro };\n  \n  // Detect state change\n  if (!previousInAirspace && currentInAirspace) {\n    // ENTRY detected\n    const entryEvent = {\n      timestamp: currentTime,\n      location: { lat: aircraft.lat, lon: aircraft.lon },\n      altitude: aircraft.alt_baro || 0,\n      speed: aircraft.gs || 0,\n      heading: aircraft.track || 0,\n      nearestWaypoint: getNearestWaypoint(aircraft.lat, aircraft.lon),\n      flightId: generateFlightId(hex, currentTime)\n    };\n    \n    record.entryEvents.push(entryEvent);\n    record.inAirspace = true;\n    record.totalCrossings++;\n    \n    // Start new flight segment\n    record.flightSegments.push({\n      entry: entryEvent,\n      exit: null,\n      duration: 0,\n      maxAltitude: aircraft.alt_baro || 0,\n      minAltitude: aircraft.alt_baro || 0,\n      avgSpeed: aircraft.gs || 0,\n      points: [{...entryEvent.location, timestamp: currentTime, alt: aircraft.alt_baro }]\n    });\n    \n    return { type: \"ENTRY\", event: entryEvent };\n    \n  } else if (previousInAirspace && !currentInAirspace) {\n    // EXIT detected\n    const exitEvent = {\n      timestamp: currentTime,\n      location: { lat: aircraft.lat, lon: aircraft.lon },\n      altitude: aircraft.alt_baro || 0,\n      speed: aircraft.gs || 0,\n      heading: aircraft.track || 0,\n      nearestWaypoint: getNearestWaypoint(aircraft.lat, aircraft.lon)\n    };\n    \n    record.exitEvents.push(exitEvent);\n    record.inAirspace = false;\n    \n    // Complete the latest flight segment\n    if (record.flightSegments.length > 0) {\n      const currentSegment = record.flightSegments[record.flightSegments.length - 1];\n      if (!currentSegment.exit) {\n        currentSegment.exit = exitEvent;\n        currentSegment.duration = (new Date(exitEvent.timestamp) - new Date(currentSegment.entry.timestamp)) / 1000;\n        \n        // Calculate segment statistics\n        let totalSpeed = 0;\n        let pointCount = 0;\n        currentSegment.points.forEach(point => {\n          totalSpeed += point.speed || 0;\n          pointCount++;\n          if (point.alt > currentSegment.maxAltitude) currentSegment.maxAltitude = point.alt;\n          if (point.alt < currentSegment.minAltitude) currentSegment.minAltitude = point.alt;\n        });\n        currentSegment.avgSpeed = pointCount > 0 ? totalSpeed / pointCount : 0;\n        \n        // Store completed flight\n        const flightRecord = {\n          flightId: currentSegment.entry.flightId,\n          hex: hex,\n          callsign: aircraft.flight || \"N/A\",\n          type: aircraft.type || \"unknown\",\n          country: aircraft.country_of_origin || \"Unknown\",\n          entry: currentSegment.entry,\n          exit: currentSegment.exit,\n          duration: currentSegment.duration,\n          maxAltitude: currentSegment.maxAltitude,\n          minAltitude: currentSegment.minAltitude,\n          avgSpeed: Math.round(currentSegment.avgSpeed),\n          pointsCount: currentSegment.points.length,\n          timestamp: currentTime,\n          completed: true\n        };\n        \n        workflowData.completedFlights.push(flightRecord);\n        \n        // Keep only last 500 completed flights\n        if (workflowData.completedFlights.length > 500) {\n          workflowData.completedFlights = workflowData.completedFlights.slice(-500);\n        }\n      }\n    }\n    \n    return { type: \"EXIT\", event: exitEvent };\n    \n  } else if (currentInAirspace) {\n    // Update current flight segment with new point\n    if (record.flightSegments.length > 0) {\n      const currentSegment = record.flightSegments[record.flightSegments.length - 1];\n      if (!currentSegment.exit) {\n        currentSegment.points.push({\n          lat: aircraft.lat,\n          lon: aircraft.lon,\n          timestamp: currentTime,\n          alt: aircraft.alt_baro,\n          speed: aircraft.gs\n        });\n        \n        // Keep only last 100 points per segment\n        if (currentSegment.points.length > 100) {\n          currentSegment.points = currentSegment.points.slice(-100);\n        }\n      }\n    }\n  }\n  \n  return null;\n}\n\n// Update daily statistics\nfunction updateDailyStats(aircraft, entryExitEvent) {\n  const today = new Date().toISOString().split('T')[0];\n  \n  // Reset stats if it's a new day\n  if (workflowData.dailyStats.date !== today) {\n    workflowData.dailyStats = {\n      date: today,\n      totalCrossings: 0,\n      militaryCrossings: 0,\n      droneCrossings: 0,\n      civilCrossings: 0,\n      uniqueAircraft: new Set()\n    };\n  }\n  \n  const hex = aircraft.hex.toLowerCase();\n  \n  // Count unique aircraft\n  if (!workflowData.dailyStats.uniqueAircraft.has(hex)) {\n    workflowData.dailyStats.uniqueAircraft.add(hex);\n  }\n  \n  // Count crossings by type\n  if (entryExitEvent && entryExitEvent.type === \"ENTRY\") {\n    workflowData.dailyStats.totalCrossings++;\n    \n    if (aircraft.type === \"military\") {\n      workflowData.dailyStats.militaryCrossings++;\n    } else if (aircraft.type === \"drone\") {\n      workflowData.dailyStats.droneCrossings++;\n    } else {\n      workflowData.dailyStats.civilCrossings++;\n    }\n  }\n}\n\n// Process all aircraft\nconst processedAircraft = [];\nconst entryExitEvents = [];\nconst currentlyInAirspace = [];\n\nuniqueAircraft.forEach(ac => {\n  if (!ac.hex || !ac.lat || !ac.lon) return;\n  \n  const currentTime = now.toISOString();\n  const inAirspace = isInEstonianAirspace(ac.lat, ac.lon);\n  \n  // Detect entry/exit events\n  const event = detectEntryExit(ac, workflowData.estoniaAirspaceRegistry, currentTime);\n  if (event) {\n    entryExitEvents.push({\n      ...event,\n      aircraft: {\n        hex: ac.hex,\n        callsign: ac.flight || \"N/A\",\n        type: ac.type || \"unknown\",\n        country: ac.country_of_origin || \"Unknown\"\n      }\n    });\n    \n    // Update daily stats for entry events\n    if (event.type === \"ENTRY\") {\n      updateDailyStats(ac, event);\n    }\n  }\n  \n  // Add to currently in airspace list\n  if (inAirspace) {\n    currentlyInAirspace.push({\n      hex: ac.hex,\n      callsign: ac.flight || \"N/A\",\n      type: ac.type || \"unknown\",\n      country: ac.country_of_origin || \"Unknown\",\n      position: {\n        lat: ac.lat,\n        lon: ac.lon,\n        alt: ac.alt_baro || 0\n      },\n      speed: ac.gs || 0,\n      heading: ac.track || 0,\n      altitudeLayer: getAltitudeLayer(ac.alt_baro),\n      nearestWaypoint: getNearestWaypoint(ac.lat, ac.lon),\n      timestamp: currentTime\n    });\n  }\n  \n  // Enhanced tracking data\n  const enhancedAircraft = {\n    ...ac,\n    airspace_tracking: {\n      in_estonian_airspace: inAirspace,\n      altitude_layer: getAltitudeLayer(ac.alt_baro),\n      nearest_waypoint: getNearestWaypoint(ac.lat, ac.lon),\n      crossing_count: workflowData.estoniaAirspaceRegistry[ac.hex.toLowerCase()]?.totalCrossings || 0,\n      current_status: inAirspace ? \"IN_ESTONIA\" : \"NEARBY\"\n    }\n  };\n  \n  processedAircraft.push(enhancedAircraft);\n});\n\n// Clean old records (older than 48 hours)\nconst fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60000);\nObject.keys(workflowData.estoniaAirspaceRegistry).forEach(hex => {\n  const record = workflowData.estoniaAirspaceRegistry[hex];\n  if (new Date(record.lastSeen) < fortyEightHoursAgo) {\n    delete workflowData.estoniaAirspaceRegistry[hex];\n  }\n});\n\n// Update active crossings\nworkflowData.activeCrossings = currentlyInAirspace.reduce((acc, aircraft) => {\n  acc[aircraft.hex] = aircraft;\n  return acc;\n}, {});\n\n// Calculate comprehensive statistics\nconst trackingStats = {\n  airspace: {\n    total_aircraft_tracked: Object.keys(workflowData.estoniaAirspaceRegistry).length,\n    currently_in_airspace: currentlyInAirspace.length,\n    active_crossings: Object.keys(workflowData.activeCrossings).length,\n    airspace_bounds: ESTONIA_AIRSPACE.bounds\n  },\n  \n  daily: {\n    date: workflowData.dailyStats.date,\n    unique_aircraft: workflowData.dailyStats.uniqueAircraft.size,\n    total_crossings: workflowData.dailyStats.totalCrossings,\n    military_crossings: workflowData.dailyStats.militaryCrossings,\n    drone_crossings: workflowData.dailyStats.droneCrossings,\n    civil_crossings: workflowData.dailyStats.civilCrossings\n  },\n  \n  historical: {\n    completed_flights: workflowData.completedFlights.length,\n    recent_crossings: entryExitEvents.length,\n    avg_crossings_per_aircraft: Object.values(workflowData.estoniaAirspaceRegistry).length > 0 ? \n      Object.values(workflowData.estoniaAirspaceRegistry)\n        .reduce((sum, r) => sum + r.totalCrossings, 0) / \n      Object.values(workflowData.estoniaAirspaceRegistry).length : 0\n  },\n  \n  current_composition: {\n    by_type: currentlyInAirspace.reduce((acc, a) => {\n      acc[a.type] = (acc[a.type] || 0) + 1;\n      return acc;\n    }, {}),\n    by_country: currentlyInAirspace.reduce((acc, a) => {\n      acc[a.country] = (acc[a.country] || 0) + 1;\n      return acc;\n    }, {}),\n    by_altitude: currentlyInAirspace.reduce((acc, a) => {\n      const layer = a.altitudeLayer || \"unknown\";\n      acc[layer] = (acc[layer] || 0) + 1;\n      return acc;\n    }, {})\n  }\n};\n\n// Generate flight corridor analysis\nconst flightCorridors = {\n  \"North-South\": currentlyInAirspace.filter(a => \n    a.heading > 150 && a.heading < 210 || a.heading < 30 || a.heading > 330\n  ).length,\n  \"East-West\": currentlyInAirspace.filter(a => \n    a.heading > 60 && a.heading < 120 || a.heading > 240 && a.heading < 300\n  ).length,\n  \"NE-SW\": currentlyInAirspace.filter(a => \n    a.heading > 30 && a.heading < 60 || a.heading > 210 && a.heading < 240\n  ).length,\n  \"NW-SE\": currentlyInAirspace.filter(a => \n    a.heading > 120 && a.heading < 150 || a.heading > 300 && a.heading < 330\n  ).length\n};\n\n// Save workflow data\n$workflow.staticData = workflowData;\n\nreturn [{\n  json: {\n    ...input,\n    uniqueAircraft: processedAircraft,\n    estonia_airspace_tracking: {\n      timestamp: now.toISOString(),\n      stats: trackingStats,\n      currently_in_airspace: currentlyInAirspace,\n      active_crossings: Object.values(workflowData.activeCrossings),\n      recent_entry_exit_events: entryExitEvents,\n      flight_corridors: flightCorridors,\n      airspace_definition: ESTONIA_AIRSPACE,\n      waypoints: AIRSPACE_WAYPOINTS\n    },\n    monitoring_summary: {\n      total_aircraft_monitored: uniqueAircraft.length,\n      in_estonia_now: currentlyInAirspace.length,\n      entry_exit_events: entryExitEvents.length,\n      memory_usage: {\n        aircraft_registry: Object.keys(workflowData.estoniaAirspaceRegistry).length,\n        completed_flights: workflowData.completedFlights.length,\n        active_crossings: Object.keys(workflowData.activeCrossings).length\n      },\n      coverage_percentage: uniqueAircraft.length > 0 ? \n        (currentlyInAirspace.length / uniqueAircraft.length * 100).toFixed(1) + \"%\" : \"0%\"\n    }\n  }\n}];"
             },
             "name": "Estonian Airspace Tracking",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103584,
-                17360
+                110128,
+                18128
             ],
-            "id": "ba224b65-5eb2-4c1d-b9bd-0b11d01f6fd2"
+            "id": "cd2d604f-d4c1-41ec-962f-ca7df1704612"
         },
         {
             "parameters": {
-                "functionCode": "// AIRCRAFT DATABASE ENRICHMENT\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Enhanced aircraft database enrichment\nconst input = $input.first().json;\nconst uniqueAircraft = input.uniqueAircraft || [];\n\n// Comprehensive aircraft type database\nconst aircraftDatabase = {\n  \"H60\": { name: \"UH-60 Black Hawk\", category: \"military_helicopter\", country: \"USA\", role: \"Transport/Utility\" },\n  \"B762\": { name: \"Boeing 767-200\", category: \"military_tanker\", country: \"USA\", role: \"Aerial Refueling\" },\n  \"C17\": { name: \"C-17 Globemaster III\", category: \"military_transport\", country: \"USA\", role: \"Strategic Transport\" },\n  \"E135\": { name: \"Embraer ERJ-135\", category: \"military_jet\", country: \"Various\", role: \"VIP Transport\" },\n  \"E550\": { name: \"Embraer Praetor 600\", category: \"military_jet\", country: \"Various\", role: \"VIP Transport\" },\n  \"C130\": { name: \"C-130 Hercules\", category: \"military_transport\", country: \"USA\", role: \"Tactical Transport\" },\n  \"GLF4\": { name: \"Gulfstream IV\", category: \"military_jet\", country: \"Various\", role: \"VIP/Reconnaissance\" },\n  \"A332\": { name: \"Airbus A330-200\", category: \"military_tanker\", country: \"Various\", role: \"Aerial Refueling/Transport\" },\n  \"FA7X\": { name: \"Dassault Falcon 7X\", category: \"military_jet\", country: \"France\", role: \"VIP Transport\" },\n  \"A319\": { name: \"Airbus A319\", category: \"military_jet\", country: \"Various\", role: \"VIP Transport\" },\n  \"C295\": { name: \"CASA C-295\", category: \"military_transport\", country: \"Spain\", role: \"Tactical Transport\" },\n  \"V22\": { name: \"V-22 Osprey\", category: \"military_helicopter\", country: \"USA\", role: \"Tiltrotor Transport\" },\n  \"P3\": { name: \"P-3 Orion\", category: \"military_maritime\", country: \"USA\", role: \"Maritime Patrol\" },\n  \"P8\": { name: \"P-8 Poseidon\", category: \"military_maritime\", country: \"USA\", role: \"Maritime Patrol\" },\n  \"F900\": { name: \"Dassault Falcon 900\", category: \"military_jet\", country: \"France\", role: \"VIP Transport\" },\n  \"CL60\": { name: \"Canadair Challenger\", category: \"military_jet\", country: \"Canada\", role: \"VIP Transport\" },\n  \"B737\": { name: \"Boeing 737\", category: \"military_jet\", country: \"Various\", role: \"Surveillance/VIP\" },\n  \"B738\": { name: \"Boeing 737-800\", category: \"military_jet\", country: \"Various\", role: \"Transport/VIP\" },\n  \"B736\": { name: \"Boeing 737-600\", category: \"military_jet\", country: \"Various\", role: \"VIP Transport\" },\n  \"B748\": { name: \"Boeing 747-8\", category: \"military_transport\", country: \"Various\", role: \"VIP Transport\" },\n  \"SW4\": { name: \"Fairchild Swearingen Metro\", category: \"military_turboprop\", country: \"USA\", role: \"Surveillance/Transport\" },\n  \"A400\": { name: \"Airbus A400M\", category: \"military_transport\", country: \"Various\", role: \"Tactical Transport\" },\n  \"AT75\": { name: \"ATR 72-500\", category: \"civil_turboprop\", country: \"Various\", role: \"Regional Transport\" },\n  \"A320\": { name: \"Airbus A320\", category: \"civil_jet\", country: \"Various\", role: \"Commercial Transport\" },\n  \"E195\": { name: \"Embraer 195\", category: \"civil_jet\", country: \"Various\", role: \"Commercial Transport\" },\n  \"SU95\": { name: \"Sukhoi Superjet 100\", category: \"civil_jet\", country: \"Russia\", role: \"Commercial Transport\" }\n};\n\n// Country of origin from hex code prefix\nfunction getCountryFromHex(hex) {\n  if (!hex) return 'Unknown';\n  const prefix = hex.substring(0, 2).toLowerCase();\n  const countryMap = {\n    'ae': 'USA',\n    'ad': 'USA (military)',\n    'af': 'USA (military)',\n    'a3': 'USA (military)',\n    '43': 'UK',\n    '44': 'UK',\n    '3a': 'France',\n    '3b': 'France',\n    '3c': 'France',\n    '48': 'Poland',\n    '32': 'Italy',\n    '33': 'Italy',\n    '34': 'Spain',\n    '35': 'Spain',\n    '36': 'Spain',\n    '44': 'Belgium',\n    '45': 'Denmark',\n    '46': 'Finland',\n    '47': 'Norway',\n    '49': 'Sweden',\n    '4a': 'Hungary',\n    '4b': 'Switzerland',\n    '4c': 'Ireland',\n    '4d': 'Portugal',\n    '51': 'Estonia',\n    '50': 'Estonia',\n    '52': 'Estonia',\n    '71': 'Saudi Arabia',\n    '89': 'UAE',\n    '06': 'Qatar',\n    'e4': 'Brazil',\n    'e2': 'Brazil',\n    '15': 'Russia',  // This is causing the false positive\n    '14': 'Russia',\n    '80': 'India',\n    '7c': 'Australia',\n    'c2': 'Bermuda',\n    'a6': 'United Arab Emirates',\n    '4d': 'Latvia',\n    '4e': 'Lithuania',\n    '4b': 'Switzerland', // Already has\n    '40': 'UK',  // Add UK for hex 407fea\n    '46': 'Finland', // Already has\n    '4c': 'Ireland', // Already has\n    '4bb2': 'Turkey' // Turkish Airlines prefix\n  };\n\n  if (hex.toLowerCase().startsWith('4bb2')) {\n    return 'Turkey';\n  }\n  \n  return countryMap[prefix] || 'Unknown';\n}\n\n// Threat level assessment\nfunction assessThreatLevel(aircraft) {\n  const country = aircraft.country_of_origin;\n  const type = aircraft.type;\n  const altitude = aircraft.alt_baro;\n  const speed = aircraft.gs;\n  const nearSensitive = aircraft.nearSensitive;\n  \n  let threat = 1; // Low\n  \n  // Country-based threat\n  if (['Russia', 'China', 'Iran', 'North Korea', 'Belarus'].includes(country)) {\n    threat += 2;\n  }\n  \n  // Type-based threat\n  if (type === 'military') threat += 1;\n  if (aircraft.aircraft_category?.includes('fighter')) threat += 2;\n  \n  // Behavior-based threat\n  if (altitude && altitude < 1000) threat += 1;\n  if (speed && speed > 800) threat += 1;\n  if (nearSensitive) threat += 2;\n  \n  // NATO aircraft are friendly\n  if (aircraft.is_nato && !aircraft.is_potential_threat) threat = Math.max(1, threat - 1);\n  \n  return Math.min(threat, 5); // Scale 1-5\n}\n\n// Enhance aircraft data\nconst enrichedAircraft = uniqueAircraft.map(ac => {\n  const hex = ac.hex?.toLowerCase();\n  const typeCode = ac.t?.toUpperCase() || ac.type;\n  const dbInfo = aircraftDatabase[typeCode] || {};\n  const country = getCountryFromHex(hex);\n  const natoCountries = ['USA', 'UK', 'France', 'Germany', 'Italy', 'Canada', 'Turkey', 'Poland', 'Spain', 'Netherlands', 'Belgium', 'Norway', 'Denmark', 'Estonia', 'Latvia', 'Lithuania', 'Portugal', 'Czech Republic', 'Slovakia', 'Hungary', 'Romania', 'Bulgaria', 'Croatia', 'Slovenia', 'Albania', 'Montenegro', 'North Macedonia', 'Finland', 'Sweden'];\n  \n  const enrichedData = {\n    ...ac,\n    aircraft_name: dbInfo.name || 'Unknown',\n    aircraft_category: dbInfo.category || 'unknown',\n    aircraft_role: dbInfo.role || 'Unknown',\n    country_of_origin: country,\n    is_nato: natoCountries.includes(country),\n    is_friendly: country === 'Estonia' || natoCountries.includes(country),\n    is_potential_threat: ['Russia', 'China', 'Iran', 'North Korea', 'Belarus'].includes(country),\n    hex_prefix: hex ? hex.substring(0, 2) : 'Unknown',\n    enriched_type: ac.type === 'military' ? `${country}_${dbInfo.category || 'military'}` : ac.type\n  };\n  \n  // Add threat level\n  enrichedData.threat_level = assessThreatLevel(enrichedData);\n  \n  return enrichedData;\n});\n\n// Calculate new statistics\nconst stats = {\n  ...input.stats,\n  by_country: enrichedAircraft.reduce((acc, ac) => {\n    const country = ac.country_of_origin;\n    acc[country] = (acc[country] || 0) + 1;\n    return acc;\n  }, {}),\n  by_category: enrichedAircraft.reduce((acc, ac) => {\n    const category = ac.aircraft_category;\n    acc[category] = (acc[category] || 0) + 1;\n    return acc;\n  }, {}),\n  nato_count: enrichedAircraft.filter(a => a.is_nato).length,\n  potential_threats: enrichedAircraft.filter(a => a.is_potential_threat).length,\n  friendly_forces: enrichedAircraft.filter(a => a.is_friendly).length,\n  high_threat: enrichedAircraft.filter(a => a.threat_level >= 4).length,\n  medium_threat: enrichedAircraft.filter(a => a.threat_level === 3).length,\n  low_threat: enrichedAircraft.filter(a => a.threat_level <= 2).length\n};\n\n// Add top countries\nconst topCountries = Object.entries(stats.by_country)\n  .sort((a, b) => b[1] - a[1])\n  .slice(0, 5)\n  .map(([country, count]) => ({ country, count }));\n\nreturn [{\n  json: {\n    ...input,\n    uniqueAircraft: enrichedAircraft,\n    enhanced_stats: stats,\n    top_countries: topCountries,\n    enrichment_timestamp: new Date().toISOString()\n  }\n}];"
             },
             "name": "Aircraft Database Enrichment",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103872,
-                17360
+                110416,
+                18128
             ],
-            "id": "fc296cb3-8917-4f8b-b500-98f75712e333"
+            "id": "0104933f-95e3-43ba-b84a-86fb79d4b7ca"
         },
         {
             "parameters": {
-                "functionCode": "// ENHANCED RISK ANALYSIS - ESTONIA OPTIMIZED\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Enhanced risk scoring with trend analysis - ESTONIA-OPTIMIZED VERSION (FINAL)\nconst input = $input.first().json;\n\n// Time analysis\nconst now = new Date();\nconst hour = now.getHours();\nconst isNight = hour < 6 || hour > 22;\nconst isWeekend = now.getDay() === 0 || now.getDay() === 6;\n\n// Initialize workflow data structure\nlet workflowData = $workflow.staticData || {};\nif (!workflowData.readings) workflowData.readings = [];\nif (!workflowData.trendData) workflowData.trendData = { baseline: 8, peak: 0 };\n\n// ESTONIA-SPECIFIC SCORING ADJUSTMENTS\n// Ground vehicles at Tallinn Airport (hex starting with 5113) should have minimal impact\nlet groundVehicleCount = 0;\nlet airportTrafficCount = 0;\nlet realAircraftCount = 0;\n\nif (input.uniqueAircraft) {\n  input.uniqueAircraft.forEach(ac => {\n    // Ground vehicles at Tallinn Airport\n    if (ac.hex && ac.hex.startsWith('5113') && \n        (ac.gs < 20 || ac.category === 'C0' || ac.type === 'tower')) {\n      groundVehicleCount++;\n    } \n    // Airport ground traffic (slow moving at airport)\n    else if (ac.nearSensitive && ac.nearSensitive.name === 'Tallinn Airport' && \n             ac.gs && ac.gs < 30 && ac.alt_baro && ac.alt_baro < 50) {\n      airportTrafficCount++;\n    }\n    // Real aircraft\n    else {\n      realAircraftCount++;\n    }\n  });\n}\n\n// Calculate scores with ESTONIA-OPTIMIZED weights\nconst baseScore = Math.min(realAircraftCount, 20) * 1.5; // Lower multiplier for real aircraft only\nconst militaryScore = Math.min(input.stats.military, 5) * 15; // Higher weight for any military in Estonia\nconst droneScore = input.stats.drones * 30; // Drones are high concern\nconst sensitiveScore = Math.max(0, input.stats.nearSensitive - groundVehicleCount - airportTrafficCount) * 2; // Lower weight\nconst speedScore = input.stats.highSpeed * 20; // High speed is concerning\nconst altitudeScore = input.stats.lowAltitude * 5; // Low altitude in Estonia is less concerning\nconst threatScore = input.enhanced_stats?.high_threat * 25 || 0;\nlet potentialThreatScore = 0;\nif (input.enhanced_stats?.potential_threats > 0 && input.uniqueAircraft) {\n  input.uniqueAircraft.forEach(ac => {\n    if (ac.is_potential_threat) {\n      // Russian commercial flights at high altitude are less threatening\n      if (ac.country_of_origin === 'Russia' && ac.type === 'civil' && ac.alt_baro && ac.alt_baro > 10000) {\n        potentialThreatScore += 10; // Lower score for high-altitude commercial\n      } else if (ac.country_of_origin === 'Russia' && ac.type === 'military') {\n        potentialThreatScore += 25; // Higher for military\n      } else {\n        potentialThreatScore += 15; // Default\n      }\n    }\n  });\n}\n\n// Adjust for commercial flights from nearby countries (normal for Estonia)\nlet commercialFlightCount = 0;\nif (input.uniqueAircraft) {\n  commercialFlightCount = input.uniqueAircraft.filter(ac => \n    ac.country_of_origin && \n    ['Finland', 'Sweden', 'Latvia', 'Lithuania', 'Poland', 'Germany', 'Denmark'].includes(ac.country_of_origin) &&\n    ac.type === 'civil' &&\n    ac.alt_baro && ac.alt_baro > 5000\n  ).length;\n}\n\n// Subtract normal commercial traffic from score\nconst commercialAdjustment = Math.min(commercialFlightCount, 3) * 2; // Reduce score for normal commercial flights\n\n// Time multipliers\nconst timeMultiplier = isNight ? 1.3 : (isWeekend ? 1.1 : 1.0);\n\n// Trend analysis - ESTONIA SPECIFIC\nconst currentRealTotal = realAircraftCount;\nworkflowData.readings.push({\n  timestamp: now.toISOString(),\n  total: currentRealTotal,\n  military: input.stats.military,\n  threats: input.enhanced_stats?.potential_threats || 0,\n  ground_vehicles: groundVehicleCount,\n  airport_traffic: airportTrafficCount\n});\n\n// Keep only last 30 readings (30 minutes)\nif (workflowData.readings.length > 30) {\n  workflowData.readings = workflowData.readings.slice(-30);\n}\n\n// Calculate trend for Estonia\nlet trendScore = 0;\nif (workflowData.readings.length >= 3) {\n  const recent = workflowData.readings.slice(-3);\n  const avgRecent = recent.reduce((sum, r) => sum + r.total, 0) / 3;\n  let baseline = workflowData.trendData.baseline;\n  \n  // Update baseline (moving average) - Estonia specific\n  workflowData.trendData.baseline = (baseline * 0.7) + (avgRecent * 0.3);\n  \n  // Calculate deviation - Estonia thresholds\n  const deviation = ((currentRealTotal - workflowData.trendData.baseline) / (workflowData.trendData.baseline || 1)) * 100;\n  \n  if (deviation > 150) trendScore = 30;    // More than 2.5x normal traffic\n  else if (deviation > 100) trendScore = 20;  // Double normal traffic\n  else if (deviation > 50) trendScore = 10;   // 50% above normal\n  \n  // Update peak\n  if (currentRealTotal > workflowData.trendData.peak) {\n    workflowData.trendData.peak = currentRealTotal;\n  }\n}\n\n// Calculate anomaly score - ESTONIA OPTIMIZED\nconst rawScore = Math.max(0, \n  (baseScore + militaryScore + droneScore + sensitiveScore + \n   speedScore + altitudeScore + threatScore + potentialThreatScore + trendScore) * timeMultiplier - commercialAdjustment\n);\nconst anomalyScore = Math.min(Math.round(rawScore), 100); // Scale 0-100 for Estonia\n\n// Determine status - ESTONIA THRESHOLDS (0-100 scale)\nlet status = 'NORMAL';\nlet severity = 1;\nlet confidence = 0.7;\n\nif (anomalyScore >= 80) {\n  status = 'CRITICAL RISK';\n  severity = 5;\n  confidence = 0.9;\n} else if (anomalyScore >= 60) {\n  status = 'HIGH RISK';\n  severity = 4;\n  confidence = 0.8;\n} else if (anomalyScore >= 40) {\n  status = 'ELEVATED RISK';\n  severity = 3;\n  confidence = 0.75;\n} else if (anomalyScore >= 20) {\n  status = 'MEDIUM RISK';\n  severity = 2;\n  confidence = 0.65;\n} else {\n  status = 'NORMAL';\n  severity = 1;\n  confidence = 0.6;\n}\n\n// Check for persistent alerts\nif (!workflowData.alerts) workflowData.alerts = {};\nconst alertKey = now.toISOString().split('T')[0];\nif (!workflowData.alerts[alertKey]) {\n  workflowData.alerts[alertKey] = { high: 0, critical: 0 };\n}\n\nif (status.includes('HIGH')) workflowData.alerts[alertKey].high++;\nif (status.includes('CRITICAL')) workflowData.alerts[alertKey].critical++;\n\n// Generate map URL\nconst highRiskAircraft = input.uniqueAircraft ? input.uniqueAircraft.filter(a => \n  a && (a.threat_level >= 4 || a.is_potential_threat) && a.lat && a.lon && \n  !isNaN(a.lat) && !isNaN(a.lon)\n).slice(0, 10) : [];\n\nlet mapUrl = 'https://www.openstreetmap.org/?mlat=59.42&mlon=24.83&zoom=10';\nif (highRiskAircraft.length > 0) {\n  const markers = highRiskAircraft.map(a => {\n    const color = a.threat_level >= 4 ? 'red' : \n                  a.is_potential_threat ? 'orange' : 'blue';\n    return `&marker=${encodeURIComponent(a.lat)},${encodeURIComponent(a.lon)},${color}`;\n  }).join('');\n  mapUrl += markers;\n}\n\n// Add Estonia-specific context\nconst estoniaContext = {\n  ground_vehicles_detected: groundVehicleCount,\n  airport_ground_traffic: airportTrafficCount,\n  real_aircraft_count: realAircraftCount,\n  commercial_flights: commercialFlightCount,\n  border_proximity: input.stats.nearBorder || 0,\n  military_base_proximity: input.stats.nearMilitaryBase || 0,\n  is_peak_hours: hour >= 7 && hour <= 21,\n  traffic_composition: {\n  civil: Math.max(0, input.stats.civil - groundVehicleCount - airportTrafficCount),\n  military: input.stats.military,\n  drones: input.stats.drones,\n  unknown: Math.max(0, realAircraftCount - (Math.max(0, input.stats.civil - groundVehicleCount - airportTrafficCount) + input.stats.military + input.stats.drones))\n}\n};\n\n// Save workflow data back\n$workflow.staticData = workflowData;\n\nreturn [{\n  json: {\n    timestamp: now.toISOString(),\n    total_aircraft: input.stats.total,\n    military_aircraft: input.stats.military,\n    drones: input.stats.drones,\n    civil_aircraft: input.stats.civil,\n    near_sensitive: input.stats.nearSensitive,\n    high_speed: input.stats.highSpeed,\n    low_altitude: input.stats.lowAltitude,\n    high_threat_aircraft: input.enhanced_stats?.high_threat || 0,\n    potential_threats: input.enhanced_stats?.potential_threats || 0,\n    nato_aircraft: input.enhanced_stats?.nato_count || 0,\n    anomaly_score: anomalyScore,\n    status: status,\n    severity: severity,\n    confidence: confidence,\n    is_night: isNight,\n    is_weekend: isWeekend,\n    trend_score: trendScore,\n    baseline: Math.round(workflowData.trendData.baseline),\n    mapUrl: mapUrl,\n    today_alerts: workflowData.alerts[alertKey] || { high: 0, critical: 0 },\n    deduplication_rate: input.deduplication_rate,\n    uniqueAircraft: input.uniqueAircraft,\n    enhanced_stats: input.enhanced_stats,\n    top_countries: input.top_countries,\n    estonia_context: estoniaContext,\n    ground_vehicle_count: groundVehicleCount,\n    airport_traffic_count: airportTrafficCount,\n    real_aircraft_count: realAircraftCount,\n    scoring_breakdown: {\n      base: baseScore,\n      military: militaryScore,\n      sensitive: sensitiveScore,\n      threat: threatScore,\n      potential: potentialThreatScore,\n      trend: trendScore,\n      commercial_adjustment: commercialAdjustment,\n      time_multiplier: timeMultiplier,\n      raw: rawScore,\n      final: anomalyScore\n    },\n    // ESTONIA SPECIFIC METRICS\n    estonia_risk_assessment: {\n      airspace_busyness: realAircraftCount < 5 ? 'Low' : realAircraftCount < 10 ? 'Normal' : 'Busy',\n      military_presence: input.stats.military === 0 ? 'None' : input.stats.military < 3 ? 'Low' : 'Significant',\n      border_activity: input.stats.nearBorder === 0 ? 'Quiet' : 'Active',\n      overall_assessment: anomalyScore < 30 ? 'Normal Operations' : \n                         anomalyScore < 50 ? 'Increased Vigilance' :\n                         anomalyScore < 70 ? 'Heightened Alert' : 'Potential Threat'\n    }\n  }\n}];"
             },
             "name": "Enhanced Risk Analysis",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                104144,
-                17360
+                110688,
+                18128
             ],
-            "id": "8ceeb446-cfdf-48d3-92e2-ed5a50746d58"
+            "id": "34ea525a-0124-42bc-b534-439506c621d5"
         },
         {
             "parameters": {
-                "functionCode": "// MOVEMENT PATTERN ANALYSIS\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Track aircraft movement and patterns\nconst input = $input.first().json;\nconst uniqueAircraft = input.uniqueAircraft || [];\nconst now = new Date();\n\n// Get or initialize workflow data\nlet workflowData = $workflow.staticData || {};\nif (!workflowData.trackingHistory) workflowData.trackingHistory = {};\n\n// Helper function for distance calculation\nfunction getDistance(lat1, lon1, lat2, lon2) {\n  const R = 6371;\n  const dLat = (lat2 - lat1) * Math.PI / 180;\n  const dLon = (lon2 - lon1) * Math.PI / 180;\n  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +\n            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *\n            Math.sin(dLon/2) * Math.sin(dLon/2);\n  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));\n  return R * c;\n}\n\n// Update tracking for each aircraft\nuniqueAircraft.forEach(ac => {\n  if (ac.hex && ac.lat && ac.lon) {\n    const hex = ac.hex.toLowerCase();\n    \n    if (!workflowData.trackingHistory[hex]) {\n      workflowData.trackingHistory[hex] = {\n        first_seen: now.toISOString(),\n        positions: [],\n        max_speed: 0,\n        altitude_history: [],\n        country: ac.country_of_origin || 'Unknown',\n        type: ac.type || 'unknown',\n        callsign: ac.flight || 'N/A'\n      };\n    }\n    \n    const history = workflowData.trackingHistory[hex];\n    \n    // Add current position\n    history.positions.push({\n      timestamp: now.toISOString(),\n      lat: ac.lat,\n      lon: ac.lon,\n      altitude: ac.alt_baro,\n      speed: ac.gs || 0,\n      track: ac.track,\n      nearSensitive: ac.nearSensitive\n    });\n    \n    // Keep only last 10 positions per aircraft\n    if (history.positions.length > 10) {\n      history.positions = history.positions.slice(-10);\n    }\n    \n    // Update max speed\n    if (ac.gs && ac.gs > history.max_speed) {\n      history.max_speed = ac.gs;\n    }\n    \n    // Track altitude\n    if (ac.alt_baro) {\n      history.altitude_history.push({\n        timestamp: now.toISOString(),\n        altitude: ac.alt_baro\n      });\n      if (history.altitude_history.length > 5) {\n        history.altitude_history = history.altitude_history.slice(-5);\n      }\n    }\n    \n    // Calculate if aircraft is circling\n    if (history.positions.length >= 3) {\n      const recentPositions = history.positions.slice(-3);\n      const distances = recentPositions.map((pos, idx) => {\n        if (idx === 0) return 0;\n        const prev = recentPositions[idx - 1];\n        return getDistance(pos.lat, pos.lon, prev.lat, prev.lon);\n      });\n      const avgMovement = distances.slice(1).reduce((a, b) => a + b, 0) / (distances.length - 1);\n      ac.is_circling = avgMovement < 5 && (ac.gs || 0) < 50; // Moving slowly in small area\n    }\n    \n    // Calculate altitude changes\n    if (history.altitude_history.length >= 2) {\n      const recentAltitudes = history.altitude_history.slice(-2);\n      const altitudeChange = recentAltitudes[1].altitude - recentAltitudes[0].altitude;\n      const timeDiff = (new Date(recentAltitudes[1].timestamp) - new Date(recentAltitudes[0].timestamp)) / 1000;\n      ac.climb_rate = altitudeChange / timeDiff;\n    }\n  }\n});\n\n// Clean old history (older than 2 hours)\nconst twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60000);\nObject.keys(workflowData.trackingHistory).forEach(hex => {\n  const lastPos = workflowData.trackingHistory[hex].positions.slice(-1)[0];\n  if (lastPos && new Date(lastPos.timestamp) < twoHoursAgo) {\n    delete workflowData.trackingHistory[hex];\n  }\n});\n\n// Calculate movement patterns\nconst patterns = {\n  circling: uniqueAircraft.filter(a => a.is_circling).length,\n  fast_climbing: uniqueAircraft.filter(a => \n    a.alt_baro && a.alt_baro > 1000 && \n    a.climb_rate && a.climb_rate > 10\n  ).length,\n  fast_descending: uniqueAircraft.filter(a => \n    a.alt_baro && a.alt_baro > 1000 && \n    a.climb_rate && a.climb_rate < -10\n  ).length,\n  hovering: uniqueAircraft.filter(a => \n    (a.gs || 0) < 10 && \n    a.alt_baro && a.alt_baro > 100\n  ).length,\n  erratic: uniqueAircraft.filter(a => {\n    const history = workflowData.trackingHistory[a.hex?.toLowerCase()];\n    if (!history || history.positions.length < 3) return false;\n    \n    // Check for sudden course changes\n    const recentPositions = history.positions.slice(-3);\n    const courseChanges = recentPositions.map((pos, idx) => {\n      if (idx === 0) return 0;\n      const prev = recentPositions[idx - 1];\n      return Math.abs(pos.track - prev.track);\n    });\n    \n    return courseChanges.some(change => change > 45);\n  }).length\n};\n\n// Get suspicious aircraft\nconst suspiciousAircraft = uniqueAircraft\n  .filter(ac => ac.is_circling || patterns.erratic > 0 || (ac.climb_rate && Math.abs(ac.climb_rate) > 15))\n  .slice(0, 10)\n  .map(ac => ({\n    hex: ac.hex,\n    callsign: ac.flight || 'N/A',\n    type: ac.type,\n    country: ac.country_of_origin,\n    threat_level: ac.threat_level || 1,\n    anomalies: [\n      ac.is_circling ? 'circling' : null,\n      ac.climb_rate && ac.climb_rate > 15 ? 'rapid_climb' : null,\n      ac.climb_rate && ac.climb_rate < -15 ? 'rapid_descent' : null\n    ].filter(Boolean)\n  }));\n\n$workflow.staticData = workflowData;\n\nreturn [{\n  json: {\n    ...input,\n    tracking_patterns: patterns,\n    total_tracked_aircraft: Object.keys(workflowData.trackingHistory).length,\n    suspicious_aircraft: suspiciousAircraft,\n    suspicious_count: suspiciousAircraft.length,\n    tracking_history_sample: Object.entries(workflowData.trackingHistory)\n      .slice(0, 5)\n      .map(([hex, data]) => ({\n        hex,\n        callsign: data.callsign,\n        position_count: data.positions.length,\n        last_seen: data.positions.slice(-1)[0]?.timestamp,\n        max_speed: data.max_speed,\n        country: data.country\n      }))\n  }\n}];"
             },
             "name": "Movement Pattern Analysis",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                104416,
-                17360
+                110960,
+                18128
             ],
-            "id": "fef2b058-2e29-4412-a597-8240ea4de9af"
+            "id": "6bd28ef8-dbce-408c-a98b-86e79c12e462"
         },
         {
             "parameters": {
-                "functionCode": "// ATC & AIRSPACE MONITORING\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Simulated ATC and Airspace Restrictions\nconst input = $input.first().json;\nconst uniqueAircraft = input.uniqueAircraft || [];\nconst now = new Date();\n\n// ATC frequencies for Tallinn area\nconst atcFrequencies = {\n  \"TLL_TWR\": { freq: \"118.100\", name: \"Tallinn Tower\" },\n  \"TLL_APP\": { freq: \"119.700\", name: \"Tallinn Approach\" },\n  \"EMA_CTR\": { freq: \"134.300\", name: \"Ämari Control\" },\n  \"RIGA_CTR\": { freq: \"132.050\", name: \"Riga Control\" },\n  \"HEL_CTR\": { freq: \"133.700\", name: \"Helsinki Control\" },\n  \"EMERG\": { freq: \"121.500\", name: \"Emergency\" },\n  \"MIL_UHF\": { freq: \"243.000\", name: \"Military UHF\" }\n};\n\n// Airspace restrictions and NOTAMs\nconst airspaceRestrictions = [\n  {\n    id: \"REST-001\",\n    type: \"TEMPORARY_FLIGHT_RESTRICTION\",\n    area: { latMin: 59.4, latMax: 59.45, lonMin: 24.7, lonMax: 24.8 },\n    reason: \"Government Operations\",\n    altitude_min: 0,\n    altitude_max: 5000,\n    active: true,\n    effective: \"2024-01-01T00:00:00Z\",\n    expiry: \"2024-12-31T23:59:59Z\"\n  },\n  {\n    id: \"REST-002\",\n    type: \"RESTRICTED_AREA\",\n    area: { latMin: 59.25, latMax: 59.3, lonMin: 24.15, lonMax: 24.25 },\n    reason: \"Military Training\",\n    altitude_min: 0,\n    altitude_max: 10000,\n    active: true,\n    effective: \"2024-01-01T00:00:00Z\",\n    expiry: \"2024-12-31T23:59:59Z\"\n  },\n  {\n    id: \"REST-003\",\n    type: \"PROHIBITED_AREA\",\n    area: { latMin: 59.43, latMax: 59.44, lonMin: 24.74, lonMax: 24.76 },\n    reason: \"Government Security Zone\",\n    altitude_min: 0,\n    altitude_max: 3000,\n    active: true,\n    effective: \"2024-01-01T00:00:00Z\",\n    expiry: \"2024-12-31T23:59:59Z\"\n  }\n];\n\n// Check for ATC contact\nconst aircraftWithATC = uniqueAircraft.map(ac => {\n  // Simulate frequency monitoring\n  let atcContact = true;\n  let frequency = '118.100'; // Default Tallinn Tower\n  \n  if (ac.type === 'military') {\n    // Military aircraft on military or emergency freq\n    atcContact = Math.random() > 0.2; // 80% have ATC contact\n    frequency = Math.random() > 0.5 ? '121.500' : '243.000';\n  } else {\n    // Civil aircraft\n    atcContact = Math.random() > 0.1; // 90% have ATC contact\n    if (ac.alt_baro && ac.alt_baro > 18000) {\n      frequency = '132.050'; // Riga Control for high altitude\n    }\n  }\n  \n  return {\n    ...ac,\n    atc_contact: atcContact,\n    atc_frequency: frequency,\n    no_contact_alert: !atcContact && (ac.type === 'military' || ac.threat_level >= 4)\n  };\n});\n\n// Check for airspace violations\nconst violations = aircraftWithATC.filter(ac => {\n  if (!ac.lat || !ac.lon || !ac.alt_baro) return false;\n  \n  return airspaceRestrictions.some(restriction => {\n    if (!restriction.active) return false;\n    \n    const inArea = ac.lat >= restriction.area.latMin && \n                   ac.lat <= restriction.area.latMax &&\n                   ac.lon >= restriction.area.lonMin && \n                   ac.lon <= restriction.area.lonMax;\n    \n    const inAltitude = ac.alt_baro >= restriction.altitude_min &&\n                      ac.alt_baro <= restriction.altitude_max;\n    \n    if (inArea && inAltitude) {\n      ac.violation = {\n        restriction_id: restriction.id,\n        type: restriction.type,\n        reason: restriction.reason,\n        severity: ac.type === 'military' ? 'HIGH' : \n                  ac.threat_level >= 4 ? 'HIGH' : 'MEDIUM',\n        altitude: ac.alt_baro\n      };\n      return true;\n    }\n    return false;\n  });\n});\n\n// ATC statistics\nconst atcStats = {\n  total_with_contact: aircraftWithATC.filter(a => a.atc_contact).length,\n  military_no_contact: aircraftWithATC.filter(a => a.no_contact_alert && a.type === 'military').length,\n  high_threat_no_contact: aircraftWithATC.filter(a => a.no_contact_alert && a.threat_level >= 4).length,\n  civil_with_contact: aircraftWithATC.filter(a => a.atc_contact && a.type === 'civil').length,\n  military_with_contact: aircraftWithATC.filter(a => a.atc_contact && a.type === 'military').length\n};\n\nreturn [{\n  json: {\n    ...input,\n    uniqueAircraft: aircraftWithATC,\n    atc_data: {\n      frequencies: atcFrequencies,\n      stats: atcStats,\n      anomalies: atcStats.military_no_contact > 0 || atcStats.high_threat_no_contact > 0 ? \n        `WARNING: ${atcStats.military_no_contact} military and ${atcStats.high_threat_no_contact} high-threat aircraft not on ATC frequency` : \n        \"Normal\"\n    },\n    airspace_restrictions: airspaceRestrictions,\n    restriction_violations: violations.length,\n    violation_details: violations.slice(0, 5).map(v => ({\n      hex: v.hex,\n      callsign: v.flight || 'N/A',\n      type: v.type,\n      country: v.country_of_origin,\n      violation: v.violation,\n      location: { lat: v.lat, lon: v.lon, altitude: v.alt_baro },\n      timestamp: now.toISOString()\n    }))\n  }\n}];"
             },
             "name": "ATC & Airspace Monitoring",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103328,
-                17600
+                109872,
+                18368
             ],
-            "id": "6fdf4b14-a64c-4c29-9722-aad245e80202"
+            "id": "c848b945-a94b-43de-9ee6-a40e07521e12"
         },
         {
             "parameters": {
@@ -204,62 +205,62 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                102736,
-                16592
+                109280,
+                17360
             ],
-            "id": "3d63d37f-0e83-413f-8c09-0df7b1b380cb"
+            "id": "f18b982c-28ab-49ba-879d-92b49b973410"
         },
         {
             "parameters": {
-                "functionCode": "// WEATHER CONTEXT\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Add weather context to analysis\nconst inputs = $input.all();\nconst airspaceData = inputs[0]?.json || {};\nlet weatherData = null;\n\n// Check if we have a second input and if it's not an error\nif (inputs.length > 1) {\n  if (inputs[1].json && !inputs[1].json.error) {\n    weatherData = inputs[1].json;\n  }\n}\n\n// Extract relevant weather info or use defaults\nconst weather = {\n  temp: weatherData?.main?.temp || null,\n  visibility: weatherData?.visibility ? weatherData.visibility / 1000 : null, // Convert to km\n  wind_speed: weatherData?.wind?.speed || null,\n  wind_direction: weatherData?.wind?.deg || null,\n  conditions: weatherData?.weather?.[0]?.main || 'Unknown',\n  description: weatherData?.weather?.[0]?.description || '',\n  clouds: weatherData?.clouds?.all || 0,\n  humidity: weatherData?.main?.humidity || null,\n  pressure: weatherData?.main?.pressure || null,\n  api_success: !!weatherData\n};\n\n// Adjust risk based on weather\nlet weatherMultiplier = 1.0;\nlet weatherNotes = [];\nlet weatherImpact = {\n  visibility_impact: 'None',\n  wind_impact: 'None',\n  precipitation_impact: 'None',\n  overall_impact: 'Low'\n};\n\nif (weather.api_success) {\n  // Visibility impact\n  if (weather.visibility && weather.visibility < 1) {\n    weatherMultiplier *= 1.4;\n    weatherNotes.push('Very low visibility');\n    weatherImpact.visibility_impact = 'High';\n  } else if (weather.visibility && weather.visibility < 3) {\n    weatherMultiplier *= 1.3;\n    weatherNotes.push('Low visibility');\n    weatherImpact.visibility_impact = 'Medium';\n  } else if (weather.visibility && weather.visibility < 5) {\n    weatherMultiplier *= 1.1;\n    weatherNotes.push('Reduced visibility');\n    weatherImpact.visibility_impact = 'Low';\n  }\n\n  // Wind impact\n  if (weather.wind_speed && weather.wind_speed > 20) {\n    weatherMultiplier *= 1.3;\n    weatherNotes.push('Very high winds');\n    weatherImpact.wind_impact = 'High';\n  } else if (weather.wind_speed && weather.wind_speed > 15) {\n    weatherMultiplier *= 1.2;\n    weatherNotes.push('High winds');\n    weatherImpact.wind_impact = 'Medium';\n  } else if (weather.wind_speed && weather.wind_speed > 10) {\n    weatherMultiplier *= 1.1;\n    weatherNotes.push('Moderate winds');\n    weatherImpact.wind_impact = 'Low';\n  }\n\n  // Precipitation impact\n  if (weather.conditions.includes('Rain') || weather.conditions.includes('Snow')) {\n    weatherMultiplier *= 1.15;\n    weatherNotes.push('Precipitation');\n    weatherImpact.precipitation_impact = 'Medium';\n  } else if (weather.conditions.includes('Thunderstorm')) {\n    weatherMultiplier *= 1.3;\n    weatherNotes.push('Thunderstorms');\n    weatherImpact.precipitation_impact = 'High';\n  }\n  \n  // Determine overall impact\n  const impactCount = [\n    weatherImpact.visibility_impact,\n    weatherImpact.wind_impact,\n    weatherImpact.precipitation_impact\n  ].filter(imp => imp !== 'None').length;\n  \n  if (impactCount >= 2) {\n    weatherImpact.overall_impact = 'High';\n  } else if (impactCount === 1) {\n    weatherImpact.overall_impact = 'Medium';\n  }\n} else {\n  weatherNotes.push('Weather API unavailable');\n  weatherImpact.overall_impact = 'Unknown';\n}\n\n// Adjust anomaly score\nconst adjustedScore = Math.min(Math.round(airspaceData.anomaly_score * weatherMultiplier), 500);\n\n// Determine if weather is a major factor\nconst weatherIsSignificant = weatherMultiplier > 1.2;\nconst weatherCritical = weatherMultiplier > 1.3;\n\nreturn [{\n  json: {\n    ...airspaceData,\n    weather: weather,\n    weather_multiplier: weatherMultiplier,\n    adjusted_anomaly_score: adjustedScore,\n    weather_notes: weatherNotes.join(', '),\n    weather_impact: weatherImpact,\n    weather_significant: weatherIsSignificant,\n    weather_critical: weatherCritical,\n    weather_api_available: weather.api_success\n  }\n}];"
             },
             "name": "Weather Context",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103568,
-                17600
+                110112,
+                18368
             ],
-            "id": "626e64d7-0e97-4422-af21-b05768a7f6cb"
+            "id": "d5a7cb7a-7f5f-42c3-aa6b-2669053e0564"
         },
         {
             "parameters": {
-                "functionCode": "// ENHANCED VISUALIZATION\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Enhanced map visualization with clustering\nconst input = $input.first().json;\nconst uniqueAircraft = input.uniqueAircraft || [];\nconst now = new Date();\n\n// Create geojson for better visualization\nconst geojson = {\n  type: \"FeatureCollection\",\n  features: uniqueAircraft\n    .filter(ac => ac.lat && ac.lon)\n    .map(ac => ({\n      type: \"Feature\",\n      geometry: {\n        type: \"Point\",\n        coordinates: [ac.lon, ac.lat]\n      },\n      properties: {\n        hex: ac.hex,\n        type: ac.type,\n        aircraft_name: ac.aircraft_name || 'Unknown',\n        altitude: ac.alt_baro,\n        speed: ac.gs,\n        track: ac.track,\n        country: ac.country_of_origin || 'Unknown',\n        callsign: ac.flight || 'N/A',\n        threat_level: ac.threat_level || 1,\n        near_sensitive: ac.nearSensitive ? ac.nearSensitive.name : null,\n        atc_contact: ac.atc_contact,\n        violation: ac.violation,\n        timestamp: ac.timestamp || now.toISOString()\n      }\n    }))\n};\n\n// Generate OpenStreetMap URL with color-coded markers\nlet mapUrl = \"https://www.openstreetmap.org/?mlat=59.42&mlon=24.83&zoom=10\";\n\n// Add markers for different threat levels (limited to 25)\nconst markers = uniqueAircraft\n  .filter(ac => ac.lat && ac.lon)\n  .slice(0, 25)\n  .map(ac => {\n    let color = 'blue';\n    let label = 'C';\n    \n    if (ac.type === 'military') {\n      color = 'orange';\n      label = 'M';\n    }\n    \n    if (ac.threat_level >= 4) {\n      color = 'red';\n      label = 'H';\n    }\n    \n    if (ac.violation) {\n      color = 'violet';\n      label = 'V';\n    }\n    \n    return `&marker=${encodeURIComponent(ac.lat)},${encodeURIComponent(ac.lon)},${color},${label}`;\n  }).join('');\n\nmapUrl += markers;\n\n// Create data for external visualization tools\nconst visualizationData = {\n  timestamp: now.toISOString(),\n  total_points: geojson.features.length,\n  by_type: geojson.features.reduce((acc, f) => {\n    const type = f.properties.type;\n    acc[type] = (acc[type] || 0) + 1;\n    return acc;\n  }, {}),\n  by_country: geojson.features.reduce((acc, f) => {\n    const country = f.properties.country;\n    acc[country] = (acc[country] || 0) + 1;\n    return acc;\n  }, {}),\n  by_threat: geojson.features.reduce((acc, f) => {\n    const threat = f.properties.threat_level;\n    acc[threat] = (acc[threat] || 0) + 1;\n    return acc;\n  }, {}),\n  heatmap_data: geojson.features.map(f => ({\n    lat: f.geometry.coordinates[1],\n    lon: f.geometry.coordinates[0],\n    intensity: f.properties.threat_level || 1\n  })),\n  flight_paths: uniqueAircraft\n    .filter(ac => ac.gs && ac.gs > 100 && ac.track && ac.lat && ac.lon)\n    .map(ac => ({\n      from: { lat: ac.lat, lon: ac.lon },\n      bearing: ac.track,\n      speed: ac.gs,\n      type: ac.type,\n      threat: ac.threat_level || 1\n    }))\n    .slice(0, 10)\n};\n\n// Sensitive locations for the map\nconst sensitiveLocations = [\n  { name: 'Tallinn Airport', lat: 59.4133, lon: 24.8328, radius: 5 },\n  { name: 'Ämari Air Base', lat: 59.2603, lon: 24.2084, radius: 10 },\n  { name: 'Paldiski Port', lat: 59.3567, lon: 24.0531, radius: 8 },\n  { name: 'Government District', lat: 59.4361, lon: 24.7453, radius: 3 },\n  { name: 'NATO HQ Tallinn', lat: 59.4308, lon: 24.7714, radius: 2 }\n];\n\nreturn [{\n  json: {\n    ...input,\n    map_geojson: geojson,\n    enhanced_map_url: mapUrl,\n    visualization_data: visualizationData,\n    map_ready: geojson.features.length > 0,\n    sensitive_locations: sensitiveLocations,\n    map_summary: {\n      total_aircraft: geojson.features.length,\n      military_aircraft: geojson.features.filter(f => f.properties.type === 'military').length,\n      high_threat_aircraft: geojson.features.filter(f => f.properties.threat_level >= 4).length,\n      violations: geojson.features.filter(f => f.properties.violation).length,\n      timestamp: now.toISOString()\n    }\n  }\n}];"
             },
             "name": "Enhanced Visualization",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103872,
-                17600
+                110416,
+                18368
             ],
-            "id": "60914a27-91b0-4f17-80d8-7d779a853da6"
+            "id": "d453551e-7df2-4c5c-8dbe-6bf5c992b4fc"
         },
         {
             "parameters": {
-                "functionCode": "// PREPARE ENHANCED DATA LOG\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Prepare data for Enhanced Data Log (with size limitation)\nconst input = $input.first().json;\nconst now = new Date();\n\n// Create a trimmed version of the data for logging\nconst enhancedLogData = {\n  timestamp: input.timestamp,\n  total_aircraft: input.total_aircraft,\n  military_aircraft: input.military_aircraft,\n  drones: input.drones,\n  civil_aircraft: input.civil_aircraft,\n  near_sensitive: input.near_sensitive,\n  high_speed: input.high_speed,\n  low_altitude: input.low_altitude,\n  high_threat_aircraft: input.high_threat_aircraft,\n  potential_threats: input.potential_threats,\n  nato_aircraft: input.nato_aircraft,\n  anomaly_score: input.anomaly_score,\n  status: input.status,\n  severity: input.severity,\n  confidence: input.confidence,\n  is_night: input.is_night,\n  is_weekend: input.is_weekend,\n  trend_score: input.trend_score,\n  baseline: input.baseline,\n  mapUrl: input.mapUrl,\n  today_alerts: JSON.stringify(input.today_alerts || {}).substring(0, 1000),\n  deduplication_rate: input.deduplication_rate,\n  \n  // Truncate large JSON objects\n  uniqueAircraft: JSON.stringify((input.uniqueAircraft || []).slice(0, 5)).substring(0, 5000),\n  enhanced_stats: JSON.stringify(input.enhanced_stats || {}).substring(0, 5000),\n  top_countries: JSON.stringify(input.top_countries || []).substring(0, 2000),\n  tracking_patterns: JSON.stringify(input.tracking_patterns || {}).substring(0, 2000),\n  \n  total_tracked_aircraft: input.total_tracked_aircraft,\n  suspicious_count: input.suspicious_count,\n  \n  // Truncate more\n  suspicious_aircraft: JSON.stringify((input.suspicious_aircraft || []).slice(0, 3)).substring(0, 3000),\n  tracking_history_sample: JSON.stringify(input.tracking_history_sample || []).substring(0, 3000),\n  \n  atc_data_stats: JSON.stringify(input.atc_data?.stats || {}).substring(0, 2000),\n  restriction_violations: input.restriction_violations,\n  \n  // Truncate violation details\n  violation_details: JSON.stringify((input.violation_details || []).slice(0, 2)).substring(0, 3000),\n  \n  weather_temp: input.weather?.temp,\n  weather_visibility: input.weather?.visibility,\n  weather_conditions: input.weather?.conditions,\n  weather_multiplier: input.weather_multiplier,\n  adjusted_anomaly_score: input.adjusted_anomaly_score,\n  weather_notes: input.weather_notes?.substring(0, 500),\n  weather_significant: input.weather_significant,\n  weather_critical: input.weather_critical,\n  weather_api_available: input.weather_api_available,\n  \n  // URLs and short data\n  enhanced_map_url: input.enhanced_map_url?.substring(0, 500),\n  map_ready: input.map_ready,\n  \n  // AI analysis if available\n  ai_threat_level: input.ai_structured?.threat_level,\n  ai_scenario: input.ai_structured?.likely_scenario,\n  ai_primary_concern: input.ai_structured?.primary_concern,\n  ai_recommendations: input.ai_structured?.recommendations?.substring(0, 1000)\n};\n\nreturn [{\n  json: enhancedLogData\n}];"
             },
             "name": "Prepare Enhanced Data Log",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103328,
-                17856
+                109872,
+                18624
             ],
-            "id": "47d58352-d115-4d3d-bdad-c0dc1285547b"
+            "id": "f3217eb0-74f7-465a-9a94-f21893447ec5"
         },
         {
             "parameters": {
-                "functionCode": "// INTELLIGENCE AGGREGATION\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// ====== FIXED INTELLIGENCE AGGREGATION NODE ======\n// This version correctly parses JSON strings that arrive as input\nconst input = $input.first().json;\nconst now = new Date();\n\n// ====== 1. CRITICAL FIX: Parse JSON String Fields ======\n// These fields are delivered as strings and must be parsed before use\nlet uniqueAircraft = [];\nlet enhancedStats = {};\nlet topCountries = [];\nlet trackingPatterns = {};\n\ntry {\n  // Parse uniqueAircraft from string to array\n  if (typeof input.uniqueAircraft === 'string') {\n    uniqueAircraft = JSON.parse(input.uniqueAircraft);\n  } else if (Array.isArray(input.uniqueAircraft)) {\n    uniqueAircraft = input.uniqueAircraft; // Already an array\n  }\n\n  // Parse enhanced_stats from string to object\n  if (typeof input.enhanced_stats === 'string') {\n    enhancedStats = JSON.parse(input.enhanced_stats);\n  } else if (input.enhanced_stats) {\n    enhancedStats = input.enhanced_stats;\n  }\n\n  // Parse top_countries from string to array\n  if (typeof input.top_countries === 'string') {\n    topCountries = JSON.parse(input.top_countries);\n  } else if (Array.isArray(input.top_countries)) {\n    topCountries = input.top_countries;\n  }\n\n  // Parse tracking_patterns from string to object\n  if (typeof input.tracking_patterns === 'string') {\n    trackingPatterns = JSON.parse(input.tracking_patterns);\n  } else if (input.tracking_patterns) {\n    trackingPatterns = input.tracking_patterns;\n  }\n\n} catch (parseError) {\n  console.error('JSON Parsing Error in Intelligence Aggregation:', parseError);\n  // If parsing fails, use empty defaults to prevent crash\n}\n\n// ====== 2. Use the Parsed Data (Now Arrays/Objects, not Strings) ======\n// External data sources context\nconst externalData = {\n  flight_tracking: {\n    total_tracks: uniqueAircraft.length, // Now works: .length on an array\n    active_flights: uniqueAircraft.filter(a => a && a.gs && a.gs > 50).length,\n    ground_vehicles: uniqueAircraft.filter(a => a && a.gs && a.gs < 10).length,\n    stationary_targets: uniqueAircraft.filter(a => a && (!a.gs || a.gs < 1) && a.alt_baro && a.alt_baro > 100).length\n  },\n\n  weather_impact: {\n    visibility_rating: input.weather_visibility > 10 ? 'Good' :\n                      input.weather_visibility > 5 ? 'Fair' :\n                      input.weather_visibility > 2 ? 'Poor' : 'Very Poor',\n    wind_impact: input.weather_wind_speed > 20 ? 'High' :\n                 input.weather_wind_speed > 10 ? 'Moderate' : 'Low',\n    precipitation: input.weather_conditions?.toLowerCase().includes('rain') ||\n                   input.weather_conditions?.toLowerCase().includes('snow') ? 'Yes' : 'No',\n    cloud_cover: input.weather_clouds > 70 ? 'Heavy' :\n                 input.weather_clouds > 30 ? 'Moderate' : 'Light'\n  },\n\n  historical_context: {\n    avg_daily_military: 8,\n    avg_daily_total: 25,\n    current_military: input.military_aircraft || 0,\n    current_total: input.total_aircraft || 0,\n    military_deviation: ((input.military_aircraft || 0) - 8) / 8 * 100,\n    total_deviation: ((input.total_aircraft || 0) - 25) / 25 * 100,\n    trend: input.trend_score > 0 ? 'Increasing' : input.trend_score < 0 ? 'Decreasing' : 'Stable'\n  }\n};\n\n// ====== 3. Calculate Scores with Parsed Data ======\nconst baseScore = input.anomaly_score || 0;\nconst weatherFactor = input.weather_multiplier || 1;\nconst historicalFactor = Math.max(1, Math.abs(externalData.historical_context.military_deviation) / 50);\nconst timeFactor = (now.getHours() < 6 || now.getHours() > 22) ? 1.2 : 1;\nconst patternFactor = trackingPatterns.suspicious_count > 0 ? 1.1 : 1; // Now works: .suspicious_count on an object\nconst violationFactor = input.restriction_violations > 0 ? 1.3 : 1;\n\n// Parse atc_data_stats if it's a string\nlet atcStats = { military_no_contact: 0 };\nif (typeof input.atc_data_stats === 'string') {\n  try { atcStats = JSON.parse(input.atc_data_stats); } catch(e) {}\n} else if (input.atc_data_stats) {\n  atcStats = input.atc_data_stats;\n}\nconst atcFactor = atcStats.military_no_contact > 0 ? 1.2 : 1;\n\nconst compositeThreatScore = Math.min(\n  Math.round(baseScore * weatherFactor * historicalFactor * timeFactor *\n             patternFactor * violationFactor * atcFactor),\n  500\n);\n\n// ====== 4. Return the Fully Parsed and Enriched Data ======\nreturn [{\n  json: {\n    // Pass through all original input\n    ...input,\n    \n    // Replace string fields with their parsed versions for downstream nodes\n    uniqueAircraft: uniqueAircraft,           // Now an ARRAY\n    enhanced_stats: enhancedStats,           // Now an OBJECT\n    top_countries: topCountries,             // Now an ARRAY\n    tracking_patterns: trackingPatterns,     // Now an OBJECT\n    \n    // New aggregated intelligence\n    external_data: externalData,\n    enhanced_risk_assessment: {\n      composite_score: compositeThreatScore,\n      overall_risk: compositeThreatScore > 400 ? 'CRITICAL' :\n                    compositeThreatScore > 300 ? 'HIGH' :\n                    compositeThreatScore > 200 ? 'ELEVATED' :\n                    compositeThreatScore > 100 ? 'MODERATE' : 'LOW',\n      confidence: 0.85,\n      timestamp: now.toISOString()\n    },\n    \n    final_assessment: {\n      timestamp: now.toISOString(),\n      risk_level: compositeThreatScore > 400 ? 'CRITICAL' :\n                  compositeThreatScore > 300 ? 'HIGH' :\n                  compositeThreatScore > 200 ? 'ELEVATED' :\n                  compositeThreatScore > 100 ? 'MODERATE' : 'LOW',\n      score: compositeThreatScore,\n      military_presence: input.military_aircraft,\n      threat_presence: enhancedStats.potential_threats || 0, // Now works: property access on object\n      overall_status: compositeThreatScore > 400 ? 'RED ALERT' :\n                     compositeThreatScore > 300 ? 'YELLOW ALERT' :\n                     compositeThreatScore > 200 ? 'INCREASED VIGILANCE' : 'NORMAL'\n    }\n  }\n}];"
             },
             "name": "Intelligence Aggregation",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103568,
-                17856
+                110112,
+                18624
             ],
-            "id": "bbe30bee-1e6a-4ce8-a061-070133656034"
+            "id": "9614e132-a6c2-4576-9728-8cd12536e28c"
         },
         {
             "parameters": {
@@ -277,10 +278,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                103552,
-                18288
+                110096,
+                19056
             ],
-            "id": "b49ebca6-dd6c-4f8c-a39d-c3fc2271f02b"
+            "id": "b17e3914-f638-4d1c-9ac4-5d4c124c987c"
         },
         {
             "parameters": {
@@ -293,7 +294,7 @@
                 "messages": {
                     "values": [
                         {
-                            "content": "Analyze Tallinn airspace security alert with enhanced intelligence..."
+                            "content": "={{ $json.prompt }}"
                         }
                     ]
                 },
@@ -305,10 +306,10 @@
             "type": "@n8n/n8n-nodes-langchain.ollama",
             "typeVersion": 1,
             "position": [
-                104016,
-                18272
+                110848,
+                19040
             ],
-            "id": "18b588f7-d483-448c-a0fe-cfb07dd19cd3",
+            "id": "6e625054-eb32-4cfd-80c7-f457acd7c205",
             "credentials": {
                 "ollamaApi": {
                     "id": "idxsjqPJszpgHr7Q",
@@ -318,16 +319,16 @@
         },
         {
             "parameters": {
-                "functionCode": "// PARSE AI RESPONSE\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Improved AI response parsing with better error handling\nconst input = $input.first();\n\n// Handle different possible input formats\nlet aiResponse = '';\nlet originalData = {};\n\nif (input.content) {\n  // Format 1: Direct content string (Ollama returns content directly)\n  aiResponse = input.content;\n  originalData = input.json || {};\n} else if (input.json && input.json.response) {\n  // Format 2: Nested in json.response\n  aiResponse = input.json.response;\n  originalData = input.json;\n} else if (input.json && input.json.content) {\n  // Format 3: Nested in json.content\n  aiResponse = input.json.content;\n  originalData = input.json;\n} else if (typeof input === 'string') {\n  // Format 4: Input is directly a string\n  aiResponse = input;\n  originalData = {};\n} else {\n  // Fallback\n  aiResponse = JSON.stringify(input);\n  originalData = input.json || {};\n}\n\nconsole.log('AI Response received (first 500 chars):', aiResponse.substring(0, 500));\n\n// Initialize structured data with defaults\nconst structured = {\n  situation: 'Unknown',\n  threat_level: 'Unknown',\n  primary_concern: 'Unknown',\n  secondary_concerns: 'None',\n  likely_scenario: 'Unknown',\n  recommendations: 'None',\n  forecast: 'Unknown',\n  confidence: 'Unknown'\n};\n\n// Clean the response - remove any introductory text like \"Here is the analysis:\"\nlet cleanResponse = aiResponse.trim();\nconst unwantedPrefixes = [\n  'Here is the analysis:',\n  'Analysis:',\n  'Based on the data:',\n  'Here is my analysis:',\n  'Here is the security analysis:'\n];\n\nfor (const prefix of unwantedPrefixes) {\n  if (cleanResponse.startsWith(prefix)) {\n    cleanResponse = cleanResponse.substring(prefix.length).trim();\n  }\n}\n\n// Split into lines and process\nconst lines = cleanResponse.split('\\n').map(line => line.trim()).filter(line => line);\n\n// Map section numbers to field names\nconst sectionMap = {\n  1: 'situation',\n  2: 'threat_level',\n  3: 'primary_concern',\n  4: 'secondary_concerns',\n  5: 'likely_scenario',\n  6: 'recommendations',\n  7: 'forecast',\n  8: 'confidence'\n};\n\n// Parse each numbered section\nfor (const line of lines) {\n  // Match patterns like \"1. SITUATION:\", \"2. THREAT LEVEL:\", etc.\n  const match = line.match(/^(\\d+)\\.\\s+([A-Z\\s]+):\\s*(.*)$/i);\n  \n  if (match) {\n    const sectionNum = parseInt(match[1]);\n    const sectionName = match[2].trim();\n    let content = match[3].trim();\n    \n    if (sectionNum >= 1 && sectionNum <= 8) {\n      const fieldName = sectionMap[sectionNum];\n      \n      // For multi-line content, check if the content is incomplete\n      if (content === '' || content.length < 10) {\n        // Look ahead for continuation lines (not starting with a number)\n        const lineIndex = lines.indexOf(line);\n        if (lineIndex !== -1) {\n          let continuation = '';\n          let nextLineIndex = lineIndex + 1;\n          \n          // Gather continuation lines until we hit another numbered section\n          while (nextLineIndex < lines.length && \n                 !lines[nextLineIndex].match(/^\\d+\\.\\s+[A-Z\\s]+:/i)) {\n            continuation += (continuation ? ' ' : '') + lines[nextLineIndex].trim();\n            nextLineIndex++;\n          }\n          \n          if (continuation) {\n            content = continuation;\n          }\n        }\n      }\n      \n      // Clean the content\n      content = content.replace(/\\*\\*/g, '').trim();\n      structured[fieldName] = content;\n    }\n  }\n  \n  // Also handle sections without the colon format (some AI outputs)\n  if (line.startsWith('SITUATION:')) {\n    structured.situation = line.replace('SITUATION:', '').trim();\n  } else if (line.startsWith('THREAT LEVEL:')) {\n    structured.threat_level = line.replace('THREAT LEVEL:', '').trim();\n  } else if (line.startsWith('PRIMARY CONCERN:')) {\n    structured.primary_concern = line.replace('PRIMARY CONCERN:', '').trim();\n  } else if (line.startsWith('SECONDARY CONCERNS:')) {\n    structured.secondary_concerns = line.replace('SECONDARY CONCERNS:', '').trim();\n  } else if (line.startsWith('LIKELY SCENARIO:')) {\n    structured.likely_scenario = line.replace('LIKELY SCENARIO:', '').trim();\n  } else if (line.startsWith('RECOMMENDATIONS:')) {\n    structured.recommendations = line.replace('RECOMMENDATIONS:', '').trim();\n  } else if (line.startsWith('FORECAST:')) {\n    structured.forecast = line.replace('FORECAST:', '').trim();\n  } else if (line.startsWith('CONFIDENCE:')) {\n    structured.confidence = line.replace('CONFIDENCE:', '').trim();\n  }\n}\n\n// Post-process to ensure we have valid values\nif (structured.secondary_concerns === '' || structured.secondary_concerns === 'None') {\n  structured.secondary_concerns = 'No secondary concerns identified';\n}\n\nif (structured.recommendations === '' || structured.recommendations === 'None') {\n  structured.recommendations = 'Continue normal monitoring procedures';\n}\n\nif (structured.forecast === '' || structured.forecast === 'Unknown') {\n  structured.forecast = 'Situation expected to remain stable in the next 30 minutes';\n}\n\n// Add AI metadata\nstructured.ai_timestamp = new Date().toISOString();\nstructured.ai_confidence_score = 0.85;\nstructured.ai_response_length = aiResponse.length;\n\n// Generate analysis ID for MySQL\nconst analysisId = `analysis_${new Date().getTime()}_${Math.random().toString(36).substring(2, 10)}`;\nstructured.analysis_id = analysisId;\n\nconsole.log('Parsed structured data:', JSON.stringify(structured, null, 2));\n\nreturn [{\n  json: {\n    ...originalData,\n    ai_analysis: aiResponse,\n    ai_structured: structured\n  }\n}];"
             },
             "name": "Parse AI Response",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                104352,
-                18272
+                111200,
+                19040
             ],
-            "id": "22fc000a-f4e9-413d-b01b-154c5759a9d9"
+            "id": "48956681-ab84-4b97-b521-f03be6b640cf"
         },
         {
             "parameters": {
@@ -345,57 +346,23 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                103888,
-                17856
+                110432,
+                18624
             ],
-            "id": "31d6b4d8-1db0-434f-9aa2-1e1207b78e8d"
+            "id": "0d5c4641-dd90-429e-a5be-250d348ac88d"
         },
         {
             "parameters": {
-                "functionCode": "// GENERATE NATO SALUTE REPORT\nconst input = $input.first().json;\nconst now = new Date();\nconst timestamp = now.toISOString();\n\nlet targets = [];\nif (input.uniqueAircraft) {\n  targets = input.uniqueAircraft.filter(ac => \n    ac.is_military || \n    ac.threat_level >= 4 || \n    ac.is_potential_threat ||\n    (ac.country_of_origin === 'Russia' && ac.type !== 'civil')\n  );\n}\n\nif (targets.length === 0 && input.status.includes('RISK')) {\n    targets = [{\n        aircraft_name: 'Unidentified Bogey',\n        hex: 'UNKNOWN',\n        lat: 59.42,\n        lon: 24.83,\n        alt_baro: 0,\n        gs: 0,\n        track: 0,\n        country_of_origin: 'Unknown',\n        hex: 'UNKNOWN'\n    }];\n}\n\nconst primaryTarget = targets.sort((a, b) => (b.threat_level || 0) - (a.threat_level || 0))[0];\nif (!primaryTarget) return [];\n\nconst size = `${targets.length}x CONTACT(S)`;\nlet activity = `HDG ${primaryTarget.track || 0} deg, SPD ${primaryTarget.gs || 0} kts`;\nif (primaryTarget.gs > 800) activity += \" [HIGH SPEED]\";\nif (primaryTarget.alt_baro < 1000) activity += \" [LOW LEVEL]\";\nif (primaryTarget.violation) activity += \" [VIOLATION]\";\n\nconst location = `LAT ${primaryTarget.lat}, LON ${primaryTarget.lon}, ALT ${primaryTarget.alt_baro || 0} ft`;\nlet locationDetail = primaryTarget.airspace_tracking?.nearest_waypoint?.name \n    ? `NEAR ${primaryTarget.airspace_tracking.nearest_waypoint.name}` \n    : 'SECTOR TALLINN';\n\nlet unit = primaryTarget.aircraft_name || 'UNKNOWN TYPE';\nif (primaryTarget.callsign) unit += ` c/s ${primaryTarget.callsign}`;\nif (primaryTarget.country_of_origin) unit += ` (${primaryTarget.country_of_origin.toUpperCase()})`;\n\nconst timeZulu = now.toISOString().replace('T', ' ').substring(0, 19) + ' Z';\nconst equipment = `HEX: ${primaryTarget.hex}, SQUAWK: ${primaryTarget.squawk || 'N/A'}`;\n\nconst reportText = `*** NATO FLASH REPORT ***\\nTO: SKYGUARDIAN C2\\nSUBJ: ${input.status}\\n\\n1. (S) SIZE: ${size}\\n2. (A) ACTIVITY: ${activity}\\n3. (L) LOCATION: ${location} // ${locationDetail}\\n4. (U) UNIT: ${unit}\\n5. (T) TIME: ${timeZulu}\\n6. (E) EQUIP: ${equipment}`;\n\nreturn [{\n    json: {\n        report_id: `SALUTE-${now.getTime()}-${primaryTarget.hex}`,\n        timestamp: timestamp,\n        report_type: 'SALUTE',\n        threat_level: input.enhanced_risk_assessment?.overall_risk || 'UNKNOWN',\n        salute_size: size,\n        salute_activity: activity,\n        salute_location: `${location} // ${locationDetail}`,\n        salute_unit: unit,\n        salute_time: timeZulu,\n        salute_equipment: equipment,\n        full_report_text: reportText,\n        is_transmitted: false\n    }\n}];"
-            },
-            "name": "Generate NATO SALUTE Report",
-            "type": "n8n-nodes-base.function",
-            "typeVersion": 1,
-            "position": [
-                104160,
-                18064
-            ],
-            "id": "nato-report-gen"
-        },
-        {
-            "parameters": {
-                "operation": "insert",
-                "table": "skyguardian_nato_reports",
-                "options": {}
-            },
-            "name": "MySQL - Insert NATO Report",
-            "type": "n8n-nodes-base.mySql",
-            "typeVersion": 2,
-            "position": [
-                104416,
-                18064
-            ],
-            "id": "mysql-nato-insert",
-            "credentials": {
-                "mySql": {
-                    "id": "mXkCRDNO8ss2rXeA",
-                    "name": "MySQL account"
-                }
-            }
-        },
-        {
-            "parameters": {
-                "functionCode": "// CHECK PERSISTENT ALERT\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Check for persistent high risk\nconst input = $input.first().json;\nconst workflowData = $workflow.staticData || {};\n\nif (!workflowData.persistentAlerts) {\n  workflowData.persistentAlerts = [];\n}\n\nconst now = new Date();\nconst fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);\n\n// Filter recent high/critical alerts\nconst recentAlerts = workflowData.persistentAlerts.filter(\n  alert => new Date(alert.timestamp) > fiveMinutesAgo\n);\n\n// Add current alert\nif (input.enhanced_risk_assessment.overall_risk.includes('HIGH') || \n    input.enhanced_risk_assessment.overall_risk.includes('CRITICAL')) {\n  workflowData.persistentAlerts.push({\n    timestamp: input.timestamp,\n    status: input.enhanced_risk_assessment.overall_risk,\n    score: input.enhanced_risk_assessment.composite_score,\n    military: input.military_aircraft,\n    threats: input.potential_threats\n  });\n}\n\n// Keep only last 100 alerts\nif (workflowData.persistentAlerts.length > 100) {\n  workflowData.persistentAlerts = workflowData.persistentAlerts.slice(-100);\n}\n\n// Check if we have 3+ high alerts in last 5 minutes\nconst highAlertCount = recentAlerts.filter(\n  a => a.status.includes('HIGH') || a.status.includes('CRITICAL')\n).length;\n\nconst isPersistentAlert = highAlertCount >= 3;\n\n// Save workflow data\n$workflow.staticData = workflowData;\n\nreturn [{\n  json: {\n    ...input,\n    persistent_alert: isPersistentAlert,\n    recent_high_alerts: highAlertCount,\n    alert_history: recentAlerts.length,\n    alert_escalation_needed: isPersistentAlert && input.potential_threats > 0\n  }\n}];"
             },
             "name": "Check Persistent Alert",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                104160,
-                17840
+                110720,
+                18720
             ],
-            "id": "5454d826-d223-45c9-816f-c7bb76c8e5fd"
+            "id": "e260fbce-0a1d-4a46-a403-98eb78a66e98"
         },
         {
             "parameters": {
@@ -412,23 +379,23 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                104416,
-                17840
+                110976,
+                18720
             ],
-            "id": "92086efc-8470-4d07-93af-63d6ce06ff85"
+            "id": "ed5ce2c7-74b8-447c-ae61-3a64089e3d8a"
         },
         {
             "parameters": {
-                "functionCode": "// FORMAT MYSQL DATA\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// FORMAT MySQL DATA - FIXED VERSION WITH data_type FIELD\nconst input = $input.first().json;\nconst uniqueAircraft = input.uniqueAircraft || [];\nconst now = new Date();\n\n// Process each aircraft for MySQL insertion\nconst aircraftForMySQL = uniqueAircraft.map(ac => ({\n  data_type: 'aircraft', // ADD THIS FIELD\n  hex: ac.hex?.substring(0, 6) || '',\n  registration: ac.r || null,\n  callsign: ac.flight || null,\n  type: ac.t || ac.type || null,\n  aircraft_name: ac.aircraft_name || null,\n  category: ac.aircraft_category || null,\n  role: ac.aircraft_role || null,\n  country: ac.country_of_origin || 'Unknown',\n  is_military: ac.type === 'military',\n  is_drone: ac.type === 'drone',\n  is_nato: ac.is_nato || false,\n  is_friendly: ac.is_friendly || false,\n  is_potential_threat: ac.is_potential_threat || false,\n  threat_level: ac.threat_level || 1,\n  metadata: JSON.stringify({\n    source: ac.source,\n    alt_baro: ac.alt_baro,\n    gs: ac.gs,\n    track: ac.track,\n    near_sensitive: ac.nearSensitive,\n    near_military_base: ac.nearMilitaryBase,\n    near_border: ac.nearBorder\n  }),\n  last_seen: now.toISOString()\n})).filter(ac => ac.hex);\n\n// Process positions for MySQL\nconst positionsForMySQL = uniqueAircraft\n  .filter(ac => ac.hex && ac.lat && ac.lon)\n  .map(ac => ({\n    data_type: 'position', // ADD THIS FIELD\n    hex: ac.hex?.substring(0, 6) || '',\n    latitude: ac.lat,\n    longitude: ac.lon,\n    altitude: ac.alt_baro || null,\n    speed: ac.gs || null,\n    heading: ac.track || null,\n    vertical_rate: ac.vr || null,\n    squawk: ac.squawk || null,\n    source: ac.source || 'unknown',\n    altitude_layer: ac.airspace_tracking?.altitude_layer || 'unknown',\n    nearest_waypoint: ac.airspace_tracking?.nearest_waypoint?.name || null,\n    in_estonia: ac.isInEstonia || false,\n    near_sensitive: !!ac.nearSensitive,\n    near_military_base: !!ac.nearMilitaryBase,\n    near_border: !!ac.nearBorder,\n    threat_level: ac.threat_level || 1,\n    position_metadata: JSON.stringify({\n      aircraft_type: ac.type,\n      country: ac.country_of_origin,\n      callsign: ac.flight\n    }),\n    position_time: now.toISOString()\n  }));\n\n// Format analysis data for MySQL\nconst analysisForMySQL = {\n  data_type: 'analysis', // ADD THIS FIELD\n  analysis_id: `analysis_${now.getTime()}_${Math.random().toString(36).substring(2, 10)}`,\n  analysis_time: input.timestamp || now.toISOString(),\n  total_aircraft: input.total_aircraft || 0,\n  military_aircraft: input.military_aircraft || 0,\n  drones: input.drones || 0,\n  civil_aircraft: input.civil_aircraft || 0,\n  near_sensitive: input.near_sensitive || 0,\n  high_speed: input.high_speed || 0,\n  low_altitude: input.low_altitude || 0,\n  high_threat_aircraft: input.high_threat_aircraft || 0,\n  potential_threats: input.potential_threats || 0,\n  nato_aircraft: input.nato_aircraft || 0,\n  anomaly_score: input.anomaly_score || 0,\n  status: input.status || 'UNKNOWN',\n  severity: input.severity || 1,\n  confidence: input.confidence || 0.5,\n  is_night: input.is_night || false,\n  is_weekend: input.is_weekend || false,\n  trend_score: input.trend_score || 0,\n  baseline: input.baseline || 0,\n  map_url: input.mapUrl || null,\n  today_alerts: JSON.stringify(input.today_alerts || {}),\n  deduplication_rate: input.deduplication_rate || 0,\n  enhanced_stats: JSON.stringify(input.enhanced_stats || {}),\n  top_countries: JSON.stringify(input.top_countries || []),\n  scoring_breakdown: JSON.stringify(input.scoring_breakdown || {}),\n  composite_score: input.enhanced_risk_assessment?.composite_score || 0,\n  overall_risk: input.enhanced_risk_assessment?.overall_risk || 'LOW',\n  persistent_alert: input.persistent_alert || false,\n  weather_multiplier: input.weather_multiplier || 1.0,\n  adjusted_anomaly_score: input.adjusted_anomaly_score || 0,\n  weather_notes: input.weather_notes || null,\n  weather_significant: input.weather_significant || false,\n  weather_critical: input.weather_critical || false,\n  weather_api_available: input.weather_api_available || false,\n  estonia_context: JSON.stringify(input.estonia_context || {}),\n  external_data: JSON.stringify(input.external_data || {}),\n  final_assessment: JSON.stringify(input.final_assessment || {})\n};\n\n// Combine all data types\nconst allData = [\n  ...aircraftForMySQL,\n  ...positionsForMySQL,\n  analysisForMySQL\n];\n\n// Return all data - split node will handle separation\nreturn allData.map(item => ({\n  json: item\n}));"
             },
             "name": "Format MySQL Data",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                104144,
-                17600
+                110688,
+                18368
             ],
-            "id": "13b2d803-076a-4e99-b054-4bf66581f5cd"
+            "id": "b0ab404d-9dfe-4012-964f-081c14fe7bdb"
         },
         {
             "parameters": {
@@ -439,10 +406,10 @@
             "type": "n8n-nodes-base.splitInBatches",
             "typeVersion": 1,
             "position": [
-                104432,
-                17600
+                110976,
+                18368
             ],
-            "id": "d71f2d77-b68d-4782-87e6-e5516a075d13"
+            "id": "01a893eb-45ed-4e77-9b3c-09cf166f00a4"
         },
         {
             "parameters": {
@@ -459,10 +426,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                104768,
-                17296
+                111312,
+                18064
             ],
-            "id": "28cf1ff5-7322-4f59-8416-0f3b60c4bc8b"
+            "id": "dd671699-1e57-4708-a07f-daa476192601"
         },
         {
             "parameters": {
@@ -479,10 +446,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                104768,
-                17648
+                111312,
+                18416
             ],
-            "id": "946dbe2a-969f-4267-a1b7-248d10cb7535"
+            "id": "a3c41caa-357b-4f7f-a745-e24797d5977a"
         },
         {
             "parameters": {
@@ -495,10 +462,10 @@
             "type": "n8n-nodes-base.mySql",
             "typeVersion": 2,
             "position": [
-                105088,
-                17280
+                111632,
+                18048
             ],
-            "id": "8afdd267-5c66-4aee-b950-6c15ec6d57a5",
+            "id": "1d1e59fe-6c6f-4995-a136-bdf83aa74e4e",
             "credentials": {
                 "mySql": {
                     "id": "mXkCRDNO8ss2rXeA",
@@ -517,10 +484,10 @@
             "type": "n8n-nodes-base.mySql",
             "typeVersion": 2,
             "position": [
-                105088,
-                17632
+                111632,
+                18400
             ],
-            "id": "2173f98f-984c-4474-b275-095ca899e253",
+            "id": "f2e70b41-376b-4f0d-bc02-c284a1d502d2",
             "credentials": {
                 "mySql": {
                     "id": "mXkCRDNO8ss2rXeA",
@@ -537,10 +504,10 @@
             "type": "n8n-nodes-base.mySql",
             "typeVersion": 2,
             "position": [
-                105088,
-                17456
+                111632,
+                18224
             ],
-            "id": "01f8cafb-18be-4874-9e33-ad8ad8825e96",
+            "id": "022f6a67-6ebb-4a4c-981a-6d9641805215",
             "credentials": {
                 "mySql": {
                     "id": "mXkCRDNO8ss2rXeA",
@@ -557,10 +524,10 @@
             "type": "n8n-nodes-base.mySql",
             "typeVersion": 2,
             "position": [
-                104768,
-                18272
+                111632,
+                19040
             ],
-            "id": "4d0ca2c2-31a2-4bb4-8bbe-6abce5cda205",
+            "id": "0705bf82-8835-4b92-97f2-67e48e9968a1",
             "credentials": {
                 "mySql": {
                     "id": "mXkCRDNO8ss2rXeA",
@@ -570,34 +537,39 @@
         },
         {
             "parameters": {
-                "functionCode": "// ERROR LOGGER FOR MYSQL\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "const workflowData = $workflow.staticData || {};\nlet errors = workflowData.apiErrors || [];\n\nconst input = $input.all();\ninput.forEach(item => {\n  if (item.json && item.json.error) {\n    errors.push({\n      timestamp: new Date().toISOString(),\n      error: item.json.error,\n      source: item.json.source || 'Unknown',\n      requires_retry: item.json.requires_retry || false,\n      context: JSON.stringify(item.json, null, 2).substring(0, 500)\n    });\n  }\n});\n\nconst oneDayAgo = new Date(Date.now() - 24 * 60 * 60000);\nerrors = errors.filter(e => new Date(e.timestamp) > oneDayAgo);\nworkflowData.apiErrors = errors;\n\n$workflow.staticData = workflowData;\n\nconst mysqlErrors = errors.slice(-5).map(error => ({\n  error_id: `error_${new Date().getTime()}_${Math.random().toString(36).substring(2, 10)}`,\n  source: error.source,\n  error_type: 'API_ERROR',\n  error_message: error.error.substring(0, 255),\n  requires_retry: error.requires_retry,\n  error_context: error.context,\n  workflow_version: \"2.0-enhanced-mysql\",\n  logged_at: error.timestamp\n}));\n\nif (mysqlErrors.length > 0) {\n  return mysqlErrors.map(error => ({\n    json: error\n  }));\n}\n\nreturn [];"
             },
             "name": "Error Logger for MySQL",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103680,
-                16928
+                110224,
+                17712
             ],
-            "id": "a021bfbc-2a8a-4b7c-b576-5d665038ecad"
+            "id": "129b8eba-f086-4eac-a48f-f0d40cc65101"
         },
         {
             "parameters": {
-                "table": "skyguardian_errors",
+                "table": {
+                    "__rl": true,
+                    "value": "skyguardian_errors",
+                    "mode": "list",
+                    "cachedResultName": "skyguardian_errors"
+                },
                 "options": {}
             },
             "name": "MySQL - Insert Errors",
             "type": "n8n-nodes-base.mySql",
             "typeVersion": 2,
             "position": [
-                103968,
-                16928
+                110512,
+                17712
             ],
-            "id": "e585adf5-a79f-4387-9327-92babec27ce9",
+            "id": "bbdd8105-f527-4fb0-9372-c78b76483053",
             "credentials": {
                 "mySql": {
-                    "id": "j7tkvMpNfEpImhym",
-                    "name": "Tenant DB"
+                    "id": "mXkCRDNO8ss2rXeA",
+                    "name": "MySQL account"
                 }
             }
         },
@@ -612,10 +584,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                103888,
-                18064
+                110336,
+                18832
             ],
-            "id": "5d93658c-3204-4228-9f22-958ae198d190",
+            "id": "6f0ba075-ec55-4fe5-9599-ca1618edd0b4",
             "disabled": true
         },
         {
@@ -627,10 +599,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                104752,
-                17824
+                111264,
+                18704
             ],
-            "id": "d2123904-6c7b-4829-9070-9bb563ecafe1",
+            "id": "b8725624-5fdc-4594-a010-d6ad0e1a75fd",
             "disabled": true
         },
         {
@@ -648,62 +620,62 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                104768,
-                17472
+                111312,
+                18240
             ],
-            "id": "d39bdbc7-749b-4200-a54d-bbea7976383d"
+            "id": "d5dd5b9a-9da2-4b1f-9f94-bb76cb6f923f"
         },
         {
             "parameters": {
-                "numberInputs": 5
+                "numberInputs": 6
             },
             "type": "n8n-nodes-base.merge",
             "typeVersion": 3.2,
             "position": [
-                103072,
-                16880
+                109616,
+                17648
             ],
-            "id": "86852974-399f-4499-8ae4-fef794df982d",
+            "id": "d3962b63-edda-4799-a2f5-1f3f2128a660",
             "name": "Merge"
         },
         {
             "parameters": {
-                "functionCode": "// Standardize risk levels\nconst input = $input.first().json;\nconst riskLevelMap = {\n  'LOW': 'LOW',\n  'MODERATE': 'MEDIUM',\n  'MEDIUM': 'MEDIUM',\n  'ELEVATED': 'HIGH',\n  'HIGH': 'HIGH',\n  'CRITICAL': 'CRITICAL'\n};\nconst originalRisk = input.final_assessment?.risk_level || 'LOW';\nconst standardizedRisk = riskLevelMap[originalRisk] || 'LOW';\nlet isMediumOrHigher = false;\nif (standardizedRisk === 'MEDIUM' || standardizedRisk === 'HIGH' || standardizedRisk === 'CRITICAL') {\n  isMediumOrHigher = true;\n}\nreturn [{\n  json: {\n    ...input,\n    standardized_risk_level: standardizedRisk,\n    is_medium_or_higher: isMediumOrHigher\n  }\n}];"
+                "functionCode": "// Standardize risk levels\nconst input = $input.first().json;\n\n// Map risk levels to standard format\nconst riskLevelMap = {\n  'LOW': 'LOW',\n  'MODERATE': 'MEDIUM',\n  'MEDIUM': 'MEDIUM',\n  'ELEVATED': 'HIGH',\n  'HIGH': 'HIGH',\n  'CRITICAL': 'CRITICAL'\n};\n\nconst originalRisk = input.final_assessment?.risk_level || 'LOW';\nconst standardizedRisk = riskLevelMap[originalRisk] || 'LOW';\n\n// Also check composite score for additional logic\nconst compositeScore = input.enhanced_risk_assessment?.composite_score || 0;\nlet isMediumOrHigher = false;\n\n// Determine if medium or higher based on both risk level and score\nif (standardizedRisk === 'MEDIUM' || standardizedRisk === 'HIGH' || standardizedRisk === 'CRITICAL') {\n  isMediumOrHigher = true;\n} else if (compositeScore >= 100) { // Or any threshold you prefer\n  isMediumOrHigher = true;\n}\n\nreturn [{\n  json: {\n    ...input,\n    standardized_risk_level: standardizedRisk,\n    is_medium_or_higher: isMediumOrHigher,\n    // For backward compatibility\n    final_assessment: {\n      ...input.final_assessment,\n      risk_level: standardizedRisk\n    }\n  }\n}];"
             },
             "name": "Intelligence Aggregation1",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103328,
-                18288
+                109872,
+                19056
             ],
-            "id": "d4ebce03-92a7-4a41-8c16-77cdbf6a7d04"
+            "id": "41376cc8-6d8c-4f55-a172-18e55055c694"
         },
         {
             "parameters": {
-                "functionCode": "// FORMAT AI ANALYSIS FOR MYSQL\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Format AI Analysis for MySQL with multi-language support\nconst input = $input.first().json;\n\n// Get current timestamp\nconst now = new Date();\nconst timestamp = now.toISOString();\n\nconst aiAlertData = {\n  analysis_id: input.ai_structured?.analysis_id || `ai_${Date.now()}`,\n  trigger_level: 'MEDIUM_OR_HIGHER', // This comes from your IF condition\n  ai_analysis_raw: input.ai_analysis || '',\n  \n  // Translations - set to NULL for now (will be populated by translation service)\n  translations: null,\n  \n  // Structured analysis fields in English\n  situation: input.ai_structured?.situation || '',\n  threat_level: input.ai_structured?.threat_level || '',\n  primary_concern: input.ai_structured?.primary_concern || '',\n  secondary_concerns: input.ai_structured?.secondary_concerns || '',\n  likely_scenario: input.ai_structured?.likely_scenario || '',\n  recommendations: input.ai_structured?.recommendations || '',\n  forecast: input.ai_structured?.forecast || '',\n  confidence: input.ai_structured?.confidence || '',\n  \n  // Multi-language analysis fields (JSON)\n  analysis_en: JSON.stringify(input.ai_structured || {}),\n  analysis_tr: null, // Will be populated with Turkish translation\n  analysis_et: null, // Will be populated with Estonian translation\n  multi_language_analysis: null, // Will contain all language versions\n  \n  // Language settings\n  languages_available: 'en', // Only English for now\n  source_language: 'en',\n  \n  // Metadata\n  ai_timestamp: input.ai_structured?.ai_timestamp || timestamp,\n  ai_confidence_score: input.ai_structured?.ai_confidence_score || 0.85,\n  ai_response_length: input.ai_structured?.ai_response_length || 0,\n  structured_data: JSON.stringify(input.ai_structured || {}),\n  \n  // Context from the current airspace situation\n  context: JSON.stringify({\n    risk_score: input.enhanced_risk_assessment?.composite_score || 0,\n    risk_level: input.enhanced_risk_assessment?.overall_risk || 'LOW',\n    military_count: input.military_aircraft || 0,\n    threat_count: input.potential_threats || 0,\n    weather_impact: input.weather_notes || 'None',\n    timestamp: input.timestamp || timestamp\n  }),\n  \n  // Timestamps for record keeping\n  created_at: timestamp,\n  updated_at: timestamp\n};\n\nreturn [{\n  json: aiAlertData\n}];"
             },
             "name": "Format AI Analysis for MySQL",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                104560,
-                18272
+                111424,
+                19040
             ],
-            "id": "7eafbe82-f12c-4454-9a1b-0867aa38f352"
+            "id": "c1749233-e6b2-4e06-b470-2d9a79591557"
         },
         {
             "parameters": {
-                "functionCode": "// TIERED ALERT SYSTEM\n// ... (Retains original logic)\nreturn $input.all();"
+                "functionCode": "// Tiered Alert System for Estonia\nconst input = $input.first().json;\nconst now = new Date();\n\n// Tier 1: CRITICAL (Immediate AI + Alerts)\n// Tier 2: HIGH (AI Analysis only, no immediate alerts)\n// Tier 3: MEDIUM (Log only, no analysis)\n// Tier 4: LOW (No action needed)\n\nconst riskTier = {\n  'CRITICAL RISK': 1,\n  'HIGH RISK': 2,\n  'ELEVATED RISK': 3,\n  'MEDIUM RISK': 4,\n  'NORMAL': 5\n};\n\nconst currentStatus = input.status || 'NORMAL';\nconst currentTier = riskTier[currentStatus] || 5;\n\n// Tier-based actions\nconst actions = {\n  shouldTriggerAI: currentTier <= 1, // Only CRITICAL\n  shouldSendImmediateAlert: currentTier <= 1, // Only CRITICAL\n  shouldLogToDatabase: currentTier <= 3, // CRITICAL, HIGH, MEDIUM\n  shouldTriggerPersistentCheck: currentTier <= 2, // CRITICAL, HIGH\n  alertPriority: currentTier <= 1 ? 'IMMEDIATE' : \n                 currentTier === 2 ? 'HIGH' : \n                 currentTier === 3 ? 'MEDIUM' : 'LOW'\n};\n\nreturn [{\n  json: {\n    ...input,\n    tiered_system: {\n      current_tier: currentTier,\n      tier_label: currentStatus,\n      actions: actions,\n      thresholds: {\n        ai_trigger: 'CRITICAL ONLY',\n        immediate_alert: 'CRITICAL ONLY',\n        enhanced_monitoring: 'HIGH+',\n        standard_logging: 'MEDIUM+'\n      }\n    }\n  }\n}];"
             },
             "name": "Tiered Alert System for Estonia",
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                103808,
-                18272
+                110352,
+                19040
             ],
-            "id": "17c58427-1f64-4acb-b945-6e705c3a4097"
+            "id": "785ec7d0-df94-4ce3-9697-e281ab79206f"
         },
         {
             "parameters": {
@@ -724,8 +696,56 @@
                             "value": "={{ $json.coord.lon }}"
                         },
                         {
+                            "column": "latitude",
+                            "value": "={{ $json.coord.lat }}"
+                        },
+                        {
+                            "column": "weather_main",
+                            "value": "={{ $json.weather[0].main }}"
+                        },
+                        {
+                            "column": "weather_description",
+                            "value": "={{ $json.weather[0].description }}"
+                        },
+                        {
+                            "column": "weather_icon",
+                            "value": "={{ $json.weather[0].icon }}"
+                        },
+                        {
+                            "column": "weather_id",
+                            "value": "={{ $json.weather[0].id }}"
+                        },
+                        {
                             "column": "temperature",
                             "value": "={{ $json.main.temp }}"
+                        },
+                        {
+                            "column": "feels_like",
+                            "value": "={{ $json.main.feels_like }}"
+                        },
+                        {
+                            "column": "temp_min",
+                            "value": "={{ $json.main.temp_min }}"
+                        },
+                        {
+                            "column": "temp_max",
+                            "value": "={{ $json.main.temp_max }}"
+                        },
+                        {
+                            "column": "pressure",
+                            "value": "={{ $json.main.pressure }}"
+                        },
+                        {
+                            "column": "humidity",
+                            "value": "={{ $json.main.humidity }}"
+                        },
+                        {
+                            "column": "sea_level",
+                            "value": "={{ $json.main.sea_level }}"
+                        },
+                        {
+                            "column": "grnd_level",
+                            "value": "={{ $json.main.grnd_level }}"
                         },
                         {
                             "column": "visibility",
@@ -736,12 +756,48 @@
                             "value": "={{ $json.wind.speed }}"
                         },
                         {
+                            "column": "wind_degree",
+                            "value": "={{ $json.wind.deg }}"
+                        },
+                        {
+                            "column": "clouds_all",
+                            "value": "={{ $json.clouds.all }}"
+                        },
+                        {
                             "column": "location_name",
                             "value": "={{ $json.name }}"
                         },
                         {
+                            "column": "location_id",
+                            "value": "={{ $json.sys.id }}"
+                        },
+                        {
+                            "column": "sunrise",
+                            "value": "={{ $json.sys.sunrise }}"
+                        },
+                        {
+                            "column": "sunset",
+                            "value": "={{ $json.sys.sunset }}"
+                        },
+                        {
                             "column": "data_timestamp",
                             "value": "={{ $json.dt }}"
+                        },
+                        {
+                            "column": "timezone_offset",
+                            "value": "={{ $json.timezone }}"
+                        },
+                        {
+                            "column": "base",
+                            "value": "={{ $json.base }}"
+                        },
+                        {
+                            "column": "cod",
+                            "value": "={{ $json.cod }}"
+                        },
+                        {
+                            "column": "country_code",
+                            "value": "={{ $json.sys.country }}"
                         }
                     ]
                 },
@@ -750,10 +806,10 @@
             "type": "n8n-nodes-base.mySql",
             "typeVersion": 2.5,
             "position": [
-                103056,
-                16464
+                109600,
+                17232
             ],
-            "id": "b90dcdfd-394d-4b6e-b096-98efc1a38faf",
+            "id": "1d73833c-818d-464b-b616-f309378cc558",
             "name": "Update Weather",
             "credentials": {
                 "mySql": {
@@ -761,8 +817,60 @@
                     "name": "MySQL account"
                 }
             }
+        },
+        {
+            "parameters": {
+                "table": {
+                    "__rl": true,
+                    "value": "skyguardian_nato_reports",
+                    "mode": "list",
+                    "cachedResultName": "skyguardian_nato_reports"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2.5,
+            "position": [
+                110992,
+                18544
+            ],
+            "id": "2d902aac-a694-4b67-818a-dfcd992c02e4",
+            "name": "MySQL - Insert NATO Report",
+            "credentials": {
+                "mySql": {
+                    "id": "mXkCRDNO8ss2rXeA",
+                    "name": "MySQL account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "functionCode": "// =================================================================\n// NATO STANDARD REPORT GENERATOR (LIVE / PRODUCTION)\n// =================================================================\n// Bu modül sadece YÜKSEK TEHDİT veya ASKERİ unsurlar için çalışır.\n// Sivil uçuşlarda çıktı vermez (No Op).\n// =================================================================\n\nconst input = $input.first().json;\nconst now = new Date();\nconst timestamp = now.toISOString();\n\n// 1. Hedefleri Belirle (Sıkı Filtreleme)\nlet targets = [];\nif (input.uniqueAircraft) {\n  targets = input.uniqueAircraft.filter(ac => \n    ac.is_military ||                         // Askeri mi?\n    ac.threat_level >= 4 ||                   // Tehdit seviyesi 4 veya 5 mi?\n    ac.is_potential_threat ||                 // Potansiyel tehdit bayrağı var mı?\n    (ac.country_of_origin === 'Russia' && ac.type !== 'civil') // Rusya ve sivil değil mi?\n  );\n}\n\n// 2. Fallback: Uçak filtresine takılan yoksa ama Sistem \"Yüksek Risk\" diyorsa\n// (Örn: AI anormallik tespit etti ama uçak kimliği belirsiz)\nif (targets.length === 0 && (input.status || '').toUpperCase().includes('RISK')) {\n    // Sadece \"HIGH\" veya \"CRITICAL\" risk durumlarında boş rapor oluştur\n    if ((input.status || '').includes('HIGH') || (input.status || '').includes('CRITICAL')) {\n        targets = [{\n            aircraft_name: 'Unidentified Contact (Anomaly)',\n            hex: 'UNKNOWN',\n            lat: 59.42, \n            lon: 24.83,\n            alt_baro: 0,\n            gs: 0,\n            track: 0,\n            country_of_origin: 'Unknown',\n            hex: 'UNKNOWN'\n        }];\n    }\n}\n\n// 3. EĞER HİÇBİR TEHDİT YOKSA DUR.\n// Production ortamında gereksiz veri kaydetmemek için boş dönüyoruz.\nif (targets.length === 0) {\n    return []; \n}\n\n// En yüksek öncelikli hedefi seç\nconst primaryTarget = targets.sort((a, b) => (b.threat_level || 0) - (a.threat_level || 0))[0];\n\n// --- SALUTE FORMATI OLUŞTURMA ---\n\n// S - Size\nconst size = `${targets.length}x CONTACT(S)`;\n\n// A - Activity\nlet activity = `HDG ${primaryTarget.track || 0}, SPD ${primaryTarget.gs || 0} kts`;\nif (primaryTarget.gs > 800) activity += \" [HIGH SPEED]\";\nif (primaryTarget.alt_baro < 1000) activity += \" [LOW LEVEL]\";\nif (primaryTarget.violation) activity += \" [VIOLATION]\";\n\n// L - Location\nconst location = `LAT ${primaryTarget.lat}, LON ${primaryTarget.lon}, ALT ${primaryTarget.alt_baro || 0} ft`;\nlet locationDetail = 'SECTOR TALLINN';\nif (primaryTarget.airspace_tracking && primaryTarget.airspace_tracking.nearest_waypoint) {\n    locationDetail = `NEAR ${primaryTarget.airspace_tracking.nearest_waypoint.name}`;\n}\n\n// U - Unit\nlet unit = primaryTarget.aircraft_name || 'UNKNOWN TYPE';\nif (primaryTarget.callsign) unit += ` c/s ${primaryTarget.callsign}`;\nif (primaryTarget.country_of_origin) unit += ` (${primaryTarget.country_of_origin.toUpperCase()})`;\n\n// T - Time\nconst timeZulu = now.toISOString().replace('T', ' ').substring(0, 19) + ' Z';\n\n// E - Equipment\nconst equipment = `HEX: ${primaryTarget.hex}, SQUAWK: ${primaryTarget.squawk || 'N/A'}`;\n\n// Rapor Metni\nconst reportText = `*** NATO FLASH REPORT ***\nTO: SKYGUARDIAN C2\nSUBJ: AIRSPACE ALERT - ${input.status || 'WARNING'}\n\n1. (S) SIZE: ${size}\n2. (A) ACTIVITY: ${activity}\n3. (L) LOCATION: ${location} // ${locationDetail}\n4. (U) UNIT: ${unit}\n5. (T) TIME: ${timeZulu}\n6. (E) EQUIP: ${equipment}\n\nRMKS: AUTOMATED SENSOR ALERT.`;\n\n// Çıktı\nreturn [{\n    json: {\n        report_id: `SALUTE-${now.getTime()}-${primaryTarget.hex}`,\n        timestamp: timestamp,\n        report_type: 'SALUTE',\n        threat_level: input.enhanced_risk_assessment?.overall_risk || 'UNKNOWN',\n        salute_size: size,\n        salute_activity: activity,\n        salute_location: `${location} // ${locationDetail}`,\n        salute_unit: unit,\n        salute_time: timeZulu,\n        salute_equipment: equipment,\n        full_report_text: reportText,\n        is_transmitted: false\n    }\n}];"
+            },
+            "name": "Generate NATO SALUTE Report",
+            "type": "n8n-nodes-base.function",
+            "typeVersion": 1,
+            "position": [
+                110720,
+                18544
+            ],
+            "id": "c4aecd27-8482-406e-b430-0f2faab32f84"
+        },
+        {
+            "parameters": {
+                "functionCode": "// =================================================================\n// PROMPT GENERATOR FOR OLLAMA\n// =================================================================\n\n// 1. Veri Güvenliği Kontrolleri (Data Safety Checks)\nconst topCountries = ($json.top_countries && Array.isArray($json.top_countries)) \n    ? $json.top_countries.map(c => c.country + ':' + c.count).join(', ') \n    : 'None';\n\nconst atcAnomalies = $json.atc_data?.stats?.military_no_contact || 0;\nconst weatherNotes = $json.weather_notes || 'No significant weather impact';\nconst violations = $json.restriction_violations || 0;\nconst suspPatterns = $json.tracking_patterns?.suspicious_count || 0;\n\n// 2. Prompt Metnini İnşa Et\nconst promptText = `Analyze Tallinn airspace security alert with enhanced intelligence:\n\nOVERALL STATUS: ${$json.final_assessment?.overall_status || 'UNKNOWN'}\nTIMESTAMP: ${$json.timestamp}\n\nENHANCED DATA:\n- Total aircraft: ${$json.total_aircraft || 0}\n- Military: ${$json.military_aircraft || 0} (${$json.enhanced_stats?.nato_count || 0} NATO)\n- Potential threats: ${$json.enhanced_stats?.potential_threats || 0}\n- Drones: ${$json.drones || 0}\n- Near sensitive locations: ${$json.near_sensitive || 0}\n- High speed (>800km/h): ${$json.high_speed || 0}\n- Low altitude (<1000m): ${$json.low_altitude || 0}\n- Composite threat score: ${$json.enhanced_risk_assessment?.composite_score || 0}/500\n\nINTELLIGENCE CONTEXT:\n- Top countries: ${topCountries}\n- Airspace violations: ${violations}\n- Suspicious patterns: ${suspPatterns}\n- ATC anomalies: ${atcAnomalies}\n- Weather impact: ${weatherNotes}\n- Most affected zone: ${$json.most_affected_zone || 'Tallinn region'}\n\nTHREAT ASSESSMENT: ${$json.enhanced_risk_assessment?.overall_risk || 'LOW'}\n\nIMPORTANT: You MUST provide analysis in this EXACT FORMAT with NO additional text or explanations before or after the numbered list:\n\n1. SITUATION: [Brief overview of current airspace situation in 1-2 sentences]\n2. THREAT LEVEL: [CRITICAL/HIGH/MEDIUM/LOW] - [Brief reasoning in 5-10 words]\n3. PRIMARY CONCERN: [Most significant threat or anomaly in 1 sentence]\n4. SECONDARY CONCERNS: [List 1-3 concerns separated by semicolons, no bullet points]\n5. LIKELY SCENARIO: [Military exercise; Drone activity; Civil traffic; Unknown threat; Surveillance]\n6. RECOMMENDATIONS: [List 1-3 specific actions separated by semicolons]\n7. FORECAST: [Expected development in next 30 minutes in 1 sentence]\n8. CONFIDENCE: [High/Medium/Low] - [Brief explanation in 5-10 words]\n\nDO NOT include \"Here is the analysis:\" or any other introductory text.\nDO NOT use bullet points, asterisks, or markdown formatting.\nEach numbered item must be on a separate line.\nKeep all text on the same line as the section number.`;\n\n// 3. Prompt'u Çıktı Olarak Ver\nreturn {\n    prompt: promptText\n};"
+            },
+            "name": "Generate AI Prompt",
+            "type": "n8n-nodes-base.function",
+            "typeVersion": 1,
+            "position": [
+                110592,
+                19040
+            ],
+            "id": "fac545b9-8c0c-4188-bb56-ab18af7944c2"
         }
     ],
+    "pinData": {},
     "connections": {
         "Trigger Every Minute": {
             "main": [
@@ -796,61 +904,6 @@
                         "node": "Get Weather Data",
                         "type": "main",
                         "index": 0
-                    }
-                ]
-            ]
-        },
-        "ADSB.lol - Tallinn 50km": {
-            "main": [
-                [
-                    {
-                        "node": "Merge",
-                        "type": "main",
-                        "index": 1
-                    }
-                ]
-            ]
-        },
-        "Raspberry Pi - RF Scan": {
-            "main": [
-                [
-                    {
-                        "node": "Deduplicate & Enrich",
-                        "type": "main",
-                        "index": 5
-                    }
-                ]
-            ]
-        },
-        "ADSB.lol - Military Only": {
-            "main": [
-                [
-                    {
-                        "node": "Merge",
-                        "type": "main",
-                        "index": 2
-                    }
-                ]
-            ]
-        },
-        "OpenSky - Tallinn Airspace": {
-            "main": [
-                [
-                    {
-                        "node": "Merge",
-                        "type": "main",
-                        "index": 3
-                    }
-                ]
-            ]
-        },
-        "OpenSky - Global Extended": {
-            "main": [
-                [
-                    {
-                        "node": "Merge",
-                        "type": "main",
-                        "index": 4
                     }
                 ]
             ]
@@ -926,6 +979,22 @@
                 ]
             ]
         },
+        "Get Weather Data": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Update Weather",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
         "ATC & Airspace Monitoring": {
             "main": [
                 [
@@ -952,12 +1021,12 @@
             "main": [
                 [
                     {
-                        "node": "Format MySQL Data",
+                        "node": "Prepare Enhanced Data Log",
                         "type": "main",
                         "index": 0
                     },
                     {
-                        "node": "Prepare Enhanced Data Log",
+                        "node": "Format MySQL Data",
                         "type": "main",
                         "index": 0
                     }
@@ -969,6 +1038,76 @@
                 [
                     {
                         "node": "Intelligence Aggregation",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Intelligence Aggregation": {
+            "main": [
+                [
+                    {
+                        "node": "IF High or Critical Risk",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Intelligence Aggregation1",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF Medium or Higher Risk?": {
+            "main": [
+                [
+                    {
+                        "node": "Tiered Alert System for Estonia",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Ollama AI Analysis": {
+            "main": [
+                [
+                    {
+                        "node": "Parse AI Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF High or Critical Risk": {
+            "main": [
+                [
+                    {
+                        "node": "Check Persistent Alert",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Telegram Enhanced Alert",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Generate NATO SALUTE Report",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check Persistent Alert": {
+            "main": [
+                [
+                    {
+                        "node": "IF Persistent Alert",
                         "type": "main",
                         "index": 0
                     }
@@ -1029,59 +1168,22 @@
                 ]
             ]
         },
-        "Intelligence Aggregation": {
+        "Parse AI Response": {
             "main": [
                 [
                     {
-                        "node": "IF High or Critical Risk",
-                        "type": "main",
-                        "index": 0
-                    },
-                    {
-                        "node": "Intelligence Aggregation1",
+                        "node": "Format AI Analysis for MySQL",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "IF High or Critical Risk": {
+        "Error Logger for MySQL": {
             "main": [
                 [
                     {
-                        "node": "Telegram Enhanced Alert",
-                        "type": "main",
-                        "index": 0
-                    },
-                    {
-                        "node": "Check Persistent Alert",
-                        "type": "main",
-                        "index": 0
-                    },
-                    {
-                        "node": "Generate NATO SALUTE Report",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Generate NATO SALUTE Report": {
-            "main": [
-                [
-                    {
-                        "node": "MySQL - Insert NATO Report",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Check Persistent Alert": {
-            "main": [
-                [
-                    {
-                        "node": "IF Persistent Alert",
+                        "node": "MySQL - Insert Errors",
                         "type": "main",
                         "index": 0
                     }
@@ -1110,18 +1212,57 @@
                 ]
             ]
         },
-        "Get Weather Data": {
+        "ADSB.lol - Tallinn 50km": {
             "main": [
                 [
                     {
                         "node": "Merge",
                         "type": "main",
-                        "index": 0
-                    },
+                        "index": 1
+                    }
+                ]
+            ]
+        },
+        "Raspberry Pi - RF Scan": {
+            "main": [
+                [
                     {
-                        "node": "Update Weather",
+                        "node": "Merge",
                         "type": "main",
-                        "index": 0
+                        "index": 5
+                    }
+                ]
+            ]
+        },
+        "ADSB.lol - Military Only": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 2
+                    }
+                ]
+            ]
+        },
+        "OpenSky - Tallinn Airspace": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 3
+                    }
+                ]
+            ]
+        },
+        "OpenSky - Global Extended": {
+            "main": [
+                [
+                    {
+                        "node": "Merge",
+                        "type": "main",
+                        "index": 4
                     }
                 ]
             ]
@@ -1148,50 +1289,6 @@
                 ]
             ]
         },
-        "IF Medium or Higher Risk?": {
-            "main": [
-                [
-                    {
-                        "node": "Tiered Alert System for Estonia",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Tiered Alert System for Estonia": {
-            "main": [
-                [
-                    {
-                        "node": "Ollama AI Analysis",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Ollama AI Analysis": {
-            "main": [
-                [
-                    {
-                        "node": "Parse AI Response",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Parse AI Response": {
-            "main": [
-                [
-                    {
-                        "node": "Format AI Analysis for MySQL",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
         "Format AI Analysis for MySQL": {
             "main": [
                 [
@@ -1203,16 +1300,53 @@
                 ]
             ]
         },
-        "Error Logger for MySQL": {
+        "Tiered Alert System for Estonia": {
             "main": [
                 [
                     {
-                        "node": "MySQL - Insert Errors",
+                        "node": "Generate AI Prompt",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate NATO SALUTE Report": {
+            "main": [
+                [
+                    {
+                        "node": "MySQL - Insert NATO Report",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate AI Prompt": {
+            "main": [
+                [
+                    {
+                        "node": "Ollama AI Analysis",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         }
-    }
+    },
+    "active": true,
+    "settings": {
+        "executionOrder": "v1",
+        "availableInMCP": false,
+        "timeSavedMode": "fixed",
+        "timezone": "Europe/Tallinn",
+        "callerPolicy": "workflowsFromSameOwner"
+    },
+    "versionId": "38f8af40-9885-45b9-86da-8bcb13844a07",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "3a70f2cbf6fc810e2efeddde906f50aa8de136a42c3549f046f2c63d7108bd3c"
+    },
+    "id": "CPV9VOYpWrPJnq7Z",
+    "tags": []
 }
