@@ -190,6 +190,11 @@ class ThreatAnalysisPage extends Component
     {
         $this->selectedAlertId = $alertId;
         $this->showDetailsModal = true;
+
+        $alert = SkyguardianAiAlerts::find($alertId);
+        $translatedAlert = $this->applyTranslation($alert);
+
+        $this->dispatch('details-loaded', recommendations: $translatedAlert->recommendations ?? '');
     }
 
     public function closeModal(): void

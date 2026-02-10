@@ -6,13 +6,15 @@ use App\Exports\AnalysesExport;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 
 class AnalysisHistoryPage extends Component
 {
-    public $analyses = [];
+    use WithPagination;
+    protected $paginationTheme = 'bootstrap';
     public $selectedAnalysis = null;
     public $showDetailsModal = false;
     public $loading = false;
@@ -26,54 +28,15 @@ class AnalysisHistoryPage extends Component
     public $chartData = [];
     public $riskDistribution = [];
     public $aircraftTrends = [];
+    public $perPage = 10;
 
     public function mount(): void
     {
         $this->currentLocale = Session::get('user_locale', App::getLocale());
         Session::put('user_locale', $this->currentLocale);
 
-        $this->loadAnalyses();
         $this->loadStats();
         $this->loadChartData();
-    }
-
-    public function loadAnalyses(): void
-    {
-        $this->loading = true;
-
-        $query = DB::table('skyguardian_analyses')
-            ->orderBy('analysis_time', 'desc');
-
-        if ($this->timeRange !== 'all') {
-            $days = match($this->timeRange) {
-                '7days' => 7,
-                '30days' => 30,
-                '90days' => 90,
-                default => 7
-            };
-
-            $startDate = Carbon::now()->subDays($days);
-            $query->where('analysis_time', '>=', $startDate);
-        }
-
-        if ($this->filterStatus !== 'all') {
-            $query->where('status', $this->filterStatus);
-        }
-
-        if ($this->filterRisk !== 'all') {
-            $query->where('overall_risk', $this->filterRisk);
-        }
-
-        if ($this->search) {
-            $query->where(function($q) {
-                $q->where('analysis_id', 'like', '%' . $this->search . '%')
-                    ->orWhere('status', 'like', '%' . $this->search . '%')
-                    ->orWhere('weather_notes', 'like', '%' . $this->search . '%');
-            });
-        }
-
-        $this->analyses = $query->limit(100)->get();
-        $this->loading = false;
     }
 
     public function loadStats(): void
@@ -165,9 +128,45 @@ class AnalysisHistoryPage extends Component
         $this->selectedAnalysis = null;
     }
 
+    private function getAnalysesQuery(): \Illuminate\Database\Query\Builder
+    {
+        $query = DB::table('skyguardian_analyses')
+            ->orderBy('analysis_time', 'desc');
+
+        if ($this->timeRange !== 'all') {
+            $days = match($this->timeRange) {
+                '7days' => 7,
+                '30days' => 30,
+                '90days' => 90,
+                default => 7
+            };
+
+            $startDate = Carbon::now()->subDays($days);
+            $query->where('analysis_time', '>=', $startDate);
+        }
+
+        if ($this->filterStatus !== 'all') {
+            $query->where('status', $this->filterStatus);
+        }
+
+        if ($this->filterRisk !== 'all') {
+            $query->where('overall_risk', $this->filterRisk);
+        }
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('analysis_id', 'like', '%' . $this->search . '%')
+                    ->orWhere('status', 'like', '%' . $this->search . '%')
+                    ->orWhere('weather_notes', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        return $query;
+    }
+
     public function applyFilters(): void
     {
-        $this->loadAnalyses();
+        $this->resetPage();
         $this->loadStats();
         $this->loadChartData();
         $this->dispatch('charts-updated');
@@ -175,6 +174,7 @@ class AnalysisHistoryPage extends Component
 
     public function resetFilters(): void
     {
+        $this->resetPage();
         $this->timeRange = '7days';
         $this->filterStatus = 'all';
         $this->filterRisk = 'all';
@@ -281,10 +281,10 @@ class AnalysisHistoryPage extends Component
 
     public function refreshData(): void
     {
-        $this->loadAnalyses();
         $this->loadStats();
         $this->loadChartData();
         $this->dispatch('charts-updated');
+        $this->resetPage();
     }
 
     public function getStatusOptions(): array
@@ -314,7 +314,10 @@ class AnalysisHistoryPage extends Component
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
+        $analyses = $this->getAnalysesQuery()->paginate($this->perPage);
+
         return view('livewire.user.analysis-history-page', [
+            'analyses' => $analyses,
             'statusOptions' => $this->getStatusOptions(),
             'riskOptions' => $this->getRiskOptions(),
         ])->layout('components.layouts.userApp');

@@ -20,12 +20,7 @@
 <body>
 <div id="layout-wrapper">
     @livewire('user.partials.top-bar')
-
     @livewire('user.partials.header')
-
-    <!-- ============================================================== -->
-    <!-- Start right Content here -->
-    <!-- ============================================================== -->
     {{ $slot }}
 </div>
 
@@ -40,7 +35,6 @@
         </div>
     </div>
 </div>
-
 <script src="{{ asset('user/assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('user/assets/libs/simplebar/simplebar.min.js') }}"></script>
 <script src="{{ asset('user/assets/libs/node-waves/waves.min.js') }}"></script>
@@ -52,7 +46,6 @@
     <script>
         window.addEventListener('language-changed', function(event) {
             const translationsPath = `/user/assets/lang/${event.detail.locale}.json`;
-
             fetch(translationsPath)
                 .then(response => response.json())
                 .then(translations => {

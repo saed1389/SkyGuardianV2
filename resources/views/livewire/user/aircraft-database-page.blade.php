@@ -717,15 +717,52 @@
                         @if($selectedAircraft->metadata)
                             <div class="row mt-4">
                                 <div class="col-12">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <button class="btn btn-sm btn-outline-secondary w-100" type="button" data-bs-toggle="collapse" data-bs-target="#metadataCollapse">
-                                                <i class="fas fa-code me-1"></i> <span data-key="t-view-raw-metadata">View Raw Metadata</span>
+                                    <div class="card bg-light border-0"> <div class="card-header bg-transparent border-bottom">
+                                            <button class="btn btn-sm btn-outline-secondary w-100 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#metadataCollapse">
+                                                <span><i class="fas fa-code me-2"></i> <span data-key="t-technical-metadata">Technical Metadata</span></span>
+                                                <i class="fas fa-chevron-down"></i>
                                             </button>
                                         </div>
                                         <div class="collapse" id="metadataCollapse">
-                                            <div class="card-body">
-                                                <pre class="mb-0" style="font-size: 11px; max-height: 200px; overflow: auto;">{{ json_encode(json_decode($selectedAircraft->metadata), JSON_PRETTY_PRINT) }}</pre>
+                                            <div class="card-body p-3">
+                                                @php
+                                                    $meta = json_decode($selectedAircraft->metadata, true);
+                                                @endphp
+
+                                                @if(is_array($meta))
+                                                    <div class="row g-3">
+                                                        @foreach($meta as $key => $value)
+                                                            <div class="col-md-4 col-sm-6">
+                                                                <div class="p-2 border rounded bg-white h-100">
+                                                                    <small class="text-muted text-uppercase d-block mb-1" style="font-size: 0.7rem;">
+                                                                        {{ str_replace('_', ' ', $key) }}
+                                                                    </small>
+
+                                                                    @if(is_array($value))
+                                                                        <ul class="list-unstyled mb-0 ps-2 border-start border-3 border-primary">
+                                                                            @foreach($value as $subKey => $subValue)
+                                                                                <li class="small">
+                                                                                    <span class="fw-bold">{{ ucfirst($subKey) }}:</span>
+                                                                                    {{ is_array($subValue) ? json_encode($subValue) : $subValue }}
+                                                                                </li>
+                                                                            @endforeach
+                                                                        </ul>
+                                                                    @elseif(is_bool($value))
+                                                                        <span class="badge bg-{{ $value ? 'success' : 'danger' }}">
+                                                                            {{ $value ? 'TRUE' : 'FALSE' }}
+                                                                        </span>
+                                                                    @elseif(is_null($value))
+                                                                        <span class="text-muted fst-italic">null</span>
+                                                                    @else
+                                                                        <span class="fw-medium text-dark">{{ $value }}</span>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <pre class="mb-0 text-muted">{{ $selectedAircraft->metadata }}</pre>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

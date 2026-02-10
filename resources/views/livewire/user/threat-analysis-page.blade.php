@@ -727,7 +727,7 @@
                                     <div class="accordion-body">
                                         <div class="card bg-success-subtle">
                                             <div class="card-body">
-                                                <div class="recommendations">
+                                                <div class="recommendations" id="ai-recommendations-content">
                                                     {!! nl2br(e($alertDetails->recommendations)) !!}
                                                 </div>
                                             </div>

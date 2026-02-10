@@ -18,7 +18,7 @@ return new class extends Migration
                 $table->string('error_type', 50)->nullable();
                 $table->text('error_message')->nullable();
                 $table->boolean('requires_retry')->default(false);
-                $table->longText('error_context')->nullable(); // JSON verisi büyük olabilir
+                $table->longText('error_context')->nullable();
                 $table->string('workflow_version', 50)->nullable();
                 $table->dateTime('logged_at')->index();
                 $table->timestamps();
@@ -28,7 +28,7 @@ return new class extends Migration
         if (!Schema::hasTable('skyguardian_aircraft')) {
             Schema::create('skyguardian_aircraft', function (Blueprint $table) {
                 $table->id();
-                $table->string('hex', 10)->unique(); // ICAO 24-bit address
+                $table->string('hex', 10)->unique();
                 $table->string('registration', 20)->nullable();
                 $table->string('callsign', 20)->nullable();
                 $table->string('type', 20)->nullable();

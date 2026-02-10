@@ -32,13 +32,13 @@
                     </button>
                 </div>
 
-                <div class="app-search d-none d-md-block">
-                    <div class="dropdown topbar-head-dropdown ms-1 header-item" id="weatherDropdown">
-                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" wire:click="refreshWeather" onclick="event.stopPropagation()" wire:loading.attr="disabled">
+                <div class="d-flex align-items-center">
+
+                    <div class="dropdown topbar-head-dropdown ms-1 header-item">
+                        <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="modal" data-bs-target="#weatherModal" wire:click="refreshWeather" title="Meteorological Intelligence">
                             @if($weather)
                                 <div wire:loading.remove wire:target="refreshWeather">
                                     <i class='bx {{ $this->getWeatherIcon() }} fs-22 {{ $this->getWeatherIconClass() }}'></i>
-                                    <span class="ms-1 fw-medium">{{ round($weather->temperature) }}°C</span>
                                 </div>
                                 <div wire:loading wire:target="refreshWeather">
                                     <i class='bx bx-refresh fs-22 animate-spin text-primary'></i>
@@ -46,144 +46,11 @@
                             @else
                                 <div>
                                     <i class='bx bx-cloud fs-22 text-secondary'></i>
-                                    <span class="ms-1 fw-medium">--°C</span>
                                 </div>
                             @endif
                         </button>
-
-                        @if($weather)
-                            <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="weatherDropdown" wire:ignore.self>
-                                <div class="dropdown-head bg-primary bg-pattern rounded-top">
-                                    <div class="p-3">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h6 class="m-0 fs-16 fw-semibold text-white">
-                                                <i class='bx bx-map-pin me-1'></i>
-                                                {{ $weather->location_name }}, {{ $weather->country_code }}
-                                            </h6>
-                                            <button type="button" class="btn btn-ghost-light btn-sm p-0" wire:click="refreshWeather" wire:loading.attr="disabled" onclick="event.stopPropagation()" title="Refresh weather">
-                                                <i class='bx bx-refresh fs-16' wire:loading.remove wire:target="refreshWeather"></i>
-                                                <i class='bx bx-loader bx-spin fs-16' wire:loading wire:target="refreshWeather"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-body p-3">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="flex-shrink-0">
-                                            @if($weather->weather_icon)
-                                                <img src="https://openweathermap.org/img/wn/{{ $weather->weather_icon }}@2x.png" alt="{{ $weather->weather_description }}" width="60" height="60">
-                                            @else
-                                                <div class="avatar-xs">
-                                                    <span class="avatar-title bg-soft-primary text-primary rounded-circle fs-24">
-                                                        <i class='bx {{ $this->getWeatherIcon() }}'></i>
-                                                    </span>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h3 class="mb-0">{{ round($weather->temperature) }}°C</h3>
-                                            <p class="text-muted mb-0 text-capitalize">{{ $weather->weather_description }}</p>
-                                            <small class="text-muted" ><span data-i18n="t-feels-like" wire:ignore>Feels like</span>: {{ round($weather->feels_like) }}°C</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="row g-2">
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0">
-                                                    <i class='bx bx-wind text-primary fs-18'></i>
-                                                </div>
-                                                <div class="flex-grow-1 ms-2">
-                                                    <p class="mb-0 fs-12" data-i18n="t-wind" wire:ignore>Wind</p>
-                                                    <h6 class="mb-0 fs-14">{{ $weather->wind_speed }} m/s</h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0">
-                                                    <i class='bx bx-droplet text-info fs-18'></i>
-                                                </div>
-                                                <div class="flex-grow-1 ms-2">
-                                                    <p class="mb-0 fs-12" data-i18n="t-humidity" wire:ignore>Humidity</p>
-                                                    <h6 class="mb-0 fs-14">{{ $weather->humidity }}%</h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0">
-                                                    <i class='bx bx-bar-chart-alt text-success fs-18'></i>
-                                                </div>
-                                                <div class="flex-grow-1 ms-2">
-                                                    <p class="mb-0 fs-12" data-i18n="t-pressure" wire:ignore>Pressure</p>
-                                                    <h6 class="mb-0 fs-14">{{ $weather->pressure }} hPa</h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0">
-                                                    <i class='bx bx-show text-warning fs-18'></i>
-                                                </div>
-                                                <div class="flex-grow-1 ms-2">
-                                                    <p class="mb-0 fs-12" data-i18n="t-visibility" wire:ignore>Visibility</p>
-                                                    <h6 class="mb-0 fs-14">{{ $this->getFormattedVisibility() }}</h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-3">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <div class="text-center">
-                                                    <i class='bx bx-sunrise text-warning fs-18 d-block mb-1'></i>
-                                                    <small class="text-muted" data-i18n="t-sunrise" wire:ignore>Sunrise</small>
-                                                    <p class="mb-0 fs-12">
-                                                        {{ $this->getFormattedSunrise() }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="col-6">
-                                                <div class="text-center">
-                                                    <i class='bx bx-sunset text-orange fs-18 d-block mb-1'></i>
-                                                    <small class="text-muted" data-i18n="t-sunset" wire:ignore>Sunset</small>
-                                                    <p class="mb-0 fs-12">
-                                                        {{ $this->getFormattedSunset() }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="dropdown-footer p-2 text-center border-top">
-                                    <small class="text-muted">
-                                        <span data-key="t-updated" wire:ignore>Updated</span>: {{ $this->getLastUpdated() }}
-                                    </small>
-                                </div>
-                            </div>
-                        @else
-                            <div class="dropdown-menu dropdown-menu-end p-0" wire:ignore.self>
-                                <div class="dropdown-head bg-primary bg-pattern rounded-top">
-                                    <div class="p-3">
-                                        <h6 class="m-0 fs-16 fw-semibold text-white">
-                                            <i class='bx bx-cloud me-1'></i>
-                                            <span data-i18n="t-weather-data" wire:ignore>Weather Data</span>
-                                        </h6>
-                                    </div>
-                                </div>
-                                <div class="dropdown-body p-4 text-center">
-                                    <i class='bx bx-cloud-off fs-48 text-muted mb-3'></i>
-                                    <p class="text-muted mb-0" data-i18n="t-no-weather-data" wire:ignore>No weather data available</p>
-                                    <small class="text-muted" data-i18n="t-check-back-later" wire:ignore>Check back later or try refreshing</small>
-                                </div>
-                            </div>
-                        @endif
                     </div>
-                </div>
 
-                <div class="d-flex align-items-center">
                     <div class="dropdown ms-1 topbar-head-dropdown header-item">
                         <button type="button" class="btn btn-icon btn-topbar btn-ghost-secondary rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img id="header-lang-img" src="{{ $this->getFlagImage() }}" alt="Header Language" height="20" class="rounded" wire:ignore>
@@ -222,22 +89,19 @@
                                 <img class="rounded-circle header-profile-user" src="{{ asset('user/assets/images/users/avatar-1.jpg') }}" alt="Header Avatar">
                                 <span class="text-start ms-xl-2">
                                     <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ Auth::user()->name }}</span>
-                                    <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">{!! Auth::user()->admin_id == 0 ? "<span data-key='t-founder' wire:ignore>Founder</span>" : "<span data-key='w-member' wire:ignore>Member</span>" !!}</span>
+                                    <span class="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
+                                        {!! Auth::user()->admin_id == 0 ? "<span data-key='t-founder' wire:ignore>Commander</span>" : "<span data-key='w-member' wire:ignore>Officer</span>" !!}
+                                    </span>
                                 </span>
                             </span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header"><span data-i18n="t-welcome">Welcome</span>, {{ Auth::user()->name }}!</h6>
-                            {{--<a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-i18n="t-profile">Profile</span></a>
-                            <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-i18n="t-messages">Messages</span></a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="pages-profile-settings.html"><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-i18n="t-settings">Settings</span></a>
-                            <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-i18n="t-lock-screen">Lock screen</span></a>--}}
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                 @csrf
                             </form>
                             <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-i18n="t-logout">Logout</span>
+                                <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-i18n="t-logout">Abort Session</span>
                             </a>
                         </div>
                     </div>
@@ -245,6 +109,109 @@
             </div>
         </div>
     </header>
+
+    <div class="modal fade" id="weatherModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="background: #1a1d21; color: #fff;">
+
+                <div class="modal-header bg-soft-primary border-bottom border-secondary border-opacity-25">
+                    <h5 class="modal-title text-primary mb-3" id="myModalLabel">
+                        <i class="fas fa-satellite-dish me-2"></i><span class="text-white">METINT REPORT</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white mb-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @if($weather)
+                        <div class="text-center mb-4">
+                            <h2 class="text-uppercase fw-bold mb-0 text-white">
+                                <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ $weather->location_name }} SECTOR
+                            </h2>
+                            <div class="d-flex justify-content-center align-items-center mt-3">
+                                @if($weather->weather_icon)
+                                    <img src="https://openweathermap.org/img/wn/{{ $weather->weather_icon }}@4x.png" alt="Weather" width="100">
+                                @else
+                                    <i class='bx {{ $this->getWeatherIcon() }} display-1 {{ $this->getWeatherIconClass() }}'></i>
+                                @endif
+                                <div class="text-start ms-3">
+                                    <h1 class="display-4 fw-bold mb-0">{{ round($weather->temperature) }}°C</h1>
+                                    <p class="text-muted text-uppercase fw-medium mb-0">{{ $weather->weather_description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="p-3 border border-secondary border-opacity-25 rounded bg-soft-dark">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-wind text-info fs-18 me-2"></i>
+                                        <span class="text-muted text-uppercase fs-11">Wind Vector</span>
+                                    </div>
+                                    <h5 class="mb-0">{{ $weather->wind_speed }} m/s</h5>
+                                    <small class="text-muted">Direction: {{ $weather->wind_degree }}°</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 border border-secondary border-opacity-25 rounded bg-soft-dark">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-eye text-warning fs-18 me-2"></i>
+                                        <span class="text-muted text-uppercase fs-11">Visibility</span>
+                                    </div>
+                                    <h5 class="mb-0">{{ $this->getFormattedVisibility() }}</h5>
+                                    <small class="text-muted">Operational Range</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 border border-secondary border-opacity-25 rounded bg-soft-dark">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-tachometer-alt text-success fs-18 me-2"></i>
+                                        <span class="text-muted text-uppercase fs-11">Pressure (QNH)</span>
+                                    </div>
+                                    <h5 class="mb-0">{{ $weather->pressure }} hPa</h5>
+                                    <small class="text-muted">Sea Level</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-3 border border-secondary border-opacity-25 rounded bg-soft-dark">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-tint text-primary fs-18 me-2"></i>
+                                        <span class="text-muted text-uppercase fs-11">Humidity</span>
+                                    </div>
+                                    <h5 class="mb-0">{{ $weather->humidity }}%</h5>
+                                    <small class="text-muted">Dew Point Factor</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4 pt-3 border-top border-secondary border-opacity-25">
+                            <div class="col-6 text-center border-end border-secondary border-opacity-25">
+                                <i class="fas fa-sun text-warning mb-1"></i>
+                                <div class="fs-12 text-muted text-uppercase">Sunrise</div>
+                                <div class="fw-bold">{{ $this->getFormattedSunrise() }}</div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <i class="fas fa-moon text-white mb-1"></i>
+                                <div class="fs-12 text-muted text-uppercase">Sunset</div>
+                                <div class="fw-bold">{{ $this->getFormattedSunset() }}</div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <i class="fas fa-satellite fa-spin fa-2x text-muted mb-3"></i>
+                            <p class="text-muted">Acquiring Satellite Data...</p>
+                            <p class="small text-danger">Check n8n connection</p>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="modal-footer border-top border-secondary border-opacity-25 justify-content-between">
+                    <small class="text-muted mt-3">
+                        <i class="fas fa-sync-alt me-1"></i> Updated: {{ $this->getLastUpdated() }}
+                    </small>
+                    <button type="button" class="btn btn-sm btn-primary mt-3" wire:click="refreshWeather">
+                        <i class="fas fa-redo-alt me-1"></i> Re-Scan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
@@ -253,7 +220,6 @@
         let currentLocale = '{{ app()->getLocale() }}';
         let translationObserver = null;
 
-        // 1. Helper: Debounce to prevent performance issues on rapid DOM changes
         function debounce(func, wait) {
             let timeout;
             return function(...args) {
@@ -262,7 +228,6 @@
             };
         }
 
-        // 2. Core: Switch Language Function
         function switchLanguage(lang) {
             const flagMap = {
                 'en': '{{ asset("user/assets/images/flags/us.svg") }}',
@@ -273,7 +238,6 @@
             const langImg = document.getElementById('header-lang-img');
             const originalSrc = langImg.src;
 
-            // Visual update immediately
             if (flagMap[lang]) {
                 langImg.src = flagMap[lang];
             }
@@ -281,10 +245,8 @@
             localStorage.setItem('user_locale', lang);
             currentLocale = lang;
 
-            // Load JSON translations immediately for UI speed
             loadTranslations(lang);
 
-            // Send request to backend to persist session
             const formData = new FormData();
             formData.append('lang', lang);
 
@@ -305,7 +267,6 @@
                     if (data.success) {
                         showToast('t-language-changed', 'success', { language: lang.toUpperCase() });
 
-                        // Dispatch event so other components know language changed
                         window.dispatchEvent(new CustomEvent('language-changed', { detail: { locale: lang } }));
                     } else {
                         revertLanguage(originalSrc);
@@ -317,7 +278,6 @@
                 });
         }
 
-        // 3. Helper: Revert language on failure
         function revertLanguage(originalSrc) {
             const langImg = document.getElementById('header-lang-img');
             if(langImg) langImg.src = originalSrc;
@@ -325,14 +285,13 @@
             showToast('t-error-occurred', 'error');
         }
 
-        // 4. Core: Load Translations from JSON
         function loadTranslations(lang) {
-            // Adjust this path if your JSON files are in a different location
+
             const translationPath = `/user/assets/lang/${lang}.json`;
 
             fetch(translationPath)
                 .then(response => {
-                    // Fallback path if needed
+
                     if (!response.ok) return fetch(`/assets/lang/${lang}.json`);
                     return response;
                 })
@@ -347,32 +306,29 @@
                 .catch(err => console.error('Translation load error:', err));
         }
 
-        // 5. Core: Apply Translations to DOM
         function applyTranslations(translations) {
             if (!translations) return;
 
-            // Select all translatable elements
             const elements = document.querySelectorAll('[data-i18n], [data-key], [data-i18n-title], [data-i18n-placeholder]');
 
             elements.forEach(element => {
-                // Handle Title attribute
+
                 if (element.hasAttribute('data-i18n-title')) {
                     const key = element.getAttribute('data-i18n-title');
                     const text = getNestedProperty(translations, key);
                     if (text) element.setAttribute('title', text);
                 }
-                // Handle Placeholder attribute
+
                 if (element.hasAttribute('data-i18n-placeholder')) {
                     const key = element.getAttribute('data-i18n-placeholder');
                     const text = getNestedProperty(translations, key);
                     if (text) element.setAttribute('placeholder', text);
                 }
-                // Handle Text Content
+
                 applySingleTranslation(element, translations);
             });
         }
 
-        // 6. Helper: Apply to single element
         function applySingleTranslation(element, translations) {
             const key = element.getAttribute('data-i18n') || element.getAttribute('data-key');
             if (!key) return;
@@ -384,11 +340,9 @@
                 } else if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                     element.value = translation;
                 } else {
-                    // Safety: If element has icon children, prevent overwriting them unless explicitly allowed
+
                     if(element.children.length > 0 && !element.hasAttribute('data-text-only')) {
-                        // Try to find a text node to replace, or append if safe.
-                        // For now, simpler to assume data-key is on the text container specifically.
-                        // If you have <button><i class="icon"></i> Text</button>, put data-key on a <span> around Text.
+
                         element.textContent = translation;
                     } else {
                         element.textContent = translation;
@@ -397,7 +351,6 @@
             }
         }
 
-        // 7. Helper: Get nested JSON property (e.g., 'messages.welcome')
         function getNestedProperty(obj, path) {
             if(!path) return null;
             return path.split('.').reduce((current, key) => {
@@ -405,11 +358,9 @@
             }, obj);
         }
 
-        // 8. Helper: Toast Notification
         function showToast(keyOrMessage, type = 'info', params = {}) {
             let message = keyOrMessage;
 
-            // Try to translate the message itself
             if (keyOrMessage.startsWith('t-') && currentTranslations) {
                 const trans = getNestedProperty(currentTranslations, keyOrMessage);
                 if (trans) {
@@ -418,7 +369,6 @@
                 }
             }
 
-            // Remove existing toasts
             document.querySelectorAll('.locale-toast').forEach(t => t.remove());
 
             const toast = document.createElement('div');
@@ -438,10 +388,8 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // 9. Main Execution Block
         document.addEventListener('DOMContentLoaded', function() {
 
-            // A. Initial Load
             const savedLocale = localStorage.getItem('user_locale') || '{{ app()->getLocale() }}';
 
             const flagMap = {
@@ -454,8 +402,6 @@
 
             loadTranslations(savedLocale);
 
-            // B. MutationObserver (THE FIX for Modals)
-            // This watches the DOM for *new* elements (like your modal) and translates them instantly
             if (translationObserver) translationObserver.disconnect();
 
             translationObserver = new MutationObserver(debounce(function(mutations) {
@@ -463,7 +409,7 @@
 
                 let shouldUpdate = false;
                 for(let mutation of mutations) {
-                    // If nodes were added (like opening a modal)
+
                     if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
                         shouldUpdate = true;
                         break;
@@ -473,21 +419,18 @@
                 if (shouldUpdate) {
                     applyTranslations(currentTranslations);
                 }
-            }, 50)); // 50ms delay to batch updates
+            }, 50));
 
-            // Start observing the entire body
             translationObserver.observe(document.body, { childList: true, subtree: true });
 
-            // C. Livewire Hooks (Backup)
-            // Listen for Livewire updates to catch things the observer might miss (like value updates)
             if (typeof Livewire !== 'undefined') {
-                // Livewire v3
+
                 if (Livewire.hook) {
                     Livewire.hook('morph.updated', ({ el, component }) => {
                         if (currentTranslations) applyTranslations(currentTranslations);
                     });
                 }
-                // Livewire v2
+
                 else {
                     document.addEventListener('livewire:update', function() {
                         if (currentTranslations) applyTranslations(currentTranslations);
@@ -495,7 +438,6 @@
                 }
             }
 
-            // Also listen for standard Livewire events
             document.addEventListener('livewire:initialized', () => {
                 if (currentTranslations) applyTranslations(currentTranslations);
             });

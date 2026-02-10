@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'api/n8n/save-image',
             'n8n/save-image', // Add this too just in case
+            'api/sensor/heartbeat', // Bu adresi hariç tut
+            'sensor/heartbeat',
         ]);
         $middleware->alias([
             'role' => Role::class,

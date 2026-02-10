@@ -697,6 +697,7 @@
             let militaryMap = null;
             let militaryMarkers = new Map();
             let isMilitaryMapInitialized = false;
+            let audioContext = null; // SES SİSTEMİ EKLENDİ
 
             const militaryColorMap = {
                 'military': '#dc3545', // Red for military
@@ -710,224 +711,53 @@
                 if (isMilitaryMapInitialized) return;
 
                 try {
-
                     militaryMap = L.map('military-map').setView([58.8, 25.5], 7);
 
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '© OpenStreetMap contributors'
                     }).addTo(militaryMap);
 
-                    const mainland = [
-                        [59.479, 28.042], // Narva-Jõesuu (Start North-East)
-                        [59.376, 28.203], // Narva
-                        [58.980, 27.730], // Lake Peipsi North
-                        [58.850, 27.500], // Lake Peipsi Coast
-                        [58.450, 27.750], // Lake Peipsi South
-                        [57.880, 27.810], // Setomaa corner
-                        [57.570, 27.350], // Misso (South-East corner)
-                        [57.720, 26.650], // Antsla area
-                        [57.776, 26.031], // Valga/Valka
-                        [57.850, 25.600], // Mulgimaa border
-                        [58.000, 25.100], // Kilingi-Nõmme area
-                        [57.874, 24.348], // Ikla (South-West Coast)
-                        [58.200, 24.500], // Häädemeeste
-                        [58.380, 24.500], // Pärnu Bay (Pärnu city)
-                        [58.300, 24.150], // Liu
-                        [58.350, 23.900], // Tõstamaa
-                        [58.550, 23.550], // Matsalu Bay South
-                        [58.750, 23.500], // Matsalu Bay North
-                        [58.950, 23.540], // Haapsalu / Rohuküla
-                        [59.100, 23.500], // Noarootsi
-                        [59.250, 23.950], // Kurkse
-                        [59.340, 24.060], // Paldiski (Pakri Peninsula)
-                        [59.400, 24.250], // Lohusalu
-                        [59.450, 24.500], // Vääna-Jõesuu
-                        [59.480, 24.600], // Kakumäe
-                        [59.440, 24.750], // Tallinn (Port)
-                        [59.500, 24.830], // Viimsi Peninsula tip
-                        [59.500, 25.100], // Prangli area coast
-                        [59.550, 25.300], // Kaberneeme
-                        [59.650, 25.650], // Juminda Peninsula
-                        [59.670, 25.800], // Pärispea Peninsula (Northernmost mainland)
-                        [59.580, 26.000], // Käsmu
-                        [59.550, 26.500], // Kunda
-                        [59.420, 26.950], // Purtse
-                        [59.430, 27.500], // Toila
-                        [59.400, 27.900], // Sillamäe
-                        [59.479, 28.042]  // Close Loop
-                    ];
-
-                    const saaremaa = [
-                        [58.640, 23.150],
-                        [58.550, 23.350],
-                        [58.480, 23.000],
-                        [58.350, 22.800],
-                        [58.200, 22.500],
-                        [57.900, 22.050],
-                        [58.150, 22.150],
-                        [58.250, 21.800],
-                        [58.500, 21.850],
-                        [58.580, 22.000],
-                        [58.650, 22.600],
-                        [58.640, 23.150]
-                    ];
-
-                    const hiiumaa = [
-                        [59.080, 22.900],
-                        [59.000, 23.050],
-                        [58.800, 22.950],
-                        [58.750, 22.600],
-                        [58.900, 22.030],
-                        [59.000, 22.200],
-                        [59.080, 22.900]
-                    ];
+                    // --- HARİTA ÇİZİMLERİ (AYNEN KORUNDU) ---
+                    const mainland = [[59.479, 28.042], [59.376, 28.203], [58.980, 27.730], [58.850, 27.500], [58.450, 27.750], [57.880, 27.810], [57.570, 27.350], [57.720, 26.650], [57.776, 26.031], [57.850, 25.600], [58.000, 25.100], [57.874, 24.348], [58.200, 24.500], [58.380, 24.500], [58.300, 24.150], [58.350, 23.900], [58.550, 23.550], [58.750, 23.500], [58.950, 23.540], [59.100, 23.500], [59.250, 23.950], [59.340, 24.060], [59.400, 24.250], [59.450, 24.500], [59.480, 24.600], [59.440, 24.750], [59.500, 24.830], [59.500, 25.100], [59.550, 25.300], [59.650, 25.650], [59.670, 25.800], [59.580, 26.000], [59.550, 26.500], [59.420, 26.950], [59.430, 27.500], [59.400, 27.900], [59.479, 28.042]];
+                    const saaremaa = [[58.640, 23.150], [58.550, 23.350], [58.480, 23.000], [58.350, 22.800], [58.200, 22.500], [57.900, 22.050], [58.150, 22.150], [58.250, 21.800], [58.500, 21.850], [58.580, 22.000], [58.650, 22.600], [58.640, 23.150]];
+                    const hiiumaa = [[59.080, 22.900], [59.000, 23.050], [58.800, 22.950], [58.750, 22.600], [58.900, 22.030], [59.000, 22.200], [59.080, 22.900]];
 
                     const estonianBorder = L.polygon([mainland, saaremaa, hiiumaa], {
-                        color: '#0d6efd',
-                        fillColor: '#0d6efd',
-                        fillOpacity: 0.08,
-                        weight: 2,
-                        dashArray: '4, 4',
-                        opacity: 0.8,
-                        smoothFactor: 1.0
+                        color: '#0d6efd', fillColor: '#0d6efd', fillOpacity: 0.08, weight: 2, dashArray: '4, 4', opacity: 0.8, smoothFactor: 1.0
                     }).addTo(militaryMap);
 
-                    estonianBorder.bindPopup(`
-                            <div class="text-center">
-                                <strong data-key="t-republic-of-estonia">Republic of Estonia</strong><br>
-                                <span class="badge bg-primary" data-key="t-nato-member">NATO Member</span>
-                                <hr class="my-1">
-                                <small class="text-muted" data-key="t-monitoring-active-airspace">Monitoring Active Airspace</small>
-                            </div>
-                        `);
-                    const estonianCities = [
-                        {name: 'Tallinn', lat: 59.4370, lon: 24.7536},
-                        {name: 'Tartu', lat: 58.3780, lon: 26.7290},
-                        {name: 'Narva', lat: 59.3797, lon: 28.1797},
-                        {name: 'Pärnu', lat: 58.3855, lon: 24.4971},
-                        {name: 'Kohtla-Järve', lat: 59.3986, lon: 27.2508},
-                        {name: 'Viljandi', lat: 58.3639, lon: 25.5900},
-                        {name: 'Rakvere', lat: 59.3494, lon: 26.3628},
-                        {name: 'Kuressaare', lat: 58.2532, lon: 22.4886}
-                    ];
+                    estonianBorder.bindPopup(`<div class="text-center"><strong data-key="t-republic-of-estonia">Republic of Estonia</strong><br><span class="badge bg-primary" data-key="t-nato-member">NATO Member</span><hr class="my-1"><small class="text-muted" data-key="t-monitoring-active-airspace">Monitoring Active Airspace</small></div>`);
 
-                    estonianCities.forEach(city => {
-                        L.circleMarker([city.lat, city.lon], {
-                            radius: 5,
-                            fillColor: '#0d6efd',
-                            color: '#fff',
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.8
-                        }).addTo(militaryMap).bindPopup(`<strong>${city.name}</strong><br>City`);
-                    });
+                    const estonianCities = [{name: 'Tallinn', lat: 59.4370, lon: 24.7536}, {name: 'Tartu', lat: 58.3780, lon: 26.7290}, {name: 'Narva', lat: 59.3797, lon: 28.1797}, {name: 'Pärnu', lat: 58.3855, lon: 24.4971}, {name: 'Kohtla-Järve', lat: 59.3986, lon: 27.2508}, {name: 'Viljandi', lat: 58.3639, lon: 25.5900}, {name: 'Rakvere', lat: 59.3494, lon: 26.3628}, {name: 'Kuressaare', lat: 58.2532, lon: 22.4886}];
+                    estonianCities.forEach(city => { L.circleMarker([city.lat, city.lon], { radius: 5, fillColor: '#0d6efd', color: '#fff', weight: 1, opacity: 1, fillOpacity: 0.8 }).addTo(militaryMap).bindPopup(`<strong>${city.name}</strong><br>City`); });
 
-                    const militaryBases = [
-                        {name: 'Ämari Air Base', lat: 59.2603, lon: 24.2084, radius: 3000, type: 'airbase'},
-                        {name: 'Tallinn Airport (Mil)', lat: 59.4133, lon: 24.8328, radius: 2000, type: 'airport'},
-                        {name: 'Tapa Army Base', lat: 59.2667, lon: 25.9667, radius: 2500, type: 'army'},
-                        {name: 'Paldiski Naval Base', lat: 59.3567, lon: 24.0531, radius: 2000, type: 'naval'},
-                        {name: 'Jägala Airfield', lat: 59.4500, lon: 25.2000, radius: 1500, type: 'airfield'},
-                    ];
-
+                    const militaryBases = [{name: 'Ämari Air Base', lat: 59.2603, lon: 24.2084, radius: 3000, type: 'airbase'}, {name: 'Tallinn Airport (Mil)', lat: 59.4133, lon: 24.8328, radius: 2000, type: 'airport'}, {name: 'Tapa Army Base', lat: 59.2667, lon: 25.9667, radius: 2500, type: 'army'}, {name: 'Paldiski Naval Base', lat: 59.3567, lon: 24.0531, radius: 2000, type: 'naval'}, {name: 'Jägala Airfield', lat: 59.4500, lon: 25.2000, radius: 1500, type: 'airfield'}];
                     militaryBases.forEach(base => {
-                        L.circle([base.lat, base.lon], {
-                            color: 'red',
-                            fillColor: '#f03',
-                            fillOpacity: 0.15,
-                            radius: base.radius,
-                            weight: 1
-                        }).bindPopup(`<b>${base.name}</b><br><span data-key="t-military-installation">Military Installation</span><br><span data-key="t-type">Type</span>: ${base.type}`).addTo(militaryMap);
-
-                        L.marker([base.lat, base.lon], {
-                            icon: L.divIcon({
-                                html: `<div style="background-color: #dc3545; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center;">
-                                       <i class="fas fa-${base.type === 'airbase' ? 'fighter-jet' : base.type === 'naval' ? 'ship' : 'shield-alt'}" style="color: white; font-size: 8px;"></i>
-                                       </div>`,
-                                className: 'military-base-marker',
-                                iconSize: [16, 16]
-                            })
-                        }).addTo(militaryMap);
+                        L.circle([base.lat, base.lon], { color: 'red', fillColor: '#f03', fillOpacity: 0.15, radius: base.radius, weight: 1 }).bindPopup(`<b>${base.name}</b><br><span data-key="t-military-installation">Military Installation</span><br><span data-key="t-type">Type</span>: ${base.type}`).addTo(militaryMap);
+                        L.marker([base.lat, base.lon], { icon: L.divIcon({ html: `<div style="background-color: #dc3545; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center;"><i class="fas fa-${base.type === 'airbase' ? 'fighter-jet' : base.type === 'naval' ? 'ship' : 'shield-alt'}" style="color: white; font-size: 8px;"></i></div>`, className: 'military-base-marker', iconSize: [16, 16] }) }).addTo(militaryMap);
                     });
 
-                    const borderCrossings = [
-                        {name: 'Narva-Ivangorod', lat: 59.380, lon: 28.200, type: 'Road/Rail'},
-                        {name: 'Koidula', lat: 57.833, lon: 27.267, type: 'Road'},
-                        {name: 'Luhamaa', lat: 57.942, lon: 26.983, type: 'Road'},
-                        {name: 'Valga-Valka', lat: 57.775, lon: 26.040, type: 'Road/Rail'}
-                    ];
-
-                    borderCrossings.forEach(crossing => {
-                        L.marker([crossing.lat, crossing.lon], {
-                            icon: L.divIcon({
-                                html: '<div style="background-color: #ff6b6b; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white;"></div>',
-                                className: 'border-crossing-marker',
-                                iconSize: [10, 10]
-                            })
-                        }).addTo(militaryMap).bindPopup(`<strong>${crossing.name}</strong><br>Border Crossing`);
-                    });
+                    const borderCrossings = [{name: 'Narva-Ivangorod', lat: 59.380, lon: 28.200, type: 'Road/Rail'}, {name: 'Koidula', lat: 57.833, lon: 27.267, type: 'Road'}, {name: 'Luhamaa', lat: 57.942, lon: 26.983, type: 'Road'}, {name: 'Valga-Valka', lat: 57.775, lon: 26.040, type: 'Road/Rail'}];
+                    borderCrossings.forEach(crossing => { L.marker([crossing.lat, crossing.lon], { icon: L.divIcon({ html: '<div style="background-color: #ff6b6b; width: 10px; height: 10px; border-radius: 50%; border: 2px solid white;"></div>', className: 'border-crossing-marker', iconSize: [10, 10] }) }).addTo(militaryMap).bindPopup(`<strong>${crossing.name}</strong><br>Border Crossing`); });
 
                     const sensitiveAirspace = [
-                        {
-                            name: 'Tallinn Control Zone',
-                            coords: [[59.2, 24.3], [59.2, 25.4], [59.7, 25.4], [59.7, 24.3]],
-                            color: '#ff0000',
-                            fillOpacity: 0.05
-                        },
-                        {
-                            name: 'Ämari Air Base Zone',
-                            coords: [[59.20, 24.15], [59.20, 24.25], [59.32, 24.25], [59.32, 24.15]],
-                            color: '#ff6b6b',
-                            fillOpacity: 0.1
-                        },
-                        {
-                            name: 'Tapa Military Zone',
-                            coords: [[59.20, 25.80], [59.20, 26.10], [59.33, 26.10], [59.33, 25.80]],
-                            color: '#ff6b6b',
-                            fillOpacity: 0.1
-                        }
+                        {name: 'Tallinn Control Zone', coords: [[59.2, 24.3], [59.2, 25.4], [59.7, 25.4], [59.7, 24.3]], color: '#ff0000', fillOpacity: 0.05},
+                        {name: 'Ämari Air Base Zone', coords: [[59.20, 24.15], [59.20, 24.25], [59.32, 24.25], [59.32, 24.15]], color: '#ff6b6b', fillOpacity: 0.1},
+                        {name: 'Tapa Military Zone', coords: [[59.20, 25.80], [59.20, 26.10], [59.33, 26.10], [59.33, 25.80]], color: '#ff6b6b', fillOpacity: 0.1}
                     ];
-
-                    sensitiveAirspace.forEach(zone => {
-                        L.polygon(zone.coords, {
-                            color: zone.color,
-                            fillColor: zone.color,
-                            fillOpacity: zone.fillOpacity,
-                            weight: 1,
-                            dashArray: '5, 5'
-                        }).addTo(militaryMap).bindPopup(`<strong>${zone.name}</strong><br>Restricted Airspace`);
-                    });
+                    sensitiveAirspace.forEach(zone => { L.polygon(zone.coords, { color: zone.color, fillColor: zone.color, fillOpacity: zone.fillOpacity, weight: 1, dashArray: '5, 5' }).addTo(militaryMap).bindPopup(`<strong>${zone.name}</strong><br>Restricted Airspace`); });
 
                     const legend = L.control({position: 'bottomright'});
                     legend.onAdd = function() {
                         const div = L.DomUtil.create('div', 'info legend');
-                        div.style.backgroundColor = 'white';
-                        div.style.padding = '10px';
-                        div.style.borderRadius = '5px';
-                        div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
-                        div.style.maxWidth = '200px';
-
+                        div.style.backgroundColor = 'white'; div.style.padding = '10px'; div.style.borderRadius = '5px'; div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)'; div.style.maxWidth = '200px';
                         div.innerHTML = `
                             <h6 style="margin-top: 0; margin-bottom: 10px;"><strong data-key="t-map-legend">Map Legend</strong></h6>
-                            <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                                <div style="background-color: #dc3545; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 2px solid white;"></div>
-                                <span data-key="t-military-aircraft">Military Aircraft</span>
-                            </div>
-                            <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                                <div style="background-color: #fd7e14; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 2px solid white;"></div>
-                                <span data-key="t-military-drone">Military Drone</span>
-                            </div>
-                            <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                                <div style="background-color: #0dcaf0; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 2px solid white;"></div>
-                                <span data-key="t-nato-aircraft">NATO Aircraft</span>
-                            </div>
-                            <div style="display: flex; align-items: center; margin-bottom: 5px;">
-                                <div style="background-color: #dc3545; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 2px solid white; opacity: 0.5;"></div>
-                                <span data-key="t-military-base">Military Base</span>
-                            </div>
-                            <div style="border-top: 1px solid #ddd; margin-top: 10px; padding-top: 10px;">
-                                <small><strong data-key="t-estonian-border-shown-in-blue-dashed-line">Estonian Border shown in blue dashed line</strong></small>
-                            </div>
+                            <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="background-color: #dc3545; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 2px solid white;"></div><span data-key="t-military-aircraft">Military Aircraft</span></div>
+                            <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="background-color: #fd7e14; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 2px solid white;"></div><span data-key="t-military-drone">Military Drone</span></div>
+                            <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="background-color: #0dcaf0; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 2px solid white;"></div><span data-key="t-nato-aircraft">NATO Aircraft</span></div>
+                            <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="background-color: #dc3545; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; border: 2px solid white; opacity: 0.5;"></div><span data-key="t-military-base">Military Base</span></div>
+                            <div style="border-top: 1px solid #ddd; margin-top: 10px; padding-top: 10px;"><small><strong data-key="t-estonian-border-shown-in-blue-dashed-line">Estonian Border shown in blue dashed line</strong></small></div>
                         `;
                         return div;
                     };
@@ -970,6 +800,8 @@
                 });
                 militaryMarkers.clear();
 
+                let hasHighThreat = false; // ALARM İÇİN KONTROL DEĞİŞKENİ
+
                 markersArray.forEach(aircraft => {
                     if (!aircraft || !aircraft.latitude || !aircraft.longitude) return;
 
@@ -986,6 +818,11 @@
 
                     if (!aircraft.is_active) {
                         color = militaryColorMap.inactive;
+                    }
+
+                    // TEHDİT KONTROLÜ
+                    if (aircraft.threat_level >= 4) {
+                        hasHighThreat = true;
                     }
 
                     const latitude = parseFloat(aircraft.latitude);
@@ -1047,6 +884,39 @@
                         militaryMap.fitBounds(bounds.pad(0.1), { padding: [50, 50], maxZoom: 10, animate: true });
                     }
                 }
+
+                // EĞER YÜKSEK TEHDİT VARSA ALARM ÇAL
+                if (hasHighThreat) {
+                    playAlarmSound();
+                }
+            }
+
+            // --- SESLİ ALARM SİSTEMİ ---
+            function playAlarmSound() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                // Tarayıcı kısıtlaması için kontrol
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.type = 'sawtooth'; // Sert alarm sesi
+                osc.frequency.setValueAtTime(880, audioContext.currentTime); // A5
+                osc.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.15); // Düşüş efekti
+
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime); // Ses seviyesi
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.3);
             }
 
             function createMilitaryPopupContent(aircraft) {

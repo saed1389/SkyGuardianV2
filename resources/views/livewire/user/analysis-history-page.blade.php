@@ -18,12 +18,10 @@
                                         <i class="fas fa-database me-1"></i>
                                         {{ $stats['total_analyses'] ?? 0 }} <span data-key="t-analyses">Analyses</span>
                                     </span>
-
                                     <button wire:click="exportAll" wire:loading.attr="disabled" class="btn btn-sm btn-success" title="Export All Filtered Data" data-key-title="t-export-all-data">
                                         <i class="fas fa-file-excel" wire:loading.class="fa-spin"></i>
                                         <span data-key="t-export-all">Export All</span>
                                     </button>
-
                                     <button wire:click="refreshData" wire:loading.attr="disabled" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-redo" wire:loading.class="fa-spin"></i>
                                         <span data-key="t-refresh">Refresh</span>
@@ -33,7 +31,6 @@
                         </div>
                     </div>
                 </div>
-
                 @if (session()->has('export_message'))
                     <div class="row mb-3">
                         <div class="col-12">
@@ -45,7 +42,6 @@
                         </div>
                     </div>
                 @endif
-
                 @if (session()->has('export_error'))
                     <div class="row mb-3">
                         <div class="col-12">
@@ -57,7 +53,6 @@
                         </div>
                     </div>
                 @endif
-
                 <div class="row mb-4">
                     <div class="col-xl-3 col-md-6">
                         <div class="card card-hover border-start border-3 border-primary">
@@ -84,7 +79,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-xl-3 col-md-6">
                         <div class="card card-hover border-start border-3 border-danger">
                             <div class="card-body">
@@ -108,7 +102,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-xl-3 col-md-6">
                         <div class="card card-hover border-start border-3 border-warning">
                             <div class="card-body">
@@ -134,7 +127,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-xl-3 col-md-6">
                         <div class="card card-hover border-start border-3 border-info">
                             <div class="card-body">
@@ -160,8 +152,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Charts Section - Remove wire:ignore from the entire section -->
                 <div class="row mb-4">
                     <div class="col-xl-8">
                         <div class="card">
@@ -175,7 +165,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-xl-4">
                         <div class="card">
                             <div class="card-header bg-light">
@@ -184,12 +173,11 @@
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <div id="risk-chart" style="height: 300px;"></div>
+                                <div id="risk-chart" style="height: 300px;" wire:ignore></div>
                             </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card">
@@ -202,8 +190,7 @@
                                         <button wire:click="resetFilters" class="btn btn-sm btn-outline-secondary me-2">
                                             <i class="fas fa-times me-1"></i> <span data-key="t-clear-filters">Clear Filters</span>
                                         </button>
-                                        <button wire:click="exportAll" wire:loading.attr="disabled"
-                                                class="btn btn-sm btn-success">
+                                        <button wire:click="exportAll" wire:loading.attr="disabled" class="btn btn-sm btn-success">
                                             <i class="fas fa-file-excel me-1" wire:loading.class="fa-spin"></i>
                                             <span data-key="t-export-filtered">Export Filtered</span>
                                         </button>
@@ -221,7 +208,6 @@
                                             <option value="all" data-key="t-all-time">All Time</option>
                                         </select>
                                     </div>
-
                                     <div class="col-xl-3 col-lg-4 col-md-6">
                                         <label class="form-label" data-key="t-status">Status</label>
                                         <select wire:model.live="filterStatus" wire:change="applyFilters" class="form-select form-select-sm">
@@ -231,7 +217,6 @@
                                             @endforeach
                                         </select>
                                     </div>
-
                                     <div class="col-xl-3 col-lg-4 col-md-6">
                                         <label class="form-label" data-key="t-risk-level">Risk Level</label>
                                         <select wire:model.live="filterRisk" wire:change="applyFilters" class="form-select form-select-sm">
@@ -241,7 +226,6 @@
                                             @endforeach
                                         </select>
                                     </div>
-
                                     <div class="col-xl-3 col-lg-4 col-md-6">
                                         <label class="form-label" data-key="t-search-analysis">Search Analysis</label>
                                         <div class="input-group input-group-sm">
@@ -256,7 +240,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
@@ -267,7 +250,7 @@
                                     </h5>
                                     <div class="d-flex align-items-center gap-2">
                                         <span class="badge bg-light text-dark">
-                                            {{ count($analyses) }} <span data-key="t-records">records</span>
+                                            {{ $analyses->total() }} <span data-key="t-records">records</span>
                                         </span>
                                         @if(count($analyses) > 0)
                                             <button wire:click="exportAll" wire:loading.attr="disabled" class="btn btn-sm btn-outline-success">
@@ -398,36 +381,24 @@
                                     </div>
                                 @endif
                             </div>
-
                             @if(count($analyses) > 0)
                                 <div class="card-footer bg-light">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
+                                    <div class="row align-items-center">
+                                        <div class="col-sm-6">
                                             <small class="text-muted">
-                                                <span data-key="t-showing">Showing</span> {{ count($analyses) }} <span data-key="t-analyses">analyses</span> •
-                                                <span data-key="t-time-range">Time range</span>:
-                                                @if($timeRange === '7days')
-                                                    <span data-key="t-last-7-days">Last 7 days</span>
-                                                @elseif($timeRange === '30days')
-                                                    <span data-key="t-last-30-days">Last 30 days</span>
-                                                @elseif($timeRange === '90days')
-                                                    <span data-key="t-last-90-days">Last 90 days</span>
-                                                @else
-                                                    <span data-key="t-all-time">All time</span>
-                                                @endif
+                                                <span data-key="t-showing">Showing</span>
+                                                {{ $analyses->firstItem() ?? 0 }}
+                                                <span data-key="t-to">to</span>
+                                                {{ $analyses->lastItem() ?? 0 }}
+                                                <span data-key="t-of">of</span>
+                                                {{ $analyses->total() }}
+                                                <span data-key="t-entries">entries</span>
                                             </small>
                                         </div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <small class="text-muted">
-                                                <span data-key="t-avg-aircraft">Avg aircraft</span>: {{ round($stats['avg_aircraft'] ?? 0) }}
-                                            </small>
-                                            <button wire:click="exportAll" wire:loading.attr="disabled" class="btn btn-sm btn-outline-success me-2">
-                                                <i class="fas fa-file-excel me-1" wire:loading.class="fa-spin"></i>
-                                                <span data-key="t-export-all-data">Export All Data</span>
-                                            </button>
-                                            <button wire:click="refreshData" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-sync-alt"></i> <span data-key="t-refresh">Refresh</span>
-                                            </button>
+                                        <div class="col-sm-6">
+                                            <div class="float-sm-end">
+                                                {{ $analyses->links('livewire::bootstrap') }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -438,7 +409,6 @@
             </div>
         </div>
     </div>
-
     @if($showDetailsModal && $selectedAnalysis)
         <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog" wire:ignore.self>
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
@@ -454,7 +424,6 @@
                         <button type="button" class="btn-close btn-close-white" wire:click="closeModal"></button>
                     </div>
                     <div class="modal-body">
-
                         <div class="row mb-4">
                             <div class="col-md-3">
                                 <div class="card">
@@ -477,7 +446,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-3">
                                 <div class="card bg-{{ $selectedAnalysis->overall_risk === 'HIGH' ? 'danger' : ($selectedAnalysis->overall_risk === 'MEDIUM' ? 'warning' : 'success') }}-subtle">
                                     <div class="card-body text-center">
@@ -493,7 +461,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-3">
                                 <div class="card bg-info-subtle">
                                     <div class="card-body">
@@ -519,7 +486,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-3">
                                 <div class="card bg-warning-subtle">
                                     <div class="card-body">
@@ -548,7 +514,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row mb-4">
                             <div class="col-12">
                                 <h6 class="text-muted mb-3 border-bottom pb-2" data-key="t-aircraft-statistics">AIRCRAFT STATISTICS</h6>
@@ -604,7 +569,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="card">
@@ -637,7 +601,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-6">
                                 <div class="card">
                                     <div class="card-header bg-light">
@@ -672,55 +635,206 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- JSON Data (Collapsible) -->
                         @if($selectedAnalysis->enhanced_stats || $selectedAnalysis->scoring_breakdown || $selectedAnalysis->final_assessment)
                             <div class="row mb-4">
                                 <div class="col-12">
                                     <div class="accordion" id="dataAccordion">
+
                                         @if($selectedAnalysis->enhanced_stats)
+                                            @php
+                                                $stats = json_decode($selectedAnalysis->enhanced_stats, true);
+                                            @endphp
                                             <div class="accordion-item border-0 mb-3">
                                                 <h2 class="accordion-header">
                                                     <button class="accordion-button bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#enhancedStats">
-                                                        <i class="fas fa-chart-bar me-2"></i>
+                                                        <i class="fas fa-chart-pie me-2 text-primary"></i>
                                                         <strong data-key="t-enhanced-statistics">Enhanced Statistics</strong>
                                                     </button>
                                                 </h2>
-                                                <div id="enhancedStats" class="accordion-collapse collapse">
+                                                <div id="enhancedStats" class="accordion-collapse collapse show">
                                                     <div class="accordion-body">
-                                                        <pre class="mb-0 bg-dark text-light p-3 rounded" style="font-size: 12px; max-height: 200px; overflow: auto;">{{ json_encode(json_decode($selectedAnalysis->enhanced_stats), JSON_PRETTY_PRINT) }}</pre>
+                                                        <div class="row g-3">
+                                                            <div class="col-md-6">
+                                                                <div class="card h-100 border-light bg-light bg-opacity-25">
+                                                                    <div class="card-body">
+                                                                        <h6 class="card-title text-muted mb-3 border-bottom pb-2" data-key="t-general-counts">General Counts</h6>
+                                                                        <div class="d-flex flex-wrap gap-2">
+                                                                            <span class="badge bg-primary p-2 text-uppercase"><span data-key="t-total">Total</span>: {{ $stats['total'] ?? 0 }}</span>
+                                                                            <span class="badge bg-danger p-2 text-uppercase"><span data-key="t-military">Military</span>: {{ $stats['military'] ?? 0 }}</span>
+                                                                            <span class="badge bg-success p-2 text-uppercase"><span data-key="t-civil">Civil</span>: {{ $stats['civil'] ?? 0 }}</span>
+                                                                            <span class="badge bg-warning p-2 text-uppercase text-dark"><span data-key="t-drones">Drones</span>: {{ $stats['drones'] ?? 0 }}</span>
+                                                                            <span class="badge bg-info p-2 text-uppercase">NATO: {{ $stats['nato_count'] ?? 0 }}</span>
+                                                                        </div>
+                                                                        <h6 class="card-title text-muted mt-4 mb-3 border-bottom pb-2" data-key="t-threat-indicators">Threat Indicators</h6>
+                                                                        <ul class="list-group list-group-flush bg-transparent">
+                                                                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-1">
+                                                                                <span><i class="fas fa-radiation text-danger me-2"></i><span data-key="t-high-threat">High Threat</span></span>
+                                                                                <span class="fw-bold">{{ $stats['high_threat'] ?? 0 }}</span>
+                                                                            </li>
+                                                                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-1">
+                                                                                <span><i class="fas fa-exclamation-circle text-warning me-2"></i><span data-key="t-potential-threats">Potential Threats</span></span>
+                                                                                <span class="fw-bold">{{ $stats['potential_threats'] ?? 0 }}</span>
+                                                                            </li>
+                                                                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-1">
+                                                                                <span><i class="fas fa-map-marked-alt text-danger me-2"></i><span data-key="t-near-sensitive">Near Sensitive</span></span>
+                                                                                <span class="fw-bold">{{ $stats['nearSensitive'] ?? 0 }}</span>
+                                                                            </li>
+                                                                            <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 py-1">
+                                                                                <span><i class="fas fa-tachometer-alt text-info me-2"></i><span data-key="t-high-speed">High Speed</span></span>
+                                                                                <span class="fw-bold">{{ $stats['highSpeed'] ?? 0 }}</span>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="row g-3">
+                                                                    @if(isset($stats['by_country']) && count($stats['by_country']) > 0)
+                                                                        <div class="col-12">
+                                                                            <div class="border rounded p-2">
+                                                                                <small class="text-muted fw-bold d-block mb-2" data-key="t-by-country">By Country</small>
+                                                                                <div class="d-flex flex-wrap gap-1">
+                                                                                    @foreach($stats['by_country'] as $country => $count)
+                                                                                        <span class="badge bg-secondary bg-opacity-75 text-white border">
+                                                                                            {{ $country }}: {{ $count }}
+                                                                                        </span>
+                                                                                    @endforeach
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                    @if(isset($stats['bySource']))
+                                                                        <div class="col-6">
+                                                                            <div class="border rounded p-2 h-100">
+                                                                                <small class="text-muted fw-bold d-block mb-2" data-key="t-data-source">Data Source</small>
+                                                                                <ul class="list-unstyled mb-0 small">
+                                                                                    @foreach($stats['bySource'] as $source => $count)
+                                                                                        <li class="d-flex justify-content-between">
+                                                                                            <span>{{ $source }}</span>
+                                                                                            <span class="fw-bold">{{ $count }}</span>
+                                                                                        </li>
+                                                                                    @endforeach
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                    @if(isset($stats['byAltitude']))
+                                                                        <div class="col-6">
+                                                                            <div class="border rounded p-2 h-100">
+                                                                                <small class="text-muted fw-bold d-block mb-2" data-key="t-altitude">Altitude</small>
+                                                                                <ul class="list-unstyled mb-0 small">
+                                                                                    @foreach($stats['byAltitude'] as $alt => $count)
+                                                                                        @php
+                                                                                            $t_source = strtolower($alt);
+                                                                                        @endphp
+                                                                                        <li class="d-flex justify-content-between text-capitalize">
+                                                                                            <span data-key="t-{{ $t_source }}">{{ $alt }}</span>
+                                                                                            <span class="fw-bold">{{ $count }}</span>
+                                                                                        </li>
+                                                                                    @endforeach
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         @endif
-
                                         @if($selectedAnalysis->scoring_breakdown)
+                                            @php
+                                                $scores = json_decode($selectedAnalysis->scoring_breakdown, true);
+                                            @endphp
                                             <div class="accordion-item border-0 mb-3">
                                                 <h2 class="accordion-header">
                                                     <button class="accordion-button bg-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#scoringBreakdown">
-                                                        <i class="fas fa-calculator me-2"></i>
+                                                        <i class="fas fa-calculator me-2 text-info"></i>
                                                         <strong data-key="t-scoring-breakdown">Scoring Breakdown</strong>
                                                     </button>
                                                 </h2>
                                                 <div id="scoringBreakdown" class="accordion-collapse collapse">
                                                     <div class="accordion-body">
-                                                        <pre class="mb-0 bg-dark text-light p-3 rounded" style="font-size: 12px; max-height: 200px; overflow: auto;">{{ json_encode(json_decode($selectedAnalysis->scoring_breakdown), JSON_PRETTY_PRINT) }}</pre>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm table-bordered mb-0">
+                                                                <thead class="table-light">
+                                                                <tr>
+                                                                    <th data-key="t-factor">Factor</th>
+                                                                    <th class="text-end" data-key="t-value">Value</th>
+                                                                    <th data-key="t-description">Description</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                <tr>
+                                                                    <td class="fw-bold text-primary" data-key="t-final-score">Final Score</td>
+                                                                    <td class="text-end fw-bold text-primary fs-5">{{ $scores['final'] ?? 0 }}</td>
+                                                                    <td><small data-key="t-calculated-anomaly-score">Calculated anomaly score</small></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td data-key="t-base-score">Base Score</td>
+                                                                    <td class="text-end">{{ $scores['base'] ?? 0 }}</td>
+                                                                    <td><small data-key="t-initial-baseline-score">Initial baseline score</small></td>
+                                                                </tr>
+                                                                @foreach($scores as $key => $value)
+                                                                    @if(!in_array($key, ['final', 'base', 'raw']))
+                                                                        @php
+                                                                            $t_key = strtolower(str_replace('_', '-', $key));
+                                                                        @endphp
+                                                                        <tr>
+                                                                            <td class="text-capitalize" data-key="t-{{ $t_key }}">{{ str_replace('_', ' ', $key) }}</td>
+                                                                            <td class="text-end">
+                                                                                @if(is_numeric($value) && $value > 0)
+                                                                                    <span class="text-danger">+{{ $value }}</span>
+                                                                                @elseif(is_numeric($value) && $value < 0)
+                                                                                    <span class="text-success">{{ $value }}</span>
+                                                                                @else
+                                                                                    {{ $value }}
+                                                                                @endif
+                                                                            </td>
+                                                                            <td><small class="text-muted" data-key="t-factor-contribution">Factor contribution</small></td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         @endif
-
                                         @if($selectedAnalysis->final_assessment)
+                                            @php
+                                                $assessment = json_decode($selectedAnalysis->final_assessment, true);
+                                            @endphp
                                             <div class="accordion-item border-0">
                                                 <h2 class="accordion-header">
                                                     <button class="accordion-button bg-light collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#finalAssessment">
-                                                        <i class="fas fa-file-alt me-2"></i>
+                                                        <i class="fas fa-file-signature me-2 text-success"></i>
                                                         <strong data-key="t-final-assessment">Final Assessment</strong>
                                                     </button>
                                                 </h2>
                                                 <div id="finalAssessment" class="accordion-collapse collapse">
                                                     <div class="accordion-body">
-                                                        <pre class="mb-0 bg-dark text-light p-3 rounded" style="font-size: 12px; max-height: 200px; overflow: auto;">{{ json_encode(json_decode($selectedAnalysis->final_assessment), JSON_PRETTY_PRINT) }}</pre>
+                                                        @if(empty($assessment))
+                                                            <div class="alert alert-secondary mb-0">
+                                                                <i class="fas fa-info-circle me-2"></i> <span data-key="t-no-specific-text">No specific text assessment generated. Refer to calculated scores and threat levels.</span>
+                                                            </div>
+                                                        @else
+                                                            <div class="bg-light p-3 rounded">
+                                                                @if(is_array($assessment))
+                                                                    <ul class="list-group list-group-flush">
+                                                                        @foreach($assessment as $key => $val)
+                                                                            <li class="list-group-item bg-transparent">
+                                                                                <strong class="text-capitalize">{{ str_replace('_', ' ', $key) }}:</strong> {{ is_array($val) ? json_encode($val) : $val }}
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+                                                                @else
+                                                                    <p class="mb-0">{{ $assessment }}</p>
+                                                                @endif
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -729,7 +843,6 @@
                                 </div>
                             </div>
                         @endif
-
                         @if($selectedAnalysis->map_url)
                             <div class="row">
                                 <div class="col-12">
@@ -758,8 +871,6 @@
             </div>
         </div>
     @endif
-
-    <!-- Export Loading Modal -->
     @if($exporting)
         <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1" role="dialog" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered">
@@ -781,7 +892,6 @@
             </div>
         </div>
     @endif
-
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
         <script>

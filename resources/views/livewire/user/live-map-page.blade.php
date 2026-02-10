@@ -286,12 +286,14 @@
             let markers = new Map();
             let isMapInitialized = false;
             let pendingAircraftData = null;
+            let audioContext = null; // Ses için
 
+            // 1. DÜZELTME: Renk Paleti (Kırmızı Eklendi)
             const colorMap = {
                 'civil': '#007bff',
                 'military': '#dc3545',
                 'drone': '#6f42c1',
-                'high-threat': '#fd7e14'
+                'high-threat': '#ff0000' // Saf Kırmızı
             };
 
             function initMap() {
@@ -591,8 +593,9 @@
                         civilCount++;
                     }
 
+                    // 1. DÜZELTME: Renk Mantığı
                     if (aircraft.threat_level >= 4) {
-                        color = colorMap['high-threat'];
+                        color = colorMap['high-threat']; // #ff0000 (Kırmızı)
                         highThreatCount++;
                     }
 
@@ -622,7 +625,7 @@
                     onmouseover="this.style.transform='rotate(${aircraft.heading || 0}deg) scale(1.2)'"
                     onmouseout="this.style.transform='rotate(${aircraft.heading || 0}deg) scale(1)'">
                         <i class="fas fa-${icon}"></i>
-                        ${aircraft.threat_level >= 4 ? '<div style="position: absolute; top: -5px; right: -5px; background: #fd7e14; width: 10px; height: 10px; border-radius: 50%; border: 1px solid white;"></div>' : ''}
+                        ${aircraft.threat_level >= 4 ? '<div class="threat-pulse"></div>' : ''}
                     </div>
                 `,
                         className: 'custom-aircraft-marker',
@@ -833,7 +836,45 @@
                 return lat >= 57.5 && lat <= 60.0 && lon >= 21.5 && lon <= 28.5;
             }
 
-            document.addEventListener('DOMContentLoaded', function() {
+            // 2. DÜZELTME: Sesli Alarm Fonksiyonu
+            function playAlarmSound() {
+                if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(880, audioContext.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(440, audioContext.currentTime + 0.15);
+
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+
+                osc.start();
+                osc.stop(audioContext.currentTime + 0.3);
+            }
+
+            function triggerDemoMode() {
+                // Ses motorunu başlat
+                if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioContext.state === 'suspended') audioContext.resume();
+
+                alert("⚠️ DEMO MODE ACTIVATED: Simulating Hostile Targets");
+
+                const demoData = [
+                    {hex: "DEMO01", callsign: "BEAR01", latitude: 59.5, longitude: 26.5, heading: 240, speed: 850, altitude: 9000, is_military: true, threat_level: 5, country: "Russia", type: "Su-57 Felon"},
+                    {hex: "DEMO02", callsign: "NATO01", latitude: 59.3, longitude: 24.5, heading: 60, speed: 600, altitude: 5000, is_military: true, is_nato: true, threat_level: 1, country: "USA", type: "F-35 Lightning"},
+                    {hex: "DEMO03", callsign: "EST01", latitude: 58.5, longitude: 25.5, heading: 330, speed: 120, altitude: 1500, is_military: false, threat_level: 1, country: "Estonia", type: "Cessna 172", in_estonia: true}
+                ];
+
+                updateAircraftMarkers(demoData);
+                playAlarmSound(); // Demo açılınca ses çal
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(initMap, 100);
 
                 setInterval(() => {
@@ -886,6 +927,14 @@
                             map.setView([58.5, 25.0], 8);
                         }
                         break;
+                    case 'd':
+                    case 'D':
+                        // Demo Mode
+                        if (e.ctrlKey) {
+                            e.preventDefault();
+                            triggerDemoMode();
+                        }
+                        break;
                 }
             });
         </script>
@@ -895,5 +944,22 @@
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
         <link rel="stylesheet" href="{{ asset('user/assets/css/pages/live-map.css') }}" />
+        <style>
+            .threat-pulse {
+                position: absolute;
+                top: 50%; left: 50%;
+                transform: translate(-50%, -50%);
+                width: 40px; height: 40px;
+                border: 2px solid rgba(255, 0, 0, 0.8);
+                border-radius: 50%;
+                animation: pulse-red 1.5s infinite;
+                pointer-events: none;
+            }
+
+            @keyframes pulse-red {
+                0% { width: 30px; height: 30px; opacity: 1; }
+                100% { width: 60px; height: 60px; opacity: 0; }
+            }
+        </style>
     @endpush
 </div>
