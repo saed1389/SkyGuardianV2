@@ -479,5 +479,12 @@
     "t-scanning" : "Skannimine...",
     "t-cpu-temp" : "Protsessori temperatuur:",
     "t-load" : "Laadimine:",
-    "t-real-time-rf-spectrum-analysis" : "Reaalajas raadiosagedusspektri analüüs"
+    "t-real-time-rf-spectrum-analysis" : "Reaalajas raadiosagedusspektri analüüs",
+    "t-direction" : "Suund",
+    "t-operational-range" : "Tööulatus",
+    "t-sea_level" : "Merepind",
+    "t-dew_point_factor" : "Kastepunkti tegur",
+    "t-acquiring_satellite_data" : "Satelliidiandmete hankimine...",
+    "t-check_n8n_connection" : "Kontrollige n8n ühendust",
+    "t-re_scan" : "Skanni uuesti"
 }

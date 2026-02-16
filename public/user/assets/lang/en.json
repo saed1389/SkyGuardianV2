@@ -479,5 +479,12 @@
     "t-scanning" : "Scanning...",
     "t-cpu-temp" : "CPU Temp:",
     "t-load" : "Load:",
-    "t-real-time-rf-spectrum-analysis" : "Real-Time RF Spectrum Analysis"
+    "t-real-time-rf-spectrum-analysis" : "Real-Time RF Spectrum Analysis",
+    "t-direction" : "Direction",
+    "t-operational-range" : "Operational Range",
+    "t-sea_level" : "Sea Level",
+    "t-dew_point_factor" : "Dew Point Factor",
+    "t-acquiring_satellite_data" : "Acquiring Satellite Data...",
+    "t-check_n8n_connection" : "Check n8n connection",
+    "t-re_scan" : "Re-Scan"
 }

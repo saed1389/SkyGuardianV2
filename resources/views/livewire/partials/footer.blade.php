@@ -3,7 +3,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <div class="logo" style="margin-bottom: 20px;">
-                    <span class="logo-blue">Sky</span><span style="color: white;">Guardian</span>
+                    <img src="{{ asset('user/assets/images/logo-light.png') }}" alt="" style="width: 200px">
                 </div>
                 <p style="color: var(--gray-300); font-size: 14px;" data-translate="footer_desc">Advanced airspace monitoring and management solutions.</p>
             </div>

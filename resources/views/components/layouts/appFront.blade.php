@@ -29,7 +29,7 @@
     <div class="nav-container">
         <div class="logo">
             <a class="logo" href="{{ url('/') }}">
-                <span class="logo-blue">Sky</span><span class="logo-black">Guardian</span>
+                <img src="{{ asset('user/assets/images/logo.png') }}" alt="" style="width: 200px">
             </a>
         </div>
         <ul class="nav-links" id="navLinks">

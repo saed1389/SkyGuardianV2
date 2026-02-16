@@ -143,70 +143,70 @@
                                 <div class="p-3 border border-secondary border-opacity-25 rounded bg-soft-dark">
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fas fa-wind text-info fs-18 me-2"></i>
-                                        <span class="text-muted text-uppercase fs-11">Wind Vector</span>
+                                        <span class="text-muted text-uppercase fs-11" data-i18n="t-wind">Wind</span>
                                     </div>
                                     <h5 class="mb-0">{{ $weather->wind_speed }} m/s</h5>
-                                    <small class="text-muted">Direction: {{ $weather->wind_degree }}°</small>
+                                    <small class="text-muted" data-i18n="t-direction">Direction: {{ $weather->wind_degree }}°</small>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 border border-secondary border-opacity-25 rounded bg-soft-dark">
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fas fa-eye text-warning fs-18 me-2"></i>
-                                        <span class="text-muted text-uppercase fs-11">Visibility</span>
+                                        <span class="text-muted text-uppercase fs-11" data-i18n="t-visibility">Visibility</span>
                                     </div>
                                     <h5 class="mb-0">{{ $this->getFormattedVisibility() }}</h5>
-                                    <small class="text-muted">Operational Range</small>
+                                    <small class="text-muted" data-i18n="t-operational-range">Operational Range</small>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 border border-secondary border-opacity-25 rounded bg-soft-dark">
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fas fa-tachometer-alt text-success fs-18 me-2"></i>
-                                        <span class="text-muted text-uppercase fs-11">Pressure (QNH)</span>
+                                        <span class="text-muted text-uppercase fs-11" data-i18n="t-pressure">Pressure (QNH)</span>
                                     </div>
                                     <h5 class="mb-0">{{ $weather->pressure }} hPa</h5>
-                                    <small class="text-muted">Sea Level</small>
+                                    <small class="text-muted" data-i18n="t-sea_level">Sea Level</small>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="p-3 border border-secondary border-opacity-25 rounded bg-soft-dark">
                                     <div class="d-flex align-items-center mb-2">
                                         <i class="fas fa-tint text-primary fs-18 me-2"></i>
-                                        <span class="text-muted text-uppercase fs-11">Humidity</span>
+                                        <span class="text-muted text-uppercase fs-11" data-i18n="t-humidity">Humidity</span>
                                     </div>
                                     <h5 class="mb-0">{{ $weather->humidity }}%</h5>
-                                    <small class="text-muted">Dew Point Factor</small>
+                                    <small class="text-muted" data-i18n="t-dew_point_factor">Dew Point Factor</small>
                                 </div>
                             </div>
                         </div>
                         <div class="row mt-4 pt-3 border-top border-secondary border-opacity-25">
                             <div class="col-6 text-center border-end border-secondary border-opacity-25">
                                 <i class="fas fa-sun text-warning mb-1"></i>
-                                <div class="fs-12 text-muted text-uppercase">Sunrise</div>
+                                <div class="fs-12 text-muted text-uppercase" data-i18n="t-sunrise">Sunrise</div>
                                 <div class="fw-bold">{{ $this->getFormattedSunrise() }}</div>
                             </div>
                             <div class="col-6 text-center">
                                 <i class="fas fa-moon text-white mb-1"></i>
-                                <div class="fs-12 text-muted text-uppercase">Sunset</div>
+                                <div class="fs-12 text-muted text-uppercase" data-i18n="t-sunset">Sunset</div>
                                 <div class="fw-bold">{{ $this->getFormattedSunset() }}</div>
                             </div>
                         </div>
                     @else
                         <div class="text-center py-5">
                             <i class="fas fa-satellite fa-spin fa-2x text-muted mb-3"></i>
-                            <p class="text-muted">Acquiring Satellite Data...</p>
-                            <p class="small text-danger">Check n8n connection</p>
+                            <p class="text-muted" data_i18n="t-acquiring_satellite_data">Acquiring Satellite Data...</p>
+                            <p class="small text-danger" data-i18n="t-check_n8n_connection">Check n8n connection</p>
                         </div>
                     @endif
                 </div>
 
                 <div class="modal-footer border-top border-secondary border-opacity-25 justify-content-between">
                     <small class="text-muted mt-3">
-                        <i class="fas fa-sync-alt me-1"></i> Updated: {{ $this->getLastUpdated() }}
+                        <i class="fas fa-sync-alt me-1"></i> <span data-i18n="t-updated">Updated</span>: {{ $this->getLastUpdated() }}
                     </small>
                     <button type="button" class="btn btn-sm btn-primary mt-3" wire:click="refreshWeather">
-                        <i class="fas fa-redo-alt me-1"></i> Re-Scan
+                        <i class="fas fa-redo-alt me-1"></i> <span data-i18n="t-re_scan">Re-Scan</span>
                     </button>
                 </div>
             </div>

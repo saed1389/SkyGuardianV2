@@ -25,16 +25,7 @@
                     <div class="card overflow-hidden">
                         <div class="row g-0">
                             <div class="col-lg-6">
-                                <div class="p-lg-5 p-4 auth-one-bg h-100">
-                                    <div class="bg-overlay"></div>
-                                    <div class="position-relative h-100 d-flex flex-column">
-                                        <div class="mb-4">
-                                            <a href="/" class="d-block">
-                                                <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="80">
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                                <div class="p-lg-5 p-4 auth-one-bg h-100"></div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="p-lg-5 p-4">

@@ -479,5 +479,12 @@
     "t-scanning" : "Tarama...",
     "t-cpu-temp" : "CPU Sıcaklığı:",
     "t-load" : "Yük:",
-    "t-real-time-rf-spectrum-analysis" : "Gerçek Zamanlı RF Spektrum Analizi"
+    "t-real-time-rf-spectrum-analysis" : "Gerçek Zamanlı RF Spektrum Analizi",
+    "t-direction" : "Yön",
+    "t-operational-range" : "Operasyonel Menzil",
+    "t-sea_level" : "Deniz Seviyesi",
+    "t-dew_point_factor" : "Çiğ Noktası Faktörü",
+    "t-acquiring_satellite_data" : "Uydu Verilerinin Elde Edilmesi...",
+    "t-check_n8n_connection" : "n8n bağlantısını kontrol edin",
+    "t-re_scan" : "Yeniden Tara"
 }
