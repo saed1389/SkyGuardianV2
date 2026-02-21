@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5f27a9140daca71b3d8f6bba1551d77",
+    "content-hash": "47e092d05e50213e4e6bed6bf5e67efd",
     "packages": [
         {
             "name": "arcanedev/no-captcha",
@@ -10221,8 +10221,11 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.5"
+        "php": "^8.4"
     },
     "platform-dev": {},
+    "platform-overrides": {
+        "php": "8.4.0"
+    },
     "plugin-api-version": "2.9.0"
 }
