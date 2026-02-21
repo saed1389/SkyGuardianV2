@@ -13,7 +13,6 @@ class BlogIndex extends Component
     public $search = '';
     public $category = 'all';
 
-    // Reset pagination when search or category changes
     public function updatingSearch(): void
     { $this->resetPage(); }
     public function updatingCategory(): void
@@ -26,7 +25,7 @@ class BlogIndex extends Component
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View
     {
-        $query = Blog::where('status', 1);
+        $query = Blog::where('status', 1)->orderBy('published_at', 'desc');
 
         if (!empty($this->search)) {
             $query->where(function($q) {

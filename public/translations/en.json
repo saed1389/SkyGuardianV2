@@ -145,5 +145,6 @@
     "form_message_send" : "Message sent successfully.",
     "form_demo_send" : "Demo request received. We will contact you shortly.",
     "form_verifying" : "Verifying...",
-    "career_message" : "Application sent successfully!"
+    "career_message" : "Application sent successfully!",
+    "resource" : "Resource"
 }

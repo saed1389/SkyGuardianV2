@@ -13,7 +13,7 @@ Route::prefix('airspace')->group(function () {
     Route::get('/statistics', [AirspaceController::class, 'getStatistics']);
 });
 
-Route::post('/n8n/save-image', [N8nImageController::class, 'store']);
+Route::post('api/n8n/save-image', [N8nImageController::class, 'store']);
 
 Route::post('api/sensor/heartbeat', function (Request $request) {
     try {

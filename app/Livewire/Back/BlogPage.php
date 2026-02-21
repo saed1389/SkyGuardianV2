@@ -67,7 +67,7 @@ class BlogPage extends Component
         $blogs = Blog::where(function ($query) {
             $query->where('title_en', 'like', '%' . $this->search . '%')
                 ->orWhere('category_en', 'like', '%' . $this->search . '%');
-        })->orderBy('created_at', 'desc')->paginate(10);
+        })->orderBy('id', 'desc')->paginate(10);
 
         return view('livewire.back.blog-page', ['blogs' => $blogs]);
     }
@@ -122,7 +122,7 @@ class BlogPage extends Component
         if ($this->image) {
             if ($this->editingBlogId && $this->existingImage) {
                 $oldPath = public_path($this->existingImage);
-                if (File::exists($oldPath)) { File::delete($oldPath); }
+                if (File::exists($oldPath)) { unlink($oldPath); }
             }
 
             $imageName = time() . '.' . $this->image->getClientOriginalExtension();
@@ -154,7 +154,7 @@ class BlogPage extends Component
         if ($blog->image) {
             $imagePath = asset($blog->image);
             if (File::exists($imagePath)) {
-                File::delete($imagePath);
+                unlink($imagePath);
             }
         }
 

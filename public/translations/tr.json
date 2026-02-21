@@ -145,5 +145,6 @@
     "form_message_send" : "Mesaj başarıyla gönderildi.",
     "form_demo_send" : "Demo talebiniz alındı. Kısa süre içinde sizinle iletişime geçeceğiz.",
     "form_verifying" : "Doğrulanıyor...",
-    "career_message" : "Başvuru başarıyla gönderildi!"
+    "career_message" : "Başvuru başarıyla gönderildi!",
+    "resource" : "Kaynak"
 }

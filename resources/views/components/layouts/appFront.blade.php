@@ -12,11 +12,15 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/images/favicon/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/images/favicon/favicon-16x16.png') }}">
     <link rel="manifest" href="{{ asset('assets/images/favicon/site.webmanifest') }}">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="SkyGuardian System">
-    <meta property="og:description" content="Complete drone monitoring and security solutions.">
-    <meta property="twitter:card" content="summary_large_image">
+    @hasSection('meta')
+        @yield('meta')
+    @else
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ url()->current() }}">
+        <meta property="og:title" content="SkyGuardian System">
+        <meta property="og:description" content="Complete drone monitoring and security solutions.">
+        <meta property="twitter:card" content="summary_large_image">
+    @endif
 
     @stack('landStyles')
     @livewireStyles

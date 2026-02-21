@@ -1,0 +1,352 @@
+{
+  "name": "SkyGuardian - Smart AI Editor (Title Images 750x750)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 21
+            }
+          ]
+        }
+      },
+      "id": "3e640037-8ba6-465d-a5bd-20025d5afefe",
+      "name": "Daily at 9AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        9056,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "llama-3.3-70b-versatile"
+            },
+            {
+              "name": "messages",
+              "value": "={{ [ {\"role\": \"system\", \"content\": \"You are the Lead Systems Architect and Analyst for SkyGuardian, an Advanced Sky Monitoring System providing complete drone monitoring, weather services, security, and aircraft tracking solutions.\\\\n\\\\nTask: Write a professional, educational, and highly realistic industry blog post about modern sky monitoring technologies.\\\\n\\\\nRules for Content:\\\\n1. Write ONLY about real-world capabilities, industry challenges, and factual technological concepts (e.g., drone tracking methodologies, the impact of weather on UAVs, advanced aircraft tracking, or airspace security protocols).\\\\n2. Do NOT invent fake news events, fictional attacks, or imaginary scenarios. Instead, write an authoritative educational deep-dive or industry insight.\\\\n3. VARY the topics daily between your core features: drone monitoring, weather integration, and aircraft tracking.\\\\n\\\\nRules for Categorization:\\\\n- Randomly choose either 'Technology' or 'Security'. Then write a blog post that fits that category.\\\\n\\\\nOutput Requirements:\\\\n1. Return Valid JSON.\\\\n2. Translate all content (Title, Body, Excerpt, Category) into English (en), Turkish (tr), and Estonian (ee).\\\\n3. Category Translations:\\\\n   - Technology -> en: Technology, tr: Teknoloji, ee: Tehnoloogia\\\\n   - Security -> en: Security, tr: Güvenlik, ee: Turvalisus\\\\n\\\\nJSON Structure:\\\\n{\\\\n  \\\\\\\"title_en\\\\\\\": \\\\\\\"...\\\\\\\", \\\\\\\"title_tr\\\\\\\": \\\\\\\"...\\\\\\\", \\\\\\\"title_ee\\\\\\\": \\\\\\\"...\\\\\\\",\\\\n  \\\\\\\"slug_en\\\\\\\": \\\\\\\"kebab-case-slug\\\\\\\", \\\\\\\"slug_tr\\\\\\\": \\\\\\\"...\\\\\\\", \\\\\\\"slug_ee\\\\\\\": \\\\\\\"...\\\\\\\",\\\\n  \\\\\\\"excerpt_en\\\\\\\": \\\\\\\"...\\\\\\\", \\\\\\\"excerpt_tr\\\\\\\": \\\\\\\"...\\\\\\\", \\\\\\\"excerpt_ee\\\\\\\": \\\\\\\"...\\\\\\\",\\\\n  \\\\\\\"body_en\\\\\\\": \\\\\\\"<p>HTML...</p>\\\\\\\", \\\\\\\"body_tr\\\\\\\": \\\\\\\"...\\\\\\\", \\\\\\\"body_ee\\\\\\\": \\\\\\\"...\\\\\\\",\\\\n  \\\\\\\"category_en\\\\\\\": \\\\\\\"...\\\\\\\", \\\\\\\"category_tr\\\\\\\": \\\\\\\"...\\\\\\\", \\\\\\\"category_ee\\\\\\\": \\\\\\\"...\\\\\\\",\\\\n  \\\\\\\"image_prompt\\\\\\\": \\\\\\\"A highly detailed, professional photography prompt for an AI image generator. Focus ONLY on aerospace technology, radars, drones, or severe weather monitoring. Hyper-realistic, 8k resolution, no text.\\\\\\\"\\\\n}\"}, {\"role\": \"user\", \"content\": \"Generate today's real, educational sky monitoring blog post.\"} ] }}"
+            },
+            {
+              "name": "temperature",
+              "value": "={{ 0.8 }}"
+            },
+            {
+              "name": "response_format",
+              "value": "={{ {\"type\": \"json_object\"} }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "663979e9-0960-42f4-be38-56bfad902ea7",
+      "name": "AI - Generate News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        9280,
+        -608
+      ],
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "vyBc9xRA4h5vffbp",
+          "name": "Bearer Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Parse the original AI content\nconst aiContent = JSON.parse($input.item.json.choices[0].message.content);\n\n// 2. Get the prompt and encode it\nconst promptText = aiContent.image_prompt || 'Advanced aviation radar system, highly professional';\nconst encodedPrompt = encodeURIComponent(promptText);\nconst randomSeed = Math.floor(Math.random() * 100000);\n\n// 3. Insert YOUR Pollinations API Key here\nconst apiKey = 'sk_CdGCPBBfKNBxqGOoGndDwMTcicM4cek6'; \n\n// 4. Construct the URL with the key AND the required model attached!\n// We added &model=flux right before the key.\nconst imageUrl = `https://gen.pollinations.ai/image/${encodedPrompt}?width=750&height=750&seed=${randomSeed}&nologo=true&model=flux&key=${apiKey}`;\n\n// 5. Prepare the filename and your Laravel DB path\nconst fileName = aiContent.slug_en + '.jpg';\nconst dbPath = '/uploads/blog/' + fileName;\n\n// 6. Return everything combined for Laravel to download\nreturn {\n  ...aiContent,\n  download_url: imageUrl,\n  file_name: fileName,\n  db_path: dbPath\n};"
+      },
+      "id": "8b16eb27-3bc4-4ddb-af08-298492ce9a9b",
+      "name": "Format Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9504,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/api/n8n/save-image",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-N8N-SECRET",
+              "value": "skyguardian_secret_key_123"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.download_url }}"
+            },
+            {
+              "name": "filename",
+              "value": "={{ $json.file_name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1f7cf8f8-3125-483e-8c2f-f74ddddf7cf7",
+      "name": "Save Image to Laravel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        9712,
+        -480
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "474297a3-812d-4e39-a779-60aa21fe171d",
+      "name": "Merge Original & Response",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        9920,
+        -592
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// This node adds a unified 'db_path' field from the API response\nconst item = $input.item.json;\nif (item.path) {\n  item.db_path = item.path;\n} else {\n  // Fallback if something went wrong (should not happen in this branch)\n  item.db_path = '/uploads/blog/placeholder.jpg';\n}\nreturn item;"
+      },
+      "id": "c76b18e6-13ac-4dfb-93ad-5d5e150a208a",
+      "name": "Add Image Path",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10144,
+        -592
+      ]
+    },
+    {
+      "parameters": {
+        "table": {
+          "__rl": true,
+          "value": "blogs",
+          "mode": "list",
+          "cachedResultName": "blogs"
+        },
+        "dataMode": "defineBelow",
+        "valuesToSend": {
+          "values": [
+            {
+              "column": "title_en",
+              "value": "={{ $json.title_en }}"
+            },
+            {
+              "column": "title_tr",
+              "value": "={{ $json.title_tr }}"
+            },
+            {
+              "column": "title_ee",
+              "value": "={{ $json.title_ee }}"
+            },
+            {
+              "column": "slug_en",
+              "value": "={{ $json.slug_en }}"
+            },
+            {
+              "column": "slug_tr",
+              "value": "={{ $json.slug_tr }}"
+            },
+            {
+              "column": "slug_ee",
+              "value": "={{ $json.slug_ee }}"
+            },
+            {
+              "column": "excerpt_en",
+              "value": "={{ $json.excerpt_en }}"
+            },
+            {
+              "column": "excerpt_tr",
+              "value": "={{ $json.excerpt_tr }}"
+            },
+            {
+              "column": "excerpt_ee",
+              "value": "={{ $json.excerpt_ee }}"
+            },
+            {
+              "column": "body_en",
+              "value": "={{ $json.body_en }}"
+            },
+            {
+              "column": "body_tr",
+              "value": "={{ $json.body_tr }}"
+            },
+            {
+              "column": "body_ee",
+              "value": "={{ $json.body_ee }}"
+            },
+            {
+              "column": "image",
+              "value": "={{ $json.db_path }}"
+            },
+            {
+              "column": "category_en",
+              "value": "={{ $json.category_en }}"
+            },
+            {
+              "column": "category_tr",
+              "value": "={{ $json.category_tr }}"
+            },
+            {
+              "column": "category_ee",
+              "value": "={{ $json.category_ee }}"
+            },
+            {
+              "column": "resource",
+              "value": "AI"
+            },
+            {
+              "column": "status",
+              "value": "0"
+            },
+            {
+              "column": "updated_at",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm:ss') }}"
+            },
+            {
+              "column": "created_at",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm:ss') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "91322941-6dc1-4dd5-97b0-f46cfec62684",
+      "name": "Insert to DB",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        10368,
+        -592
+      ],
+      "credentials": {
+        "mySql": {
+          "id": "aHhAApmdynnd0WK9",
+          "name": "SkyGuardianLandPage"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Daily at 9AM": {
+      "main": [
+        [
+          {
+            "node": "AI - Generate News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Generate News": {
+      "main": [
+        [
+          {
+            "node": "Format Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Data": {
+      "main": [
+        [
+          {
+            "node": "Save Image to Laravel",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Original & Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Image to Laravel": {
+      "main": [
+        [
+          {
+            "node": "Merge Original & Response",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Original & Response": {
+      "main": [
+        [
+          {
+            "node": "Add Image Path",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Image Path": {
+      "main": [
+        [
+          {
+            "node": "Insert to DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Tallinn",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1
+  },
+  "versionId": "b50fb3c4-224a-435b-b297-a09b9e7877d7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2c743f4347db905d19eeb43b68eb38aec757212dace1ad957d845478353f8c3d"
+  },
+  "id": "ZIvKokSntOIRldQk",
+  "tags": []
+}

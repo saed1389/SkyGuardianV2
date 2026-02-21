@@ -145,5 +145,6 @@
     "form_message_send" : "Sõnum edukalt saadetud.",
     "form_demo_send" : "Demopäring on kätte saadud. Võtame teiega peagi ühendust.",
     "form_verifying" : "Kinnitamine...",
-    "career_message" : "Avaldus edukalt saadetud!"
+    "career_message" : "Avaldus edukalt saadetud!",
+    "resource" : "Ressurss"
 }
