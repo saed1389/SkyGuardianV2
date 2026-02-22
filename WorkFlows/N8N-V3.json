@@ -17,10 +17,10 @@
             "type": "n8n-nodes-base.cron",
             "typeVersion": 1,
             "position": [
-                109040,
-                17696
+                -560,
+                464
             ],
-            "id": "ab0598c8-724a-4871-98ab-dc480323cd6b"
+            "id": "4586d700-931e-49d2-9ca6-8987fc8c0005"
         },
         {
             "parameters": {
@@ -33,10 +33,11 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                109280,
-                18304
+                -320,
+                1072
             ],
-            "id": "72cd0e24-67ec-4cbd-8e93-f07c1e634bde"
+            "id": "b019ba91-c920-4446-825d-836374cdcf6e",
+            "disabled": true
         },
         {
             "parameters": {
@@ -49,10 +50,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                109280,
-                17696
+                -320,
+                464
             ],
-            "id": "a88bd2b8-909c-4a92-ad9a-57853588fd9d"
+            "id": "af5219b1-fc0e-4fc4-a4a7-8846cea6f7a8"
         },
         {
             "parameters": {
@@ -65,10 +66,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                109280,
-                17888
+                -320,
+                656
             ],
-            "id": "f87e57dd-39d9-4875-a389-98f9a87ecc2a"
+            "id": "36926c67-6d6c-4a98-b1a0-f9902682e8ce"
         },
         {
             "parameters": {
@@ -81,10 +82,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                109280,
-                18080
+                -320,
+                848
             ],
-            "id": "5d2a23f4-aa4d-43e1-8d35-6cc5758a9a46"
+            "id": "abe6b1d1-083e-46f0-9b67-83176ca59544"
         },
         {
             "parameters": {
@@ -94,10 +95,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                109888,
-                17712
+                288,
+                480
             ],
-            "id": "bdbe1b24-61a0-4577-9dd1-b59ab0fb84ca"
+            "id": "904cd711-f224-4d89-8186-e4af1585c67b"
         },
         {
             "parameters": {
@@ -107,10 +108,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                109856,
-                18128
+                256,
+                896
             ],
-            "id": "706857d2-3ff9-4e82-9092-41c5105cf7d2"
+            "id": "40993346-2b29-443f-ab24-7d418a29c74a"
         },
         {
             "parameters": {
@@ -120,10 +121,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110128,
-                18128
+                528,
+                896
             ],
-            "id": "cd2d604f-d4c1-41ec-962f-ca7df1704612"
+            "id": "5aaf5032-0293-44c3-bf71-0e8ff52b2617"
         },
         {
             "parameters": {
@@ -133,10 +134,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110416,
-                18128
+                816,
+                896
             ],
-            "id": "0104933f-95e3-43ba-b84a-86fb79d4b7ca"
+            "id": "bfbf2620-2b80-4a4f-99e7-956b570d5af1"
         },
         {
             "parameters": {
@@ -146,10 +147,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110688,
-                18128
+                1088,
+                896
             ],
-            "id": "34ea525a-0124-42bc-b534-439506c621d5"
+            "id": "c31908dc-9cba-48c8-bd50-0c41bc17b60f"
         },
         {
             "parameters": {
@@ -159,10 +160,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110960,
-                18128
+                1360,
+                896
             ],
-            "id": "6bd28ef8-dbce-408c-a98b-86e79c12e462"
+            "id": "92751dc6-e4a6-445a-ba81-2e737f886ac6"
         },
         {
             "parameters": {
@@ -172,10 +173,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                109872,
-                18368
+                272,
+                1136
             ],
-            "id": "c848b945-a94b-43de-9ee6-a40e07521e12"
+            "id": "c7307e0b-1ba1-444c-88b8-54bb5d0a3ca3"
         },
         {
             "parameters": {
@@ -188,10 +189,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                109280,
-                17360
+                -320,
+                128
             ],
-            "id": "f18b982c-28ab-49ba-879d-92b49b973410"
+            "id": "51104ddd-cc1f-4ca9-a6e9-56a1560fe12c"
         },
         {
             "parameters": {
@@ -201,10 +202,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110128,
-                18368
+                528,
+                1136
             ],
-            "id": "d5a7cb7a-7f5f-42c3-aa6b-2669053e0564"
+            "id": "cd4c6fe4-4ed4-42c1-ad06-08d2db411b34"
         },
         {
             "parameters": {
@@ -214,10 +215,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110416,
-                18368
+                816,
+                1136
             ],
-            "id": "d453551e-7df2-4c5c-8dbe-6bf5c992b4fc"
+            "id": "fe297d94-12ad-495d-9f66-209468fd6dc0"
         },
         {
             "parameters": {
@@ -227,10 +228,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                109872,
-                18624
+                272,
+                1392
             ],
-            "id": "f3217eb0-74f7-465a-9a94-f21893447ec5"
+            "id": "b5bd312b-ed89-4a06-853c-cccb770bcfee"
         },
         {
             "parameters": {
@@ -240,10 +241,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110112,
-                18624
+                512,
+                1392
             ],
-            "id": "9614e132-a6c2-4576-9728-8cd12536e28c"
+            "id": "505047f4-7ca6-4f9b-bdf2-af269613aa93"
         },
         {
             "parameters": {
@@ -261,10 +262,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                110096,
-                19056
+                512,
+                2032
             ],
-            "id": "b17e3914-f638-4d1c-9ac4-5d4c124c987c"
+            "id": "79364a76-4056-496f-9361-0caa21d88c02"
         },
         {
             "parameters": {
@@ -289,14 +290,14 @@
             "type": "@n8n/n8n-nodes-langchain.ollama",
             "typeVersion": 1,
             "position": [
-                110848,
-                19040
+                1264,
+                2016
             ],
-            "id": "6e625054-eb32-4cfd-80c7-f457acd7c205",
+            "id": "89f4e91b-2a22-4ded-a4f4-9d5ddf43ed9a",
             "credentials": {
                 "ollamaApi": {
-                    "id": "idxsjqPJszpgHr7Q",
-                    "name": "Ollama account 2"
+                    "id": "MRjb4KLhOCu1V8gc",
+                    "name": "Ollama account"
                 }
             }
         },
@@ -308,10 +309,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                111200,
-                19040
+                1616,
+                2016
             ],
-            "id": "48956681-ab84-4b97-b521-f03be6b640cf"
+            "id": "c0df7bac-2d01-4059-9802-913fe1341770"
         },
         {
             "parameters": {
@@ -329,10 +330,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                110400,
-                18624
+                800,
+                1392
             ],
-            "id": "0d5c4641-dd90-429e-a5be-250d348ac88d"
+            "id": "0a35a4c6-2c00-420e-8cfc-e6f0baf298e8"
         },
         {
             "parameters": {
@@ -342,10 +343,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110688,
-                18704
+                1072,
+                1664
             ],
-            "id": "e260fbce-0a1d-4a46-a403-98eb78a66e98"
+            "id": "aee5c9b1-7965-4efd-8315-b8d235fd43fb"
         },
         {
             "parameters": {
@@ -362,10 +363,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                110976,
-                18704
+                1360,
+                1664
             ],
-            "id": "ed5ce2c7-74b8-447c-ae61-3a64089e3d8a"
+            "id": "f4c81ce0-7760-4181-8314-1197a71232df"
         },
         {
             "parameters": {
@@ -375,10 +376,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110688,
-                18368
+                1088,
+                1136
             ],
-            "id": "b0ab404d-9dfe-4012-964f-081c14fe7bdb"
+            "id": "a9098c30-284b-4e4a-9d87-5eda8bb5edc0"
         },
         {
             "parameters": {
@@ -389,10 +390,10 @@
             "type": "n8n-nodes-base.splitInBatches",
             "typeVersion": 1,
             "position": [
-                110976,
-                18368
+                1376,
+                1136
             ],
-            "id": "01a893eb-45ed-4e77-9b3c-09cf166f00a4"
+            "id": "297e11ae-f218-42c3-ac55-63a3cd986470"
         },
         {
             "parameters": {
@@ -409,10 +410,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                111312,
-                18064
+                1712,
+                784
             ],
-            "id": "dd671699-1e57-4708-a07f-daa476192601"
+            "id": "87efde06-6338-4926-802c-77a167d06e19"
         },
         {
             "parameters": {
@@ -429,94 +430,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                111312,
-                18416
+                1712,
+                1264
             ],
-            "id": "a3c41caa-357b-4f7f-a745-e24797d5977a"
-        },
-        {
-            "parameters": {
-                "operation": "upsert",
-                "table": "skyguardian_aircraft",
-                "columnToMatchOn": "hex",
-                "options": {}
-            },
-            "name": "MySQL - Insert Aircraft",
-            "type": "n8n-nodes-base.mySql",
-            "typeVersion": 2,
-            "position": [
-                111632,
-                18048
-            ],
-            "id": "1d1e59fe-6c6f-4995-a136-bdf83aa74e4e",
-            "credentials": {
-                "mySql": {
-                    "id": "mXkCRDNO8ss2rXeA",
-                    "name": "MySQL account"
-                }
-            }
-        },
-        {
-            "parameters": {
-                "operation": "upsert",
-                "table": "skyguardian_positions",
-                "columnToMatchOn": "hex",
-                "options": {}
-            },
-            "name": "MySQL - Insert Positions",
-            "type": "n8n-nodes-base.mySql",
-            "typeVersion": 2,
-            "position": [
-                111632,
-                18400
-            ],
-            "id": "f2e70b41-376b-4f0d-bc02-c284a1d502d2",
-            "credentials": {
-                "mySql": {
-                    "id": "mXkCRDNO8ss2rXeA",
-                    "name": "MySQL account"
-                }
-            }
-        },
-        {
-            "parameters": {
-                "table": "skyguardian_analyses",
-                "options": {}
-            },
-            "name": "MySQL - Insert Analysis",
-            "type": "n8n-nodes-base.mySql",
-            "typeVersion": 2,
-            "position": [
-                111632,
-                18224
-            ],
-            "id": "022f6a67-6ebb-4a4c-981a-6d9641805215",
-            "credentials": {
-                "mySql": {
-                    "id": "mXkCRDNO8ss2rXeA",
-                    "name": "MySQL account"
-                }
-            }
-        },
-        {
-            "parameters": {
-                "table": "skyguardian_ai_alerts",
-                "options": {}
-            },
-            "name": "MySQL - Insert AI Alerts",
-            "type": "n8n-nodes-base.mySql",
-            "typeVersion": 2,
-            "position": [
-                111632,
-                19040
-            ],
-            "id": "0705bf82-8835-4b92-97f2-67e48e9968a1",
-            "credentials": {
-                "mySql": {
-                    "id": "mXkCRDNO8ss2rXeA",
-                    "name": "MySQL account"
-                }
-            }
+            "id": "a78f1109-6401-4821-b2d7-7a01144ef508"
         },
         {
             "parameters": {
@@ -526,35 +443,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110224,
-                17712
+                624,
+                480
             ],
-            "id": "129b8eba-f086-4eac-a48f-f0d40cc65101"
-        },
-        {
-            "parameters": {
-                "table": {
-                    "__rl": true,
-                    "value": "skyguardian_errors",
-                    "mode": "list",
-                    "cachedResultName": "skyguardian_errors"
-                },
-                "options": {}
-            },
-            "name": "MySQL - Insert Errors",
-            "type": "n8n-nodes-base.mySql",
-            "typeVersion": 2,
-            "position": [
-                110512,
-                17712
-            ],
-            "id": "bbdd8105-f527-4fb0-9372-c78b76483053",
-            "credentials": {
-                "mySql": {
-                    "id": "mXkCRDNO8ss2rXeA",
-                    "name": "MySQL account"
-                }
-            }
+            "id": "e5653459-1ce3-4617-a059-cf0de42be0ff"
         },
         {
             "parameters": {
@@ -567,10 +459,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                110704,
-                18864
+                784,
+                1760
             ],
-            "id": "6f0ba075-ec55-4fe5-9599-ca1618edd0b4",
+            "id": "4ddcc917-cd7e-4d60-bf14-383cfea4b2f6",
             "disabled": true
         },
         {
@@ -582,10 +474,10 @@
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 2,
             "position": [
-                111248,
-                18688
+                1664,
+                1648
             ],
-            "id": "b8725624-5fdc-4594-a010-d6ad0e1a75fd",
+            "id": "806b5167-e14f-4df1-b6e6-3536f1c82ed6",
             "disabled": true
         },
         {
@@ -603,10 +495,10 @@
             "type": "n8n-nodes-base.if",
             "typeVersion": 1,
             "position": [
-                111312,
-                18240
+                1712,
+                1024
             ],
-            "id": "d5dd5b9a-9da2-4b1f-9f94-bb76cb6f923f"
+            "id": "5cdbf7f2-9b06-427b-9523-584b8cd58969"
         },
         {
             "parameters": {
@@ -615,10 +507,10 @@
             "type": "n8n-nodes-base.merge",
             "typeVersion": 3.2,
             "position": [
-                109616,
-                17648
+                16,
+                416
             ],
-            "id": "d3962b63-edda-4799-a2f5-1f3f2128a660",
+            "id": "a7615669-15e1-408b-9e9b-ddc00d2359aa",
             "name": "Merge"
         },
         {
@@ -629,10 +521,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                109872,
-                19056
+                272,
+                2032
             ],
-            "id": "41376cc8-6d8c-4f55-a172-18e55055c694"
+            "id": "3e082e37-30cc-4608-a62d-3b4bd87e3e3e"
         },
         {
             "parameters": {
@@ -642,10 +534,10 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                111424,
-                19040
+                1840,
+                2016
             ],
-            "id": "c1749233-e6b2-4e06-b470-2d9a79591557"
+            "id": "27e3cb59-955e-4af3-adff-3677fc3ace12"
         },
         {
             "parameters": {
@@ -655,10 +547,52 @@
             "type": "n8n-nodes-base.function",
             "typeVersion": 1,
             "position": [
-                110352,
-                19040
+                768,
+                2016
             ],
-            "id": "785ec7d0-df94-4ce3-9697-e281ab79206f"
+            "id": "6ed17b26-563d-481f-a0e9-d6f8820cfea0"
+        },
+        {
+            "parameters": {
+                "functionCode": "// =================================================================\n// NATO STANDARD REPORT GENERATOR (LIVE / PRODUCTION)\n// =================================================================\n// Bu modül sadece YÜKSEK TEHDİT veya ASKERİ unsurlar için çalışır.\n// Sivil uçuşlarda çıktı vermez (No Op).\n// =================================================================\n\nconst input = $input.first().json;\nconst now = new Date();\nconst timestamp = now.toISOString();\n\n// 1. Hedefleri Belirle (Sıkı Filtreleme)\nlet targets = [];\nif (input.uniqueAircraft) {\n  targets = input.uniqueAircraft.filter(ac => \n    ac.is_military ||                         // Askeri mi?\n    ac.threat_level >= 4 ||                   // Tehdit seviyesi 4 veya 5 mi?\n    ac.is_potential_threat ||                 // Potansiyel tehdit bayrağı var mı?\n    (ac.country_of_origin === 'Russia' && ac.type !== 'civil') // Rusya ve sivil değil mi?\n  );\n}\n\n// 2. Fallback: Uçak filtresine takılan yoksa ama Sistem \"Yüksek Risk\" diyorsa\n// (Örn: AI anormallik tespit etti ama uçak kimliği belirsiz)\nif (targets.length === 0 && (input.status || '').toUpperCase().includes('RISK')) {\n    // Sadece \"HIGH\" veya \"CRITICAL\" risk durumlarında boş rapor oluştur\n    if ((input.status || '').includes('HIGH') || (input.status || '').includes('CRITICAL')) {\n        targets = [{\n            aircraft_name: 'Unidentified Contact (Anomaly)',\n            hex: 'UNKNOWN',\n            lat: 59.42, \n            lon: 24.83,\n            alt_baro: 0,\n            gs: 0,\n            track: 0,\n            country_of_origin: 'Unknown',\n            hex: 'UNKNOWN'\n        }];\n    }\n}\n\n// 3. EĞER HİÇBİR TEHDİT YOKSA DUR.\n// Production ortamında gereksiz veri kaydetmemek için boş dönüyoruz.\nif (targets.length === 0) {\n    return []; \n}\n\n// En yüksek öncelikli hedefi seç\nconst primaryTarget = targets.sort((a, b) => (b.threat_level || 0) - (a.threat_level || 0))[0];\n\n// --- SALUTE FORMATI OLUŞTURMA ---\n\n// S - Size\nconst size = `${targets.length}x CONTACT(S)`;\n\n// A - Activity\nlet activity = `HDG ${primaryTarget.track || 0}, SPD ${primaryTarget.gs || 0} kts`;\nif (primaryTarget.gs > 800) activity += \" [HIGH SPEED]\";\nif (primaryTarget.alt_baro < 1000) activity += \" [LOW LEVEL]\";\nif (primaryTarget.violation) activity += \" [VIOLATION]\";\n\n// L - Location\nconst location = `LAT ${primaryTarget.lat}, LON ${primaryTarget.lon}, ALT ${primaryTarget.alt_baro || 0} ft`;\nlet locationDetail = 'SECTOR TALLINN';\nif (primaryTarget.airspace_tracking && primaryTarget.airspace_tracking.nearest_waypoint) {\n    locationDetail = `NEAR ${primaryTarget.airspace_tracking.nearest_waypoint.name}`;\n}\n\n// U - Unit\nlet unit = primaryTarget.aircraft_name || 'UNKNOWN TYPE';\nif (primaryTarget.callsign) unit += ` c/s ${primaryTarget.callsign}`;\nif (primaryTarget.country_of_origin) unit += ` (${primaryTarget.country_of_origin.toUpperCase()})`;\n\n// T - Time\nconst timeZulu = now.toISOString().replace('T', ' ').substring(0, 19) + ' Z';\n\n// E - Equipment\nconst equipment = `HEX: ${primaryTarget.hex}, SQUAWK: ${primaryTarget.squawk || 'N/A'}`;\n\n// Rapor Metni\nconst reportText = `*** NATO FLASH REPORT ***\nTO: SKYGUARDIAN C2\nSUBJ: AIRSPACE ALERT - ${input.status || 'WARNING'}\n\n1. (S) SIZE: ${size}\n2. (A) ACTIVITY: ${activity}\n3. (L) LOCATION: ${location} // ${locationDetail}\n4. (U) UNIT: ${unit}\n5. (T) TIME: ${timeZulu}\n6. (E) EQUIP: ${equipment}\n\nRMKS: AUTOMATED SENSOR ALERT.`;\n\n// Çıktı\nreturn [{\n    json: {\n        report_id: `SALUTE-${now.getTime()}-${primaryTarget.hex}`,\n        timestamp: timestamp,\n        report_type: 'SALUTE',\n        threat_level: input.enhanced_risk_assessment?.overall_risk || 'UNKNOWN',\n        salute_size: size,\n        salute_activity: activity,\n        salute_location: `${location} // ${locationDetail}`,\n        salute_unit: unit,\n        salute_time: timeZulu,\n        salute_equipment: equipment,\n        full_report_text: reportText,\n        is_transmitted: false\n    }\n}];"
+            },
+            "name": "Generate NATO SALUTE Report",
+            "type": "n8n-nodes-base.function",
+            "typeVersion": 1,
+            "position": [
+                1088,
+                1296
+            ],
+            "id": "643c5d72-fc41-4e55-a611-4a7f03bb4fe3"
+        },
+        {
+            "parameters": {
+                "functionCode": "// =================================================================\n// PROMPT GENERATOR FOR OLLAMA\n// =================================================================\n\n// 1. Veri Güvenliği Kontrolleri (Data Safety Checks)\nconst topCountries = ($json.top_countries && Array.isArray($json.top_countries)) \n    ? $json.top_countries.map(c => c.country + ':' + c.count).join(', ') \n    : 'None';\n\nconst atcAnomalies = $json.atc_data?.stats?.military_no_contact || 0;\nconst weatherNotes = $json.weather_notes || 'No significant weather impact';\nconst violations = $json.restriction_violations || 0;\nconst suspPatterns = $json.tracking_patterns?.suspicious_count || 0;\n\n// 2. Prompt Metnini İnşa Et\nconst promptText = `Analyze Tallinn airspace security alert with enhanced intelligence:\n\nOVERALL STATUS: ${$json.final_assessment?.overall_status || 'UNKNOWN'}\nTIMESTAMP: ${$json.timestamp}\n\nENHANCED DATA:\n- Total aircraft: ${$json.total_aircraft || 0}\n- Military: ${$json.military_aircraft || 0} (${$json.enhanced_stats?.nato_count || 0} NATO)\n- Potential threats: ${$json.enhanced_stats?.potential_threats || 0}\n- Drones: ${$json.drones || 0}\n- Near sensitive locations: ${$json.near_sensitive || 0}\n- High speed (>800km/h): ${$json.high_speed || 0}\n- Low altitude (<1000m): ${$json.low_altitude || 0}\n- Composite threat score: ${$json.enhanced_risk_assessment?.composite_score || 0}/500\n\nINTELLIGENCE CONTEXT:\n- Top countries: ${topCountries}\n- Airspace violations: ${violations}\n- Suspicious patterns: ${suspPatterns}\n- ATC anomalies: ${atcAnomalies}\n- Weather impact: ${weatherNotes}\n- Most affected zone: ${$json.most_affected_zone || 'Tallinn region'}\n\nTHREAT ASSESSMENT: ${$json.enhanced_risk_assessment?.overall_risk || 'LOW'}\n\nIMPORTANT: You MUST provide analysis in this EXACT FORMAT with NO additional text or explanations before or after the numbered list:\n\n1. SITUATION: [Brief overview of current airspace situation in 1-2 sentences]\n2. THREAT LEVEL: [CRITICAL/HIGH/MEDIUM/LOW] - [Brief reasoning in 5-10 words]\n3. PRIMARY CONCERN: [Most significant threat or anomaly in 1 sentence]\n4. SECONDARY CONCERNS: [List 1-3 concerns separated by semicolons, no bullet points]\n5. LIKELY SCENARIO: [Military exercise; Drone activity; Civil traffic; Unknown threat; Surveillance]\n6. RECOMMENDATIONS: [List 1-3 specific actions separated by semicolons]\n7. FORECAST: [Expected development in next 30 minutes in 1 sentence]\n8. CONFIDENCE: [High/Medium/Low] - [Brief explanation in 5-10 words]\n\nDO NOT include \"Here is the analysis:\" or any other introductory text.\nDO NOT use bullet points, asterisks, or markdown formatting.\nEach numbered item must be on a separate line.\nKeep all text on the same line as the section number.`;\n\n// 3. Prompt'u Çıktı Olarak Ver\nreturn {\n    prompt: promptText\n};"
+            },
+            "name": "Generate AI Prompt",
+            "type": "n8n-nodes-base.function",
+            "typeVersion": 1,
+            "position": [
+                1024,
+                2016
+            ],
+            "id": "13567af9-d837-4002-8b2b-6364ad9dccfd"
+        },
+        {
+            "parameters": {
+                "url": "https://api.adsb.lol/v2/point/59.42/24.83/100",
+                "options": {
+                    "timeout": 10000
+                }
+            },
+            "name": "ADSB.lol - Tallinn 100km",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 2,
+            "position": [
+                -320,
+                304
+            ],
+            "id": "48e2077d-9d0e-4a91-89d1-e71e9e4a540d"
         },
         {
             "parameters": {
@@ -789,15 +723,374 @@
             "type": "n8n-nodes-base.mySql",
             "typeVersion": 2.5,
             "position": [
-                109600,
-                17232
+                16,
+                48
             ],
-            "id": "1d73833c-818d-464b-b616-f309378cc558",
-            "name": "Update Weather",
+            "id": "ad60b4d0-629c-419c-8f64-acec0f3261b2",
+            "name": "Update Weather Live",
             "credentials": {
                 "mySql": {
-                    "id": "mXkCRDNO8ss2rXeA",
-                    "name": "MySQL account"
+                    "id": "zPnMCtZPLcW96MMr",
+                    "name": "SkyGuardianLive"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "table": {
+                    "__rl": true,
+                    "value": "skyguardian_weather",
+                    "mode": "list",
+                    "cachedResultName": "skyguardian_weather"
+                },
+                "dataMode": "defineBelow",
+                "columnToMatchOn": "location_id",
+                "valueToMatchOn": "={{ $json.sys.id }}",
+                "valuesToSend": {
+                    "values": [
+                        {
+                            "column": "longitude",
+                            "value": "={{ $json.coord.lon }}"
+                        },
+                        {
+                            "column": "latitude",
+                            "value": "={{ $json.coord.lat }}"
+                        },
+                        {
+                            "column": "weather_main",
+                            "value": "={{ $json.weather[0].main }}"
+                        },
+                        {
+                            "column": "weather_description",
+                            "value": "={{ $json.weather[0].description }}"
+                        },
+                        {
+                            "column": "weather_icon",
+                            "value": "={{ $json.weather[0].icon }}"
+                        },
+                        {
+                            "column": "weather_id",
+                            "value": "={{ $json.weather[0].id }}"
+                        },
+                        {
+                            "column": "temperature",
+                            "value": "={{ $json.main.temp }}"
+                        },
+                        {
+                            "column": "feels_like",
+                            "value": "={{ $json.main.feels_like }}"
+                        },
+                        {
+                            "column": "temp_min",
+                            "value": "={{ $json.main.temp_min }}"
+                        },
+                        {
+                            "column": "temp_max",
+                            "value": "={{ $json.main.temp_max }}"
+                        },
+                        {
+                            "column": "pressure",
+                            "value": "={{ $json.main.pressure }}"
+                        },
+                        {
+                            "column": "humidity",
+                            "value": "={{ $json.main.humidity }}"
+                        },
+                        {
+                            "column": "sea_level",
+                            "value": "={{ $json.main.sea_level }}"
+                        },
+                        {
+                            "column": "grnd_level",
+                            "value": "={{ $json.main.grnd_level }}"
+                        },
+                        {
+                            "column": "visibility",
+                            "value": "={{ $json.visibility }}"
+                        },
+                        {
+                            "column": "wind_speed",
+                            "value": "={{ $json.wind.speed }}"
+                        },
+                        {
+                            "column": "wind_degree",
+                            "value": "={{ $json.wind.deg }}"
+                        },
+                        {
+                            "column": "clouds_all",
+                            "value": "={{ $json.clouds.all }}"
+                        },
+                        {
+                            "column": "location_name",
+                            "value": "={{ $json.name }}"
+                        },
+                        {
+                            "column": "location_id",
+                            "value": "={{ $json.sys.id }}"
+                        },
+                        {
+                            "column": "sunrise",
+                            "value": "={{ $json.sys.sunrise }}"
+                        },
+                        {
+                            "column": "sunset",
+                            "value": "={{ $json.sys.sunset }}"
+                        },
+                        {
+                            "column": "data_timestamp",
+                            "value": "={{ $json.dt }}"
+                        },
+                        {
+                            "column": "timezone_offset",
+                            "value": "={{ $json.timezone }}"
+                        },
+                        {
+                            "column": "base",
+                            "value": "={{ $json.base }}"
+                        },
+                        {
+                            "column": "cod",
+                            "value": "={{ $json.cod }}"
+                        },
+                        {
+                            "column": "country_code",
+                            "value": "={{ $json.sys.country }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2.5,
+            "position": [
+                16,
+                -112
+            ],
+            "id": "d9f94d06-8d5b-46a4-a9e5-84e2d863de70",
+            "name": "Update Weather Local",
+            "credentials": {
+                "mySql": {
+                    "id": "J1SUsmZMjYf8wkkJ",
+                    "name": "SkyGuardian"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "table": {
+                    "__rl": true,
+                    "value": "skyguardian_errors",
+                    "mode": "list",
+                    "cachedResultName": "skyguardian_errors"
+                },
+                "options": {}
+            },
+            "name": "MySQL - Insert Errors Local",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                896,
+                560
+            ],
+            "id": "f84076f3-b0d6-4098-813a-9ab05e11f144",
+            "credentials": {
+                "mySql": {
+                    "id": "J1SUsmZMjYf8wkkJ",
+                    "name": "SkyGuardian"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "table": {
+                    "__rl": true,
+                    "value": "skyguardian_errors",
+                    "mode": "list",
+                    "cachedResultName": "skyguardian_errors"
+                },
+                "options": {}
+            },
+            "name": "MySQL - Insert Errors Live",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                896,
+                368
+            ],
+            "id": "f47a2a02-e28b-426e-8d96-44c01ee45fc9",
+            "credentials": {
+                "mySql": {
+                    "id": "zPnMCtZPLcW96MMr",
+                    "name": "SkyGuardianLive"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "upsert",
+                "table": "skyguardian_aircraft",
+                "columnToMatchOn": "hex",
+                "options": {}
+            },
+            "name": "MySQL - Insert Aircraft Local",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                2016,
+                640
+            ],
+            "id": "8f3b9986-d13b-4abc-bfee-190195363c14",
+            "credentials": {
+                "mySql": {
+                    "id": "J1SUsmZMjYf8wkkJ",
+                    "name": "SkyGuardian"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "upsert",
+                "table": "skyguardian_aircraft",
+                "columnToMatchOn": "hex",
+                "options": {}
+            },
+            "name": "MySQL - Insert Aircraft Live",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                2032,
+                816
+            ],
+            "id": "27ebd65e-6e82-4a83-b298-b8203831a4a7",
+            "credentials": {
+                "mySql": {
+                    "id": "zPnMCtZPLcW96MMr",
+                    "name": "SkyGuardianLive"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "table": "skyguardian_analyses",
+                "options": {}
+            },
+            "name": "MySQL - Insert Analysis Live",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                2032,
+                992
+            ],
+            "id": "811627ee-ecd6-45a5-b5af-11ecabea178a",
+            "credentials": {
+                "mySql": {
+                    "id": "zPnMCtZPLcW96MMr",
+                    "name": "SkyGuardianLive"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "table": "skyguardian_analyses",
+                "options": {}
+            },
+            "name": "MySQL - Insert Analysis local",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                2032,
+                1136
+            ],
+            "id": "e52db2ba-bc81-4340-a473-4a1d0ab3f9cb",
+            "credentials": {
+                "mySql": {
+                    "id": "J1SUsmZMjYf8wkkJ",
+                    "name": "SkyGuardian"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "upsert",
+                "table": "skyguardian_positions",
+                "columnToMatchOn": "hex",
+                "options": {}
+            },
+            "name": "MySQL - Insert Positions Local",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                2032,
+                1296
+            ],
+            "id": "244e6169-824f-4f63-abd5-8d18719a6b15",
+            "credentials": {
+                "mySql": {
+                    "id": "J1SUsmZMjYf8wkkJ",
+                    "name": "SkyGuardian"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "upsert",
+                "table": "skyguardian_positions",
+                "columnToMatchOn": "hex",
+                "options": {}
+            },
+            "name": "MySQL - Insert Positions live",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                2048,
+                1456
+            ],
+            "id": "f3dc8729-fa5a-4434-b11c-fd6747899148",
+            "credentials": {
+                "mySql": {
+                    "id": "zPnMCtZPLcW96MMr",
+                    "name": "SkyGuardianLive"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "table": "skyguardian_ai_alerts",
+                "options": {}
+            },
+            "name": "MySQL - Insert AI Alerts Live",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                2096,
+                2144
+            ],
+            "id": "dde24be3-277b-4c1a-af51-3a6d630e5f30",
+            "credentials": {
+                "mySql": {
+                    "id": "zPnMCtZPLcW96MMr",
+                    "name": "SkyGuardianLive"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "table": "skyguardian_ai_alerts",
+                "options": {}
+            },
+            "name": "MySQL - Insert AI Alerts Local",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2,
+            "position": [
+                2096,
+                1952
+            ],
+            "id": "11a88789-973b-44c3-849c-201ca4cc83c6",
+            "credentials": {
+                "mySql": {
+                    "id": "J1SUsmZMjYf8wkkJ",
+                    "name": "SkyGuardian"
                 }
             }
         },
@@ -814,59 +1107,42 @@
             "type": "n8n-nodes-base.mySql",
             "typeVersion": 2.5,
             "position": [
-                110976,
-                18528
+                1328,
+                1296
             ],
-            "id": "2d902aac-a694-4b67-818a-dfcd992c02e4",
-            "name": "MySQL - Insert NATO Report",
+            "id": "d9bed8d0-6c57-41e8-a03e-d18a72e175c6",
+            "name": "MySQL - Insert NATO Report Local",
             "credentials": {
                 "mySql": {
-                    "id": "mXkCRDNO8ss2rXeA",
-                    "name": "MySQL account"
+                    "id": "J1SUsmZMjYf8wkkJ",
+                    "name": "SkyGuardian"
                 }
             }
         },
         {
             "parameters": {
-                "functionCode": "// =================================================================\n// NATO STANDARD REPORT GENERATOR (LIVE / PRODUCTION)\n// =================================================================\n// Bu modül sadece YÜKSEK TEHDİT veya ASKERİ unsurlar için çalışır.\n// Sivil uçuşlarda çıktı vermez (No Op).\n// =================================================================\n\nconst input = $input.first().json;\nconst now = new Date();\nconst timestamp = now.toISOString();\n\n// 1. Hedefleri Belirle (Sıkı Filtreleme)\nlet targets = [];\nif (input.uniqueAircraft) {\n  targets = input.uniqueAircraft.filter(ac => \n    ac.is_military ||                         // Askeri mi?\n    ac.threat_level >= 4 ||                   // Tehdit seviyesi 4 veya 5 mi?\n    ac.is_potential_threat ||                 // Potansiyel tehdit bayrağı var mı?\n    (ac.country_of_origin === 'Russia' && ac.type !== 'civil') // Rusya ve sivil değil mi?\n  );\n}\n\n// 2. Fallback: Uçak filtresine takılan yoksa ama Sistem \"Yüksek Risk\" diyorsa\n// (Örn: AI anormallik tespit etti ama uçak kimliği belirsiz)\nif (targets.length === 0 && (input.status || '').toUpperCase().includes('RISK')) {\n    // Sadece \"HIGH\" veya \"CRITICAL\" risk durumlarında boş rapor oluştur\n    if ((input.status || '').includes('HIGH') || (input.status || '').includes('CRITICAL')) {\n        targets = [{\n            aircraft_name: 'Unidentified Contact (Anomaly)',\n            hex: 'UNKNOWN',\n            lat: 59.42, \n            lon: 24.83,\n            alt_baro: 0,\n            gs: 0,\n            track: 0,\n            country_of_origin: 'Unknown',\n            hex: 'UNKNOWN'\n        }];\n    }\n}\n\n// 3. EĞER HİÇBİR TEHDİT YOKSA DUR.\n// Production ortamında gereksiz veri kaydetmemek için boş dönüyoruz.\nif (targets.length === 0) {\n    return []; \n}\n\n// En yüksek öncelikli hedefi seç\nconst primaryTarget = targets.sort((a, b) => (b.threat_level || 0) - (a.threat_level || 0))[0];\n\n// --- SALUTE FORMATI OLUŞTURMA ---\n\n// S - Size\nconst size = `${targets.length}x CONTACT(S)`;\n\n// A - Activity\nlet activity = `HDG ${primaryTarget.track || 0}, SPD ${primaryTarget.gs || 0} kts`;\nif (primaryTarget.gs > 800) activity += \" [HIGH SPEED]\";\nif (primaryTarget.alt_baro < 1000) activity += \" [LOW LEVEL]\";\nif (primaryTarget.violation) activity += \" [VIOLATION]\";\n\n// L - Location\nconst location = `LAT ${primaryTarget.lat}, LON ${primaryTarget.lon}, ALT ${primaryTarget.alt_baro || 0} ft`;\nlet locationDetail = 'SECTOR TALLINN';\nif (primaryTarget.airspace_tracking && primaryTarget.airspace_tracking.nearest_waypoint) {\n    locationDetail = `NEAR ${primaryTarget.airspace_tracking.nearest_waypoint.name}`;\n}\n\n// U - Unit\nlet unit = primaryTarget.aircraft_name || 'UNKNOWN TYPE';\nif (primaryTarget.callsign) unit += ` c/s ${primaryTarget.callsign}`;\nif (primaryTarget.country_of_origin) unit += ` (${primaryTarget.country_of_origin.toUpperCase()})`;\n\n// T - Time\nconst timeZulu = now.toISOString().replace('T', ' ').substring(0, 19) + ' Z';\n\n// E - Equipment\nconst equipment = `HEX: ${primaryTarget.hex}, SQUAWK: ${primaryTarget.squawk || 'N/A'}`;\n\n// Rapor Metni\nconst reportText = `*** NATO FLASH REPORT ***\nTO: SKYGUARDIAN C2\nSUBJ: AIRSPACE ALERT - ${input.status || 'WARNING'}\n\n1. (S) SIZE: ${size}\n2. (A) ACTIVITY: ${activity}\n3. (L) LOCATION: ${location} // ${locationDetail}\n4. (U) UNIT: ${unit}\n5. (T) TIME: ${timeZulu}\n6. (E) EQUIP: ${equipment}\n\nRMKS: AUTOMATED SENSOR ALERT.`;\n\n// Çıktı\nreturn [{\n    json: {\n        report_id: `SALUTE-${now.getTime()}-${primaryTarget.hex}`,\n        timestamp: timestamp,\n        report_type: 'SALUTE',\n        threat_level: input.enhanced_risk_assessment?.overall_risk || 'UNKNOWN',\n        salute_size: size,\n        salute_activity: activity,\n        salute_location: `${location} // ${locationDetail}`,\n        salute_unit: unit,\n        salute_time: timeZulu,\n        salute_equipment: equipment,\n        full_report_text: reportText,\n        is_transmitted: false\n    }\n}];"
+                "table": {
+                    "__rl": true,
+                    "value": "skyguardian_nato_reports",
+                    "mode": "list",
+                    "cachedResultName": "skyguardian_nato_reports"
+                },
+                "options": {}
             },
-            "name": "Generate NATO SALUTE Report",
-            "type": "n8n-nodes-base.function",
-            "typeVersion": 1,
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2.5,
             "position": [
-                110688,
-                18528
+                1328,
+                1472
             ],
-            "id": "c4aecd27-8482-406e-b430-0f2faab32f84"
-        },
-        {
-            "parameters": {
-                "functionCode": "// =================================================================\n// PROMPT GENERATOR FOR OLLAMA\n// =================================================================\n\n// 1. Veri Güvenliği Kontrolleri (Data Safety Checks)\nconst topCountries = ($json.top_countries && Array.isArray($json.top_countries)) \n    ? $json.top_countries.map(c => c.country + ':' + c.count).join(', ') \n    : 'None';\n\nconst atcAnomalies = $json.atc_data?.stats?.military_no_contact || 0;\nconst weatherNotes = $json.weather_notes || 'No significant weather impact';\nconst violations = $json.restriction_violations || 0;\nconst suspPatterns = $json.tracking_patterns?.suspicious_count || 0;\n\n// 2. Prompt Metnini İnşa Et\nconst promptText = `Analyze Tallinn airspace security alert with enhanced intelligence:\n\nOVERALL STATUS: ${$json.final_assessment?.overall_status || 'UNKNOWN'}\nTIMESTAMP: ${$json.timestamp}\n\nENHANCED DATA:\n- Total aircraft: ${$json.total_aircraft || 0}\n- Military: ${$json.military_aircraft || 0} (${$json.enhanced_stats?.nato_count || 0} NATO)\n- Potential threats: ${$json.enhanced_stats?.potential_threats || 0}\n- Drones: ${$json.drones || 0}\n- Near sensitive locations: ${$json.near_sensitive || 0}\n- High speed (>800km/h): ${$json.high_speed || 0}\n- Low altitude (<1000m): ${$json.low_altitude || 0}\n- Composite threat score: ${$json.enhanced_risk_assessment?.composite_score || 0}/500\n\nINTELLIGENCE CONTEXT:\n- Top countries: ${topCountries}\n- Airspace violations: ${violations}\n- Suspicious patterns: ${suspPatterns}\n- ATC anomalies: ${atcAnomalies}\n- Weather impact: ${weatherNotes}\n- Most affected zone: ${$json.most_affected_zone || 'Tallinn region'}\n\nTHREAT ASSESSMENT: ${$json.enhanced_risk_assessment?.overall_risk || 'LOW'}\n\nIMPORTANT: You MUST provide analysis in this EXACT FORMAT with NO additional text or explanations before or after the numbered list:\n\n1. SITUATION: [Brief overview of current airspace situation in 1-2 sentences]\n2. THREAT LEVEL: [CRITICAL/HIGH/MEDIUM/LOW] - [Brief reasoning in 5-10 words]\n3. PRIMARY CONCERN: [Most significant threat or anomaly in 1 sentence]\n4. SECONDARY CONCERNS: [List 1-3 concerns separated by semicolons, no bullet points]\n5. LIKELY SCENARIO: [Military exercise; Drone activity; Civil traffic; Unknown threat; Surveillance]\n6. RECOMMENDATIONS: [List 1-3 specific actions separated by semicolons]\n7. FORECAST: [Expected development in next 30 minutes in 1 sentence]\n8. CONFIDENCE: [High/Medium/Low] - [Brief explanation in 5-10 words]\n\nDO NOT include \"Here is the analysis:\" or any other introductory text.\nDO NOT use bullet points, asterisks, or markdown formatting.\nEach numbered item must be on a separate line.\nKeep all text on the same line as the section number.`;\n\n// 3. Prompt'u Çıktı Olarak Ver\nreturn {\n    prompt: promptText\n};"
-            },
-            "name": "Generate AI Prompt",
-            "type": "n8n-nodes-base.function",
-            "typeVersion": 1,
-            "position": [
-                110592,
-                19040
-            ],
-            "id": "fac545b9-8c0c-4188-bb56-ab18af7944c2"
-        },
-        {
-            "parameters": {
-                "url": "https://api.adsb.lol/v2/point/59.42/24.83/100",
-                "options": {
-                    "timeout": 10000
+            "id": "42393cc6-f7cd-485f-a678-6cc33f342f6c",
+            "name": "MySQL - Insert NATO Report Live",
+            "credentials": {
+                "mySql": {
+                    "id": "zPnMCtZPLcW96MMr",
+                    "name": "SkyGuardianLive"
                 }
-            },
-            "name": "ADSB.lol - Tallinn 100km",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 2,
-            "position": [
-                109280,
-                17536
-            ],
-            "id": "c50f848e-5be8-4388-b54a-0dcb408b368a"
+            }
         }
     ],
     "pinData": {},
@@ -987,7 +1263,12 @@
                         "index": 0
                     },
                     {
-                        "node": "Update Weather",
+                        "node": "Update Weather Live",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Update Weather Local",
                         "type": "main",
                         "index": 0
                     }
@@ -1149,7 +1430,12 @@
             "main": [
                 [
                     {
-                        "node": "MySQL - Insert Aircraft",
+                        "node": "MySQL - Insert Aircraft Local",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "MySQL - Insert Aircraft Live",
                         "type": "main",
                         "index": 0
                     }
@@ -1160,7 +1446,12 @@
             "main": [
                 [
                     {
-                        "node": "MySQL - Insert Positions",
+                        "node": "MySQL - Insert Positions Local",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "MySQL - Insert Positions live",
                         "type": "main",
                         "index": 0
                     }
@@ -1182,7 +1473,12 @@
             "main": [
                 [
                     {
-                        "node": "MySQL - Insert Errors",
+                        "node": "MySQL - Insert Errors Live",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "MySQL - Insert Errors Local",
                         "type": "main",
                         "index": 0
                     }
@@ -1204,7 +1500,12 @@
             "main": [
                 [
                     {
-                        "node": "MySQL - Insert Analysis",
+                        "node": "MySQL - Insert Analysis Live",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "MySQL - Insert Analysis local",
                         "type": "main",
                         "index": 0
                     }
@@ -1281,7 +1582,12 @@
             "main": [
                 [
                     {
-                        "node": "MySQL - Insert AI Alerts",
+                        "node": "MySQL - Insert AI Alerts Local",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "MySQL - Insert AI Alerts Live",
                         "type": "main",
                         "index": 0
                     }
@@ -1303,7 +1609,12 @@
             "main": [
                 [
                     {
-                        "node": "MySQL - Insert NATO Report",
+                        "node": "MySQL - Insert NATO Report Local",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "MySQL - Insert NATO Report Live",
                         "type": "main",
                         "index": 0
                     }
@@ -1336,16 +1647,14 @@
     "active": true,
     "settings": {
         "executionOrder": "v1",
-        "availableInMCP": false,
-        "timeSavedMode": "fixed",
-        "timezone": "Europe/Tallinn",
-        "callerPolicy": "workflowsFromSameOwner"
+        "binaryMode": "separate",
+        "availableInMCP": false
     },
-    "versionId": "1ae21d07-0c1f-496b-9a71-abaf99bd4132",
+    "versionId": "278f96e3-5b8b-4980-a7c4-bc79cd1d4a2c",
     "meta": {
         "templateCredsSetupCompleted": true,
-        "instanceId": "3a70f2cbf6fc810e2efeddde906f50aa8de136a42c3549f046f2c63d7108bd3c"
+        "instanceId": "2c743f4347db905d19eeb43b68eb38aec757212dace1ad957d845478353f8c3d"
     },
-    "id": "CPV9VOYpWrPJnq7Z",
+    "id": "zNIj54sY8bWEqyFv",
     "tags": []
 }

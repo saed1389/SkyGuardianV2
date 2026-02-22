@@ -34,8 +34,8 @@
         <div class="contact-details">
             <h3 data-translate="contact_info_h3">Contact Information</h3>
             <div class="detail-item">
-                <label data-translate="contact_office_label">Tartu HQ</label>
-                <p>Rotermanni 8, 10111 Tartu, Estonia</p>
+                <label data-translate="contact_office_label">Tallinn HQ</label>
+                <p>Harju maakond, Tallinn, Põhja-Tallinna linnaosa, Telliskivi tn 57, 10412, Estonia</p>
             </div>
             <div class="detail-item">
                 <label data-translate="contact_email_label">Email</label>
