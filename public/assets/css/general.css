@@ -19,8 +19,16 @@
     --gray-900: #111827;
 }
 
+@font-face {
+    font-family: 'Aino';
+    src: url('../fonts/Aino-Headline.otf') format('opentype');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, Aino, sans-serif;
     line-height: 1.6;
     color: var(--gray-900);
     background: var(--white);
@@ -188,6 +196,7 @@ nav {
 }
 
 .hero-text h1 {
+    font-family: 'Aino', sans-serif;
     font-size: 48px;
     margin-bottom: 20px;
     line-height: 1.2;
