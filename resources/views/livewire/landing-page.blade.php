@@ -22,28 +22,16 @@
                 {{--<div class="badge">
                     🇪🇪 <span data-translate="hero_badge">Made in Estonia</span>
                 </div>--}}
-                <h1 data-translate="hero_title">Advanced Sky Monitoring System</h1>
-                <p data-translate="hero_subtitle">Complete drone monitoring, weather services, security, and aircraft tracking solution for the modern era.</p>
+                <h1>SkyGuardian</h1>
+                <h2 data-translate="hero_subtitle_h2">Passive RF Drone Detection for Critical Infrastructure</h2>
+                <p data-translate="hero_subtitle">Low-cost, AI-powered real-time detection system protecting airports, borders, ports, and energy facilities.</p>
                 <div class="hero-buttons">
                     <button onclick="openModal('demoModal')" class="btn-primary" data-translate="hero_btn_primary">Start Monitoring</button>
                     <a href="#about" class="btn-secondary" data-translate="hero_btn_secondary">Learn More</a>
                 </div>
-                <div class="stats">
-                    <div class="stat-item">
-                        <h3>24/7</h3>
-                        <p data-translate="stat_monitoring">Monitoring</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>99.9%</h3>
-                        <p data-translate="stat_uptime">Uptime</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>1000+</h3>
-                        <p data-translate="stat_assets">Tracked Assets</p>
-                    </div>
-                </div>
+
             </div>
-            <div class="hero-card">
+            {{--<div class="hero-card">
                 <div class="service-item">
                     <div class="service-icon">✨</div>
                     <div>
@@ -65,54 +53,49 @@
                         <p data-translate="hero_service3_desc">Advanced protection</p>
                     </div>
                 </div>
-            </div>
+            </div>--}}
         </div>
     </section>
 
     <section class="features" id="features">
         <div class="section-title">
-            <h2 data-translate="features_title">Powerful Features</h2>
+            <h2 data-translate="features_title">Core Capabilities</h2>
             <p data-translate="features_subtitle">Everything you need to monitor, track, and secure your airspace</p>
         </div>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">✨</div>
-                <h3 data-translate="feature1_title">Drone Tracking</h3>
-                <p data-translate="feature1_desc">Real-time GPS tracking and monitoring of all drone activities in your airspace.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">☁️</div>
-                <h3 data-translate="feature2_title">Weather Data</h3>
-                <p data-translate="feature2_desc">Live weather conditions, forecasts, and alerts for safe flight operations.</p>
+                <h3 data-translate="feature1_title">Passive RF Spectrum Sensing</h3>
+                <p data-translate="feature1_desc">433–900 MHz frequency scanning using low-cost RTL-SDR sensors.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🛡️</div>
-                <h3 data-translate="feature3_title">Security System</h3>
-                <p data-translate="feature3_desc">Advanced threat detection and automated security protocols for airspace protection.</p>
+                <h3 data-translate="feature3_title">Edge AI Classification & Fingerprinting</h3>
+                <p data-translate="feature3_desc">Real-time anomaly detection and threat scoring on the edge.</p>
             </div>
-            <div class="feature-card">
+       {{--     <div class="feature-card">
                 <div class="feature-icon">✈️</div>
                 <h3 data-translate="feature4_title">Aircraft Monitor</h3>
                 <p data-translate="feature4_desc">Comprehensive tracking of all aircraft movements and flight patterns.</p>
-            </div>
+            </div>--}}
             <div class="feature-card">
                 <div class="feature-icon">🔔</div>
-                <h3 data-translate="feature5_title">Real-time Alerts</h3>
-                <p data-translate="feature5_desc">Instant notifications for unauthorized airspace intrusions and critical events.</p>
+                <h3 data-translate="feature5_title">Low-Altitude Threat Detection</h3>
+                <p data-translate="feature5_desc">Instant SMS/email alerts for unauthorized drones.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3 data-translate="feature6_title">Data Analytics</h3>
-                <p data-translate="feature6_desc">Advanced analytics dashboard with detailed reports and insights for better decision making.</p>
+                <h3 data-translate="feature6_title">Real-time Alerting & NATO SALUTE Reports</h3>
+                <p data-translate="feature6_desc">Automatic SALUTE reports for security operations.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🧠</div>
-                <h3 data-translate="feature7_title">AI Analysis</h3>
-                <p data-translate="feature7_desc">Machine learning algorithms detect patterns and potential threats automatically.</p>
+                <h3 data-translate="feature7_title">Mesh Sensor Network Architecture</h3>
+                <p data-translate="feature7_desc">Scalable multi-node deployment for large areas.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">⏪</div>
-                <h3 data-translate="feature8_title">Historical Playback</h3>
+                <h3 data-translate="feature8_title">Offline / Comms-Degraded Operation</h3>
                 <p data-translate="feature8_desc">Review past flight paths and incidents with detailed timeline replay controls.</p>
             </div>
         </div>
@@ -160,9 +143,9 @@
     <section class="about" id="about">
         <div class="about-content">
             <div class="about-text">
-                <h2 data-translate="about_title">Built for the Future of Aviation</h2>
-                <p data-translate="about_desc1">SkyGuardian revolutionizes lower airspace security with cutting-edge technology. We deliver real-time, comprehensive solutions for drone detection, threat assessment, and airspace monitoring</p>
-                <p data-translate="about_desc2">Our platform combines real-time data processing, advanced analytics, and automated security protocols to ensure safe and efficient airspace operations.</p>
+                <h2 data-translate="about_title">SkyGuardian was founded to solve a critical gap</h2>
+                <p data-translate="about_desc1">traditional radar systems cannot effectively detect small, low-altitude drones near sensitive infrastructure.</p>
+                <p data-translate="about_desc2">We developed a passive RF-based, edge-AI system that requires no active emissions and works even in GPS-denied or communications-degraded environments.</p>
                 {{--<div class="about-stats">
                     <div class="about-stat">
                         <h3>500+</h3>

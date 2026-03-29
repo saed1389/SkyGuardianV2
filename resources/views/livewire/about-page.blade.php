@@ -4,21 +4,21 @@
         <link href="{{ asset('assets/css/pages/about.css') }}" rel="stylesheet" type="text/css" />
     @endpush
     <section class="about-hero">
-        <h1 data-translate="about_hero_title">Securing the Global Sky</h1>
-        <p class="subtitle" data-translate="about_hero_subtitle">Engineering meets aerospace innovation.</p>
+        <h1>SkyGuardian</h1>
+        <h2 data-translate="about_hero_title">Passive RF Drone Detection for Critical Infrastructure</h2>
+        <p class="subtitle" data-translate="about_hero_subtitle">Low-cost, AI-powered real-time protection for airports, borders, ports, and energy facilities.</p>
     </section>
 
     <section class="story-section">
         <div class="story-content">
             <h2 data-translate="about_story_title">Our Story</h2>
-            <p data-translate="about_story_p1">SkyGuardian was born from a simple observation: the world's radar systems weren't ready for the drone revolution.</p>
-            <p data-translate="about_story_p2">We combined RF Signal Intelligence with Machine Learning to create a monitoring system that doesn't just see drones—it understands them.</p>
+            <p data-translate="about_desc1">traditional radar systems cannot effectively detect small, low-altitude drones near sensitive infrastructure.</p>
+            <p data-translate="about_desc2">We developed a passive RF-based, edge-AI system that requires no active emissions and works even in GPS-denied or communications-degraded environments.</p>
         </div>
         <div class="story-image-container">
             <img src="{{ asset('assets/images/rsz_2about.jpg') }}" alt="SkyGuardian Monitoring">
         </div>
     </section>
-
    {{-- <section class="milestones">
         <div class="milestone-grid">
             <div class="milestone-card">
