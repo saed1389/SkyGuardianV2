@@ -34,16 +34,18 @@
         <div class="contact-details">
             <h3 data-translate="contact_info_h3">Contact Information</h3>
             <div class="detail-item">
-                <label data-translate="contact_office_label">Tallinn HQ</label>
-                <p>Harju maakond, Tallinn, Põhja-Tallinna linnaosa, Telliskivi tn 57, 10412, Estonia</p>
+                <label data-translate="contact_office_label">KOCAELİ Türkiye HQ</label>
+                {{--<label data-translate="contact_office_label">Tallinn HQ</label>--}}
+                <p>HACIHALİL MAH. 1219. SK. NALBUR İŞ HANI NO: 8 İÇ KAPI NO: 305 br
+                    GEBZE/ KOCAELİ Türkiye</p>
             </div>
             <div class="detail-item">
                 <label data-translate="contact_email_label">Email</label>
-                <p>security@skyguardian.ee</p>
+                <p>info@sky-guardian.net</p>
             </div>
             <div class="detail-item">
                 <label data-translate="contact_phone_label">Phone</label>
-                <p>+372 555 000 00</p>
+                <p>+90 548 865 1912</p>
             </div>
         </div>
         <div class="contact-box">

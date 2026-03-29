@@ -36,7 +36,10 @@
             </div>
         </div>
         <div class="footer-bottom">
+            <p>&copy; {{ date('Y') }} SkyGuardian System. <span data-translate="footer_rights">All rights reserved.</span></p>
+{{--
             <p>&copy; {{ date('Y') }} SkyGuardian System. <span data-translate="footer_rights">All rights reserved.</span> <span data-translate="footer_made">Made with</span> ❤️ <span data-translate="footer_estonia">in Estonia</span> 🇪🇪</p>
+--}}
         </div>
     </footer>
 

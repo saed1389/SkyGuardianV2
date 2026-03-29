@@ -11,7 +11,7 @@
               "description": "Advanced Sky Monitoring System for drone tracking and airspace security.",
               "author": {
                 "@@type": "Organization",
-                "name": "SkyGuardian Estonia"
+                "name": "SkyGuardian"
               }
             }
             </script>
@@ -19,9 +19,9 @@
     <section class="hero" id="home">
         <div class="hero-content">
             <div class="hero-text">
-                <div class="badge">
+                {{--<div class="badge">
                     🇪🇪 <span data-translate="hero_badge">Made in Estonia</span>
-                </div>
+                </div>--}}
                 <h1 data-translate="hero_title">Advanced Sky Monitoring System</h1>
                 <p data-translate="hero_subtitle">Complete drone monitoring, weather services, security, and aircraft tracking solution for the modern era.</p>
                 <div class="hero-buttons">
@@ -161,9 +161,9 @@
         <div class="about-content">
             <div class="about-text">
                 <h2 data-translate="about_title">Built for the Future of Aviation</h2>
-                <p data-translate="about_desc1">SkyGuardian System is an Estonian startup revolutionizing airspace management with cutting-edge technology. We provide comprehensive solutions for drone monitoring, weather services, security, and aircraft tracking.</p>
+                <p data-translate="about_desc1">SkyGuardian revolutionizes lower airspace security with cutting-edge technology. We deliver real-time, comprehensive solutions for drone detection, threat assessment, and airspace monitoring</p>
                 <p data-translate="about_desc2">Our platform combines real-time data processing, advanced analytics, and automated security protocols to ensure safe and efficient airspace operations.</p>
-                <div class="about-stats">
+                {{--<div class="about-stats">
                     <div class="about-stat">
                         <h3>500+</h3>
                         <p data-translate="about_stat1">Active Clients</p>
@@ -180,7 +180,7 @@
                         <h3>100%</h3>
                         <p data-translate="about_stat4">Secure</p>
                     </div>
-                </div>
+                </div>--}}
             </div>
             <div class="about-box">
                 <h3 data-translate="about_why_title">Why Choose SkyGuardian?</h3>

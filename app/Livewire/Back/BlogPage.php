@@ -3,12 +3,15 @@
 namespace App\Livewire\Back;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use App\Models\Blog;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 
 class BlogPage extends Component
 {
@@ -53,13 +56,94 @@ class BlogPage extends Component
     public function toggleStatus($id): void
     {
         $blog = Blog::findOrFail($id);
-        $blog->status = $blog->status == 1 ? 0 : 1;
-        if ($blog->published_at == null) {
-            $blog->published_at = Carbon::now();
+
+        // 1. Cast the old status strictly to a boolean
+        $wasPublished = (bool) $blog->status;
+
+        // 2. Toggle the status
+        $blog->status = !$wasPublished;
+
+        // 3. Set published_at if turning true
+        if ($blog->published_at === null && $blog->status === true) {
+            $blog->published_at = now();
         }
+
         $blog->save();
 
+        // 4. Share to LinkedIn ONLY on false → true transition
+        if ($blog->status === true && $wasPublished === false) {
+            $this->shareToLinkedIn($blog);
+        }
+
         $this->dispatch('message', 'Status updated successfully!');
+    }
+
+    private function shareToLinkedIn($blog): void
+    {
+        $accessToken = Cache::get('linkedin_access_token');
+        $companyId = env('LINKEDIN_COMPANY_ID', '112065432');
+
+        if (!$accessToken) {
+            Log::warning('LinkedIn tokens missing', ['blog_id' => $blog->id]);
+            $this->dispatch('message', 'Error: LinkedIn not connected.');
+            return;
+        }
+
+        $excerpt = $blog->excerpt_en ?? 'Check out our latest post!';
+        $blogUrl = 'https://skyguardian.nivoratechnology.com/blog/' . $blog->slug_en;
+
+        $postData = [
+            'author' => 'urn:li:organization:' . $companyId,  // Change to ORGANIZATION
+            'lifecycleState' => 'PUBLISHED',
+            'specificContent' => [
+                'com.linkedin.ugc.ShareContent' => [
+                    'shareCommentary' => [
+                        'text' => $excerpt,
+                    ],
+                    'shareMediaCategory' => 'ARTICLE',
+                    'media' => [
+                        [
+                            'status' => 'READY',
+                            'description' => [
+                                'text' => $excerpt,
+                            ],
+                            'originalUrl' => $blogUrl,
+                            'title' => [
+                                'text' => $blog->title_en,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'visibility' => [
+                'com.linkedin.ugc.MemberNetworkVisibility' => 'PUBLIC',
+            ],
+        ];
+
+        try {
+            $response = Http::timeout(15)->withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+                'Content-Type' => 'application/json',
+                'X-Restli-Protocol-Version' => '2.0.0',
+            ])->post('https://api.linkedin.com/v2/ugcPosts', $postData);
+
+            Log::info('LinkedIn response', ['status' => $response->status(), 'body' => $response->body()]);
+
+            if ($response->successful()) {
+                Log::info('LinkedIn share to company successful', ['blog_id' => $blog->id]);
+                $this->dispatch('message', 'Blog shared to company page successfully!');
+            } else {
+                Log::error('LinkedIn API error', [
+                    'blog_id' => $blog->id,
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+                $this->dispatch('message', 'Failed to share on company page.');
+            }
+        } catch (\Exception $e) {
+            Log::error('LinkedIn share error', ['blog_id' => $blog->id, 'error' => $e->getMessage()]);
+            $this->dispatch('message', 'Error sharing to LinkedIn.');
+        }
     }
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\View\View

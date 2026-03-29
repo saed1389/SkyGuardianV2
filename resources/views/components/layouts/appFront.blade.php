@@ -40,7 +40,7 @@
             <li><a href="{{ $navPrefix }}#home" data-translate="nav_home">Home</a></li>
             <li><a href="{{ $navPrefix }}#features" data-translate="nav_features">Features</a></li>
             <li><a href="{{ $navPrefix }}#services" data-translate="nav_services">Services</a></li>
-            <li><a href="{{ $navPrefix }}#about" data-translate="nav_about">About</a></li>
+            <li><a href="{{ route('about-page') }}" data-translate="nav_about">About</a></li>
             <li><a href="{{ route('contact-page') }}" data-translate="nav_contact">Contact</a></li>
         </ul>
         <div class="hidden md:flex" style="display:flex; align-items: center; gap: 15px;">

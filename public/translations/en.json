@@ -55,7 +55,7 @@
     "service3_feature2": "Custom reports",
     "service3_feature3": "Predictive analysis",
     "about_title": "Built for the Future of Aviation",
-    "about_desc1": "SkyGuardian System is an Estonian startup revolutionizing airspace management with cutting-edge technology. We provide comprehensive solutions for drone monitoring, weather services, security, and aircraft tracking.",
+    "about_desc1": "SkyGuardian revolutionizes lower airspace security with cutting-edge technology. We deliver real-time, comprehensive solutions for drone detection, threat assessment, and airspace monitoring",
     "about_desc2": "Our platform combines real-time data processing, advanced analytics, and automated security protocols to ensure safe and efficient airspace operations.",
     "about_stat1": "Active Clients",
     "about_stat2": "Flights Tracked",
@@ -109,9 +109,9 @@
     "published-on" : "Published on",
     "share" : "share",
     "about_hero_title" : "Securing the Global Sky",
-    "about_hero_subtitle" : "Estonian engineering meets aerospace innovation.",
+    "about_hero_subtitle" : "Engineering meets aerospace innovation.",
     "about_story_title" : "Our Story",
-    "about_story_p1" : "Founded in Tartu in 2026, SkyGuardian was born from a simple observation: the world's radar systems weren't ready for the drone revolution.",
+    "about_story_p1" : "SkyGuardian was born from a simple observation: the world's radar systems weren't ready for the drone revolution.",
     "about_story_p2" : "We combined RF Signal Intelligence with Machine Learning to create a monitoring system that doesn't just see drones—it understands them.",
     "milestone_1" : "SkyGuardian Founded in Tartu",
     "milestone_2" : "Successful Threat Detections",
@@ -121,7 +121,7 @@
     "contact_title": "Get in Touch",
     "contact_subtitle": "Global support for local airspace security.",
     "contact_info_h3": "Contact Information",
-    "contact_office_label": "Tartu HQ",
+    "contact_office_label": "KOCAELİ Türkiye HQ",
     "contact_email_label": "Email",
     "contact_phone_label": "Phone",
     "form_send": "Send Message",
@@ -146,5 +146,12 @@
     "form_demo_send" : "Demo request received. We will contact you shortly.",
     "form_verifying" : "Verifying...",
     "career_message" : "Application sent successfully!",
-    "resource" : "Resource"
+    "resource" : "Resource",
+    "team_title" : "Our Team",
+    "team_subtitle" : "Visionaries driving innovation in aerial defense",
+    "team_member_1_role" : "Co-Founder & CEO",
+    "team_member_2_role" : "CLO",
+    "team_member_3_role" : "Co-Founder & Head of Marketing",
+    "team_member_4_role" : "Co-Founder & Head of QA And Operation"
+
 }

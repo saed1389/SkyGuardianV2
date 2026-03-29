@@ -1,7 +1,7 @@
 # Secure Headers
 
 [![Financial Contributors on Open Collective](https://opencollective.com/secure-headers/all/badge.svg?label=financial+contributors)](https://opencollective.com/secure-headers)
-[![Actions Status](https://github.com/bepsvpt/secure-headers/workflows/Laravel/badge.svg)](https://github.com/bepsvpt/secure-headers/actions)
+[![Actions Status](https://github.com/bepsvpt/secure-headers/actions/workflows/testing.yml/badge.svg)](https://github.com/bepsvpt/secure-headers/actions/workflows/testing.yml)
 [![Latest Stable Version](https://poser.pugx.org/bepsvpt/secure-headers/v/stable)](https://packagist.org/packages/bepsvpt/secure-headers)
 [![Total Downloads](https://poser.pugx.org/bepsvpt/secure-headers/downloads)](https://packagist.org/packages/bepsvpt/secure-headers)
 [![License](https://poser.pugx.org/bepsvpt/secure-headers/license)](https://packagist.org/packages/bepsvpt/secure-headers)
@@ -18,11 +18,11 @@ Add security related headers to HTTP response. The package includes Service Prov
 
 ## Version
 
-9.0.0
+9.1.0
 
 ### Supported Laravel Version
 
-5.1 ~ 11.x
+5.1 ~ 13.x
 
 ## Installation
 
@@ -64,10 +64,18 @@ Publish config file
 php artisan vendor:publish --provider="Bepsvpt\SecureHeaders\SecureHeadersServiceProvider"
 ```
 
-Add global middleware in `app/Http/Kernel.php`
+Add global middleware in `app/Http/Kernel.php` ( laravel version < 12 )
 
 ```php
 \Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class,
+```
+
+Add global middleware in `bootstrap/app.php` ( laravel version >= 12 )
+
+```php
+->withMiddleware(function (Middleware $middleware): void {
+    $middleware->append(\Bepsvpt\SecureHeaders\SecureHeadersMiddleware::class);
+})
 ```
 
 Set up config file `config/secure-headers.php`

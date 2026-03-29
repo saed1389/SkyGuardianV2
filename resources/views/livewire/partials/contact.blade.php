@@ -33,9 +33,9 @@
                 <button onclick="openModal('demoModal')" class="btn-primary" aria-label="Request Demo" data-translate="cta_btn1">Request Demo</button>
                 <button onclick="openModal('contactModal')" class="btn-secondary" aria-label="Contact Sales" data-translate="cta_btn2">Contact Sales</button>
             </div>
-            <div class="cta-footer">
+            {{--<div class="cta-footer">
                 🇪🇪 <span data-translate="cta_footer">Proudly developed in Estonia</span>
-            </div>
+            </div>--}}
         </div>
     </section>
     <div id="demoModal" class="modal" wire:ignore.self>
