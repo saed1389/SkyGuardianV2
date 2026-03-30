@@ -12,8 +12,8 @@
     <section class="story-section">
         <div class="story-content">
             <h2 data-translate="about_story_title">Our Story</h2>
-            <p data-translate="about_desc1">traditional radar systems cannot effectively detect small, low-altitude drones near sensitive infrastructure.</p>
-            <p data-translate="about_desc2">We developed a passive RF-based, edge-AI system that requires no active emissions and works even in GPS-denied or communications-degraded environments.</p>
+            <p data-translate="about_desc1">Traditional radar systems cannot effectively detect small, low-altitude drones near sensitive infrastructure.</p>
+            <p data-translate="about_desc2">We developed a passive RF-based, edge-AI system that requires no active emissions and works reliably even in challenging environments.</p>
         </div>
         <div class="story-image-container">
             <img src="{{ asset('assets/images/rsz_2about.jpg') }}" alt="SkyGuardian Monitoring">
