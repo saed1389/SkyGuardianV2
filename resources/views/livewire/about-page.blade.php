@@ -5,46 +5,49 @@
     @endpush
     <section class="about-hero">
         <h1>SkyGuardian</h1>
-        <h2 data-translate="about_hero_title">Passive RF Drone Detection for Critical Infrastructure</h2>
-        <p class="subtitle" data-translate="about_hero_subtitle">Low-cost, AI-powered real-time protection for airports, borders, ports, and energy facilities.</p>
+        <h2 data-translate="about_hero_title">Pioneering Passive Airspace Security</h2>
+        <p class="subtitle" data-translate="about_hero_subtitle">Developing SkyGuardian: The low-cost, AI-powered real-time protection system for critical infrastructure.</p>
     </section>
 
     <section class="story-section">
         <div class="story-content">
-            <h2 data-translate="about_story_title">Our Story</h2>
-            <p data-translate="about_desc1">Traditional radar systems cannot effectively detect small, low-altitude drones near sensitive infrastructure.</p>
-            <p data-translate="about_desc2">We developed a passive RF-based, edge-AI system that requires no active emissions and works reliably even in challenging environments.</p>
+            <h2 data-translate="about_story_title">Our Mission & Vision</h2>
+            <p data-translate="about_story_p1">Our mission is to close the critical vulnerability gap in lower airspace security. Traditional radar systems are prohibitively expensive and frequently fail to detect small, low-altitude drones near sensitive infrastructure due to ground clutter.</p>
+            <p data-translate="about_story_p2">To solve this, we developed SkyGuardian: a passive RF-based, edge-AI system. It requires no active radar emissions, making it undetectable by drone operators, and works reliably even in challenging weather environments.</p>
+            <p data-translate="about_story_p3" style="margin-top: 15px; padding-left: 15px; border-left: 3px solid var(--primary-color);">Current Status: Our Minimum Viable Product (MVP) is fully operational. We are currently in active pilot discussions with Estonian critical infrastructure operators and defense entities to deploy our decentralized mesh networks in real-world scenarios.</p>
         </div>
         <div class="story-image-container">
             <img src="{{ asset('assets/images/rsz_2about.jpg') }}" alt="SkyGuardian Monitoring">
         </div>
     </section>
-   {{-- <section class="milestones">
-        <div class="milestone-grid">
-            <div class="milestone-card">
-                <h3>2026</h3>
-                <p data-translate="milestone_1">SkyGuardian Founded in Tartu</p>
+        <section class="milestones" style="background-color: var(--gray-50); padding: 60px 0;">
+            <div class="section-title text-center" style="margin-bottom: 40px;">
+                <h2 data-translate="principles_title">Our Engineering Principles</h2>
             </div>
-            <div class="milestone-card">
-                <h3>500k</h3>
-                <p data-translate="milestone_2">Successful Threat Detections</p>
+            <div class="milestone-grid">
+                <div class="milestone-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🧠</div>
+                    <h3 data-translate="principle_1_title">Edge-First AI</h3>
+                    <p data-translate="principle_1_desc" style="font-size: 0.9rem; color: var(--gray-600);">Threat classification happens directly on the hardware node, ensuring zero latency and no dependency on cloud connectivity.</p>
+                </div>
+                <div class="milestone-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🥷</div>
+                    <h3 data-translate="principle_2_title">Zero Emission</h3>
+                    <p data-translate="principle_2_desc" style="font-size: 0.9rem; color: var(--gray-600);">100% passive RF listening. The system cannot be jammed or detected by the targets it is monitoring.</p>
+                </div>
+                <div class="milestone-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🌐</div>
+                    <h3 data-translate="principle_3_title">Mesh Scalability</h3>
+                    <p data-translate="principle_3_desc" style="font-size: 0.9rem; color: var(--gray-600);">Built to scale from a single airport perimeter to hundreds of kilometers of national borders using low-cost sensor nodes.</p>
+                </div>
             </div>
-            <div class="milestone-card">
-                <h3>1</h3>
-                <p data-translate="milestone_3">Countries Protected</p>
-            </div>
-            <div class="milestone-card">
-                <h3>99.9%</h3>
-                <p data-translate="milestone_4">Detection Accuracy</p>
-            </div>
-        </div>
-    </section>--}}
+        </section>
         @livewire('partials.contact')
         <section class="team-section">
             <div class="team-container">
                 <div class="team-header">
                     <h2 data-translate="team_title">Our Team</h2>
-                    <p class="team-subtitle" data-translate="team_subtitle">Visionaries driving innovation in aerial defense</p>
+                    <p class="team-subtitle" data-translate="team_subtitle">The engineering and operational force behind SkyGuardian</p>
                 </div>
 
                 <div class="team-grid">

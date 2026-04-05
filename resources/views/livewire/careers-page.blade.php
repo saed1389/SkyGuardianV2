@@ -40,14 +40,14 @@
 
     <div class="careers-container">
         <div class="careers-visual">
-            <h1 data-translate="career_h1">Join the Mission</h1>
-            <p data-translate="career_p">We are always looking for RF engineers, AI specialists, and visionaries. Send us your CV, and let's build the future of airspace together.</p>
+            <h1 data-translate="career_h1">Join the Engineering Mission</h1>
+            <p data-translate="career_p">We are actively expanding our core team of RF engineers, Edge-AI specialists, and embedded systems developers. Help us engineer the next generation of passive drone detection systems.</p>
 
             <ul class="benefit-list">
-                <li data-translate="benefit_1">Competitive salary + Equity options</li>
-                <li data-translate="benefit_2">Relocation support to Tallinn</li>
-                <li data-translate="benefit_3">Flexible remote work policy</li>
-                <li data-translate="benefit_4">Modern tech stack & hardware</li>
+                <li data-translate="benefit_1">Competitive compensation & equity options</li>
+                <li data-translate="benefit_2">Relocation support to Tallinn, Estonia</li>
+                <li data-translate="benefit_3">Flexible and remote-friendly engineering culture</li>
+                <li data-translate="benefit_4">Hands-on work with cutting-edge SDR & Edge-AI hardware</li>
             </ul>
         </div>
 

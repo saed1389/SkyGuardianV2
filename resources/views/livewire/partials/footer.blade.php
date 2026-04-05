@@ -5,7 +5,7 @@
                 <div class="logo" style="margin-bottom: 20px;">
                     <img src="{{ asset('user/assets/images/logo-light.png') }}" alt="" style="width: 200px">
                 </div>
-                <p style="color: var(--gray-300); font-size: 14px;" data-translate="footer_desc">Advanced airspace monitoring and management solutions.</p>
+                <p style="color: var(--gray-300); font-size: 14px;" data-translate="footer_desc">Advanced RF drone detection and real-time threat classification system for critical infrastructure.</p>
             </div>
             {{--<div class="footer-section">
                 <h4 data-translate="footer_product">Product</h4>
@@ -19,10 +19,10 @@
             <div class="footer-section">
                 <h4 data-translate="footer_company">Company</h4>
                 <ul>
-                    <li><a href="{{ route('about-page') }}" data-translate="footer_about">About</a></li>
-                    <li><a href="{{ route('blog.index') }}" data-translate="footer_blog">Blog</a></li>
+                    <li><a href="{{ route('about-page') }}" data-translate="footer_about">About the Technology</a></li>
+                    <li><a href="{{ route('blog.index') }}" data-translate="footer_blog">Security Insights</a></li>
                     <li><a href="{{ route('careers-page') }}" data-translate="footer_careers">Careers</a></li>
-                    <li><a href="{{ route('contact-page') }}" data-translate="footer_contact">Contact</a></li>
+                    <li><a href="{{ route('contact-page') }}" data-translate="footer_contact">Contact Team</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -48,8 +48,8 @@
     <div id="demoModal" class="modal">
         <button class="modal-close" onclick="closeAllModals()">×</button>
         <div class="modal-header">
-            <h3 data-translate="modal_demo_title">Request a Demo</h3>
-            <p data-translate="modal_demo_desc">See SkyGuardian in action. Fill out the form below.</p>
+            <h3 data-translate="modal_demo_title">Request a System Demo</h3>
+            <p data-translate="modal_demo_desc">See how the edge-AI classification works in real-time.</p>
         </div>
         <form wire:submit.prevent="submitDemo">
             <div class="form-group">
@@ -57,11 +57,11 @@
                 <input type="text" wire:model="name" class="form-input" required placeholder="John Doe">
             </div>
             <div class="form-group">
-                <label data-translate="form_email">Email Address</label>
+                <label data-translate="form_email">Official Email Address</label>
                 <input type="email" wire:model="email" class="form-input" required placeholder="john@company.com">
             </div>
             <div class="form-group">
-                <label data-translate="form_company">Company</label>
+                <label data-translate="form_company">Company (Optional)</label>
                 <input type="text" wire:model="company" class="form-input" placeholder="Organization Name">
             </div>
             <button type="submit" class="btn-primary" style="width: 100%;" data-translate="form_submit_demo">Schedule Demo</button>
@@ -71,8 +71,8 @@
     <div id="contactModal" class="modal">
         <button class="modal-close" onclick="closeAllModals()">×</button>
         <div class="modal-header">
-            <h3 data-translate="modal_contact_title">Contact Sales</h3>
-            <p data-translate="modal_contact_desc">Get a custom quote for your organization.</p>
+            <h3 data-translate="modal_contact_title">Discuss Pilot Deployment</h3>
+            <p data-translate="modal_contact_desc">Contact our engineering team to discuss technical requirements.</p>
         </div>
         <form wire:submit.prevent="submitContact">
             <div class="form-group">

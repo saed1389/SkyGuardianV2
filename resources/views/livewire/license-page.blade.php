@@ -5,8 +5,8 @@
     @endpush
 
     <header class="legal-header">
-        <h1 data-translate="footer_license">License</h1>
-        <p data-translate="legal_subtitle">How we protect and manage your data at SkyGuardian.</p>
+        <h1 data-translate="license_title">Software & Hardware Licensing</h1>
+        <p data-translate="license_dec">Intellectual property rights, end-user license agreements (EULA), and hardware distribution terms for Sky Guardian.</p>
     </header>
 
     <article class="legal-content">

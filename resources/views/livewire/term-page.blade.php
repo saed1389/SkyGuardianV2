@@ -5,8 +5,8 @@
     @endpush
 
     <header class="legal-header">
-        <h1 data-translate="footer_terms">Term</h1>
-        <p data-translate="legal_subtitle">How we protect and manage your data at SkyGuardian.</p>
+        <h1 data-translate="term_title">Terms & Conditions</h1>
+        <p data-translate="term_dec">Operational guidelines, hardware deployment terms, and service level agreements for Sky Guardian systems.</p>
     </header>
 
     <article class="legal-content">

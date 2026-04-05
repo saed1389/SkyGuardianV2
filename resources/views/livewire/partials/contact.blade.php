@@ -2,17 +2,11 @@
     @push('landScripts')
         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
         <script>
-            function onDemoCaptcha(token) {
-                @this.set('captcha', token);
-            }
-            function onContactCaptcha(token) {
-                @this.set('captcha', token);
-            }
+            function onDemoCaptcha(token) { @this.set('captcha', token); }
+            function onContactCaptcha(token) { @this.set('captcha', token); }
             document.addEventListener('livewire:initialized', () => {
                 Livewire.on('reset-captcha', () => {
-                    try {
-                        grecaptcha.reset();
-                    } catch(e) { console.log('Captcha reset pending...'); }
+                    try { grecaptcha.reset(); } catch(e) { console.log('Captcha reset pending...'); }
                 });
             });
         </script>
@@ -20,18 +14,16 @@
     @if (session()->has('success'))
         <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 5000)" x-show="show" x-transition:leave="transition ease-in duration-500" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" wire:key="alert-{{ now()->timestamp }}" style="background: #d1fae5; color: #065f46; padding: 15px; padding-right: 40px; text-align: center; font-weight: 600; position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 3000; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 90%; max-width: 400px;">
             {!! session('success') !!}
-            <button @click="show = false" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 20px; cursor: pointer; color: #065f46; line-height: 1;">
-                &times;
-            </button>
+            <button @click="show = false" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 20px; cursor: pointer; color: #065f46; line-height: 1;">&times;</button>
         </div>
     @endif
     <section class="cta" id="contact">
         <div class="container">
-            <h2 data-translate="cta_title">Ready to Secure Your Airspace?</h2>
-            <p data-translate="cta_subtitle">Join hundreds of organizations trusting SkyGuardian for their aviation monitoring needs.</p>
+            <h2 data-translate="cta_title">Secure Your Critical Infrastructure</h2>
+            <p data-translate="cta_subtitle">Discover how our deep-tech detection system can be deployed to protect your facilities.</p>
             <div class="cta-buttons">
                 <button onclick="openModal('demoModal')" class="btn-primary" aria-label="Request Demo" data-translate="cta_btn1">Request Demo</button>
-                <button onclick="openModal('contactModal')" class="btn-secondary" aria-label="Contact Sales" data-translate="cta_btn2">Contact Sales</button>
+                <button onclick="openModal('contactModal')" class="btn-secondary" aria-label="Contact Sales" data-translate="cta_btn2">Discuss Pilot Deployment</button>
             </div>
             {{--<div class="cta-footer">
                 🇪🇪 <span data-translate="cta_footer">Proudly developed in Estonia</span>
@@ -41,8 +33,8 @@
     <div id="demoModal" class="modal" wire:ignore.self>
         <button class="modal-close" onclick="closeAllModals()">×</button>
         <div class="modal-header">
-            <h3 data-translate="modal_demo_title">Request a Demo</h3>
-            <p data-translate="modal_demo_desc">See SkyGuardian in action. Fill out the form below.</p>
+            <h3 data-translate="modal_demo_title">Request a System Demo</h3>
+            <p data-translate="modal_demo_desc">See how the edge-AI classification works in real-time.</p>
         </div>
         <form wire:submit.prevent="submitDemo">
             <div class="form-group">
@@ -51,7 +43,7 @@
                 @error('name') <span style="color:red; font-size:12px;">{{ $message }}</span> @enderror
             </div>
             <div class="form-group">
-                <label data-translate="form_email">Email Address</label>
+                <label data-translate="form_email">Official Email Address</label>
                 <input type="email" wire:model="email" class="form-input" placeholder="john@company.com" required>
                 @error('email') <span style="color:red; font-size:12px;">{{ $message }}</span> @enderror
             </div>
@@ -72,8 +64,8 @@
     <div id="contactModal" class="modal" wire:ignore.self>
         <button class="modal-close" onclick="closeAllModals()">×</button>
         <div class="modal-header">
-            <h3 data-translate="modal_contact_title">Contact Sales</h3>
-            <p data-translate="modal_contact_desc">Get a custom quote for your organization.</p>
+            <h3 data-translate="modal_contact_title">Discuss Pilot Deployment</h3>
+            <p data-translate="modal_contact_desc">Contact our engineering team to discuss technical requirements.</p>
         </div>
         <form wire:submit.prevent="submitContact">
             <div class="form-group">

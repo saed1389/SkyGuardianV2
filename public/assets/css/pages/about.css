@@ -205,3 +205,72 @@
         margin-bottom: 80px;
     }
 }
+.milestones {
+    /* HTML içinde verilen inline background ve padding'i destekler */
+    width: 100%;
+}
+
+.milestones .section-title.text-center {
+    text-align: center;
+}
+
+.milestones .section-title h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #0f172a; /* Koyu lacivert/siyah tonu */
+    margin-bottom: 10px;
+}
+
+/* Grid Yapısı - Yan yana 3 kutu, mobilde alt alta */
+.milestone-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Kart Tasarımı */
+.milestone-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover (Üzerine gelince hafif yukarı kalkma efekti) */
+.milestone-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.milestone-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 15px;
+}
+
+.milestone-card p {
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+    .milestones {
+        padding: 40px 0 !important;
+    }
+
+    .milestones .section-title h2 {
+        font-size: 1.8rem;
+    }
+
+    .milestone-card {
+        padding: 30px 20px;
+    }
+}

@@ -5,8 +5,8 @@
     @endpush
 
     <header class="legal-header">
-        <h1 data-translate="footer_privacy">Privacy</h1>
-        <p data-translate="legal_subtitle">How we protect and manage your data at SkyGuardian.</p>
+        <h1 data-translate="privacy_title">Privacy Policy & Data Protection</h1>
+        <p data-translate="privacy_dec">How we collect, process, and safeguard operational and organizational data at Sky Guardian.</p>
     </header>
 
     <article class="legal-content">

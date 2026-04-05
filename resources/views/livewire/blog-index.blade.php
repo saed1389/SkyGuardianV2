@@ -6,8 +6,8 @@
         @endpush
 
         <header class="blog-header">
-            <h1 data-translate="blog_title">Aviation Insights</h1>
-            <p data-translate="blog_subtitle">Latest news, technology updates, and security protocols from SkyGuardian.</p>
+            <h1 data-translate="blog_title">Security & Deep-Tech Insights</h1>
+            <p data-translate="blog_subtitle">Latest updates on drone threats, RF technology, and critical infrastructure security protocols.</p>
         </header>
 
         <div class="blog-controls">
@@ -39,7 +39,7 @@
                         <p class="post-excerpt lang-dynamic lang-ee">{{ Str::limit($post->excerpt_ee, 120) }}</p>
 
                         <div class="post-footer">
-                            <span>SkyGuardian Team</span>
+                            <span>SkyGuardian Engineering</span>
                             <span>{{ $post->formatted_date }}</span>
                         </div>
                     </div>
