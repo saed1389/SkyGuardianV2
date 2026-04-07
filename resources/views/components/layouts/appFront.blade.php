@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyGuardian System - Advanced Aviation Monitoring & Drone Tracking</title>
-    <meta name="description" content="Estonia's leading sky monitoring system. Complete drone monitoring, real-time aircraft tracking, weather services, and airspace security solutions.">
-    <meta name="keywords" content="drone tracking, aviation monitoring, airspace security, Estonia startup">
+    <meta name="description" content="A passive, AI-powered RF detection system protecting airports, borders, and energy facilities from unauthorized drones in real-time.">
+    <meta name="keywords" content="drone tracking, airspace security">
     <meta name="author" content="SkyGuardian System">
     <meta name="robots" content="index, follow">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/images/favicon/apple-touch-icon.png') }}">
