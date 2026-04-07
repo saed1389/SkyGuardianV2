@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyGuardian System - Advanced Aviation Monitoring & Drone Tracking</title>
+    <title>SkyGuardian System - A passive, AI-powered RF detection system</title>
     <meta name="description" content="A passive, AI-powered RF detection system protecting airports, borders, and energy facilities from unauthorized drones in real-time.">
     <meta name="keywords" content="drone tracking, airspace security">
     <meta name="author" content="SkyGuardian System">
