@@ -6,15 +6,31 @@
 .story-content p { font-size: 16px; color: var(--gray-600); line-height: 1.6; margin-bottom: 20px; }
 .story-image-container img { width: 100%; border-radius: 15px; height: auto; object-fit: cover; }
 .milestones { background: var(--gray-900); padding: 60px 20px; color: white; }
-.milestone-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto;}
-.milestone-card { border-left: 3px solid var(--primary-blue); padding-left: 15px; }
+.milestone-grid {
+    max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 0 20px;
+}
+.deep-tech-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 20px;
+}
+.business-model-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;
+}
 .milestone-card h3 { font-size: clamp(30px, 6vw, 40px); color: var(--primary-blue); margin-bottom: 5px; }
 .milestone-card p { font-size: 14px; opacity: 0.8; }
 .tech-visual { background: var(--gray-50); padding: 60px 20px; text-align: center; }
 .tech-icons { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 40px; opacity: 0.6; filter: grayscale(100%);}
 .tech-icons img { max-width: 120px; height: auto; }
-@media (min-width: 992px) {  .about-hero { padding: 120px 20px; }  .story-section { grid-template-columns: 1fr 1fr; gap: 80px; padding: 100px 20px; }  .milestone-grid { grid-template-columns: repeat(4, 1fr); }  .tech-icons { gap: 60px; }  }
-/* Team Section */
+@media (min-width: 992px) {
+    .about-hero { padding: 120px 20px; }
+    .story-section { grid-template-columns: 1fr 1fr; gap: 80px; padding: 100px 20px; }
+    .milestone-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; padding: 0 20px; }
+    .deep-tech-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;
+    }
+    .business-model-grid {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;
+    }
+    .tech-icons { gap: 60px; }  }
 .team-section {
     padding: 80px 20px;
     background: linear-gradient(180deg, #ffffff 0%, #f5f7fa 100%);
@@ -152,6 +168,12 @@
     margin: 0 0 12px 0;
 }
 
+.team-description {
+    font-size: 12px;
+    color: var(--gray-600);
+    margin-top: 5px;
+}
+
 .team-bio {
     font-size: 14px;
     color: var(--gray-600);
@@ -160,7 +182,6 @@
     font-weight: 400;
 }
 
-/* Responsive */
 @media (min-width: 768px) {
     .team-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -205,10 +226,6 @@
         margin-bottom: 80px;
     }
 }
-.milestones {
-    /* HTML içinde verilen inline background ve padding'i destekler */
-    width: 100%;
-}
 
 .milestones .section-title.text-center {
     text-align: center;
@@ -217,32 +234,29 @@
 .milestones .section-title h2 {
     font-size: 2.2rem;
     font-weight: 700;
-    color: #0f172a; /* Koyu lacivert/siyah tonu */
+    color: #0f172a;
     margin-bottom: 10px;
 }
 
-/* Grid Yapısı - Yan yana 3 kutu, mobilde alt alta */
-.milestone-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
 
-/* Kart Tasarımı */
 .milestone-card {
     background-color: #ffffff;
     border-radius: 12px;
     padding: 40px 30px;
     text-align: center;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     border: 1px solid rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
 }
 
-/* Hover (Üzerine gelince hafif yukarı kalkma efekti) */
+.deep-tech-card {
+    padding: 30px; background: var(--gray-50); border-radius: 10px; border-top: 3px solid var(--primary-blue);
+}
+
+.business-model-card {
+    padding: 35px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
 .milestone-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -5px rgba(0, 0, 0, 0.04);
@@ -258,14 +272,22 @@
 .milestone-card p {
     line-height: 1.6;
     margin: 0;
+    font-size: 15px;
+    color: var(--gray-600);
 }
 
-/* Mobil Uyumluluk */
 @media (max-width: 768px) {
     .milestones {
         padding: 40px 0 !important;
+        background-color: var(--gray-50);
     }
-
+    .deep-tech {
+        padding: 40px 0 !important;
+    }
+    .business-model {
+        padding: 40px 0 !important;
+        background: var(--gray-50);
+    }
     .milestones .section-title h2 {
         font-size: 1.8rem;
     }
@@ -273,4 +295,64 @@
     .milestone-card {
         padding: 30px 20px;
     }
+
+    .deep-tech-card {
+        padding: 30px 20px;
+    }
+
+    .business-model-card {
+        padding: 30px 20px;
+    }
+}
+.credibility-section {
+    background-color: var(--gray-100);
+    padding: 80px 20px;
+}
+.story-content-line {
+    margin-top: 15px;
+    padding-left: 15px;
+    border-left: 3px solid var(--primary-blue);
+}
+.milestones {
+    background-color: var(--gray-50);
+    padding: 80px 20px;
+}
+.milestone-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+.deep-tech {
+    padding: 80px 20px;
+    background: white;
+}
+.business-model {
+    padding: 80px 20px;
+    background: var(--gray-50);
+}
+.deep-tech-row {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.deep-tech-card h3 {
+    color: #000;
+    margin-bottom: 8px;
+}
+.deep-tech-card p {
+    font-size: 24px;
+    color: var(--primary-blue);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.deep-tech-card h6 {
+    font-size: 13px;
+    color: var(--gray-600);
+}
+.business-model-card p {
+    font-size: 13px; color: var(--gray-600); line-height: 1.6;
+}
+.business-model-card h3 {
+    color: var(--primary-blue); font-size: 18px; margin-bottom: 20px;
+}
+.business-model-card div {
+    font-size: 28px; color: #000; font-weight: bold; margin-bottom: 8px;
 }

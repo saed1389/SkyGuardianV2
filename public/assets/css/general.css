@@ -17,6 +17,7 @@
     --gray-700: #374151;
     --gray-800: #1F2937;
     --gray-900: #111827;
+    --primary-color: #0072CE;
 }
 
 @font-face {
@@ -39,6 +40,10 @@ body {
     margin: 0 auto;
     padding: 0 20px;
 }
+
+/* ============================================================================
+   NAVIGATION
+   ============================================================================ */
 
 nav {
     position: fixed;
@@ -179,6 +184,10 @@ nav {
     border-bottom: none;
 }
 
+/* ============================================================================
+   HERO SECTION
+   ============================================================================ */
+
 .hero {
     margin-top: 70px;
     background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 50%, var(--black) 100%);
@@ -200,6 +209,12 @@ nav {
     font-size: 48px;
     margin-bottom: 20px;
     line-height: 1.2;
+}
+
+.hero-text h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: 600;
 }
 
 .hero-text p {
@@ -313,20 +328,151 @@ nav {
     opacity: 0.8;
 }
 
-.features {
+/* ============================================================================
+   CREDIBILITY SECTION (NEW)
+   ============================================================================ */
+
+.credibility {
+    padding: 80px 20px;
+    background-color: var(--gray-100);
+    text-align: center;
+}
+
+.credibility-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 0 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.credibility-item {
+    padding: 30px;
+    background: var(--white);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-blue);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+}
+
+.credibility-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.credibility-item > div:first-child {
+    font-size: 32px;
+    margin-bottom: 15px;
+}
+
+.credibility-item h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: var(--black);
+    font-weight: 600;
+}
+
+.credibility-item p {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.6;
+}
+
+/* ============================================================================
+   HOW IT WORKS SECTION
+   ============================================================================ */
+
+.how-it-works {
+    padding: 80px 20px;
+    background-color: var(--gray-50);
+}
+
+.detection-flow {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 40px;
+}
+
+.detection-flow > div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    gap: 30px;
+}
+
+.detection-flow > div:nth-child(odd) {
+    flex-direction: row;
+}
+
+.detection-flow > div:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.detection-flow > div:nth-child(even) .feature-icon {
+    order: 2;
+}
+
+.detection-flow h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: var(--black);
+    font-weight: 600;
+}
+
+.detection-flow p {
+    font-size: 16px;
+    color: var(--gray-600);
+    line-height: 1.8;
+}
+
+.detection-flow > .feature-icon {
+    flex: 0 0 100px;
+    text-align: center;
+}
+
+.detection-flow > div:first-child {
+    flex: 1;
+}
+
+.flow-arrow {
+    text-align: center;
+    font-size: 24px;
+    color: var(--primary-blue);
+    margin: 30px 0;
+}
+
+/* ============================================================================
+   USE CASES SECTION
+   ============================================================================ */
+
+.use-cases {
     padding: 80px 20px;
     background: var(--gray-50);
+}
+
+/* ============================================================================
+   FEATURES & DIFFERENTIATORS
+   ============================================================================ */
+
+.features {
+    padding: 80px 20px;
+    background-color: var(--gray-100);
 }
 
 .section-title {
     text-align: center;
     margin-bottom: 60px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .section-title h2 {
     font-size: 42px;
     margin-bottom: 15px;
     color: var(--black);
+    font-weight: 700;
 }
 
 .section-title p {
@@ -340,6 +486,7 @@ nav {
     gap: 30px;
     max-width: 1400px;
     margin: 0 auto;
+    padding: 0 20px;
 }
 
 .feature-card {
@@ -375,12 +522,76 @@ nav {
     font-size: 22px;
     margin-bottom: 12px;
     color: var(--black);
+    font-weight: 600;
 }
 
 .feature-card p {
     color: var(--gray-600);
     line-height: 1.8;
+    font-size: 16px;
 }
+
+.feature-card strong {
+    color: var(--black);
+    font-weight: 600;
+}
+
+/* ============================================================================
+   COMPARISON TABLE
+   ============================================================================ */
+
+.comparison-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    padding: 0;
+    max-width: 1000px;
+    margin: 30px auto;
+}
+
+.comparison-table > div {
+    padding: 15px;
+    border: 1px solid var(--gray-200);
+    border-radius: 0;
+}
+
+.comparison-table > div:first-child {
+    border-top-left-radius: 8px;
+}
+
+.comparison-table > div:nth-child(3) {
+    border-top-right-radius: 8px;
+}
+
+.comparison-table > div:nth-last-child(3) {
+    border-bottom-left-radius: 8px;
+}
+
+.comparison-table > div:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+.comparison-table > div:nth-child(-n+3) {
+    background: var(--primary-blue);
+    color: var(--white);
+    font-weight: bold;
+    border-color: var(--primary-blue);
+}
+
+.comparison-table > div:nth-child(3n+1):not(:nth-child(-n+3)) {
+    background: var(--white);
+    font-weight: 600;
+    color: var(--black);
+}
+
+.comparison-table > div:nth-child(3n+3) {
+    background: rgba(0, 114, 206, 0.05);
+    border-color: var(--primary-blue);
+}
+
+/* ============================================================================
+   SERVICES
+   ============================================================================ */
 
 .services {
     padding: 80px 20px;
@@ -469,7 +680,12 @@ nav {
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    flex-shrink: 0;
 }
+
+/* ============================================================================
+   ABOUT SECTION
+   ============================================================================ */
 
 .about {
     padding: 80px 20px;
@@ -558,6 +774,10 @@ nav {
     opacity: 0.9;
 }
 
+/* ============================================================================
+   CTA SECTION
+   ============================================================================ */
+
 .cta {
     padding: 100px 20px;
     background: linear-gradient(90deg, var(--primary-blue), var(--dark-blue), var(--black));
@@ -590,6 +810,88 @@ nav {
     font-size: 14px;
     opacity: 0.7;
 }
+
+/* ============================================================================
+   LATEST NEWS / BLOG SECTION
+   ============================================================================ */
+
+.latest-news {
+    padding: 80px 20px;
+    background: var(--white);
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.news-card {
+    background: var(--white);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.news-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.news-content {
+    padding: 25px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.news-cat {
+    color: var(--primary-blue);
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.news-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    line-height: 1.3;
+    color: var(--black);
+}
+
+.news-excerpt {
+    font-size: 14px;
+    color: var(--gray-600);
+    line-height: 1.6;
+}
+
+.news-date {
+    margin-top: auto;
+    font-size: 13px;
+    color: var(--gray-600);
+    border-top: 1px solid var(--gray-100);
+    padding-top: 15px;
+}
+
+/* ============================================================================
+   FOOTER
+   ============================================================================ */
 
 footer {
     background: var(--black);
@@ -635,6 +937,10 @@ footer {
     font-size: 14px;
 }
 
+/* ============================================================================
+   MODALS & FORMS
+   ============================================================================ */
+
 .modal-backdrop {
     display: none;
     position: fixed;
@@ -667,7 +973,12 @@ footer {
 }
 
 .modal.active, .modal-backdrop.active {
+    display: flex;
     opacity: 1;
+}
+
+.modal-backdrop.active {
+    display: block;
 }
 
 .modal-close {
@@ -730,42 +1041,48 @@ footer {
     box-shadow: 0 0 0 3px rgba(0, 114, 206, 0.1);
 }
 
-.latest-news { padding: 80px 20px; background: var(--white); }
-.news-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
+/* ============================================================================
+   LANGUAGE SUPPORT
+   ============================================================================ */
+
+.lang-dynamic {
+    display: none;
 }
-.news-card {
-    background: var(--white);
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    transition: transform 0.3s;
-    text-decoration: none;
-    color: inherit;
-    border: 1px solid var(--gray-200);
-    display: flex;
-    flex-direction: column;
+
+.lang-dynamic.lang-en {
+    display: block;
 }
-.news-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
-.news-img { width: 100%;  }
-.news-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
-.news-cat { color: var(--primary-blue); font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 10px; }
-.news-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; line-height: 1.3; color: var(--black); }
-.news-date { margin-top: auto; font-size: 13px; color: var(--gray-600); border-top: 1px solid var(--gray-100); padding-top: 15px; }
-.lang-dynamic { display: none; }
-.lang-dynamic.lang-en { display: block; }
-span.lang-dynamic.lang-en { display: inline; }
+
+span.lang-dynamic.lang-en {
+    display: inline;
+}
+
+.lang-dynamic.lang-tr {
+    display: none;
+}
+
+span.lang-dynamic.lang-tr {
+    display: none;
+}
+
+.lang-dynamic.lang-ee {
+    display: none;
+}
+
+span.lang-dynamic.lang-ee {
+    display: none;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
 
 @media (max-width: 768px) {
     .nav-links {
         display: none;
     }
 
-    .hidden.md\\:flex {
+    .hidden.md\:flex {
         display: none !important;
     }
 
@@ -774,12 +1091,26 @@ span.lang-dynamic.lang-en { display: inline; }
     }
 
     .hero-content,
-    .about-content {
+    .about-content,
+    .detection-flow > div {
         grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+
+    .detection-flow > div:nth-child(even) {
+        flex-direction: column;
+    }
+
+    .detection-flow > div:nth-child(even) .feature-icon {
+        order: 0;
     }
 
     .hero-text h1 {
         font-size: 36px;
+    }
+
+    .hero-text h2 {
+        font-size: 22px;
     }
 
     .stats {
@@ -787,12 +1118,418 @@ span.lang-dynamic.lang-en { display: inline; }
     }
 
     .features-grid,
-    .services-grid {
+    .services-grid,
+    .news-grid,
+    .credibility-grid {
         grid-template-columns: 1fr;
+    }
+
+    .section-title h2 {
+        font-size: 32px;
+    }
+
+    .section-title p {
+        font-size: 16px;
+    }
+
+    .cta h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .about-box {
+        margin-top: 30px;
+    }
+
+    .comparison-table {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-card {
+        padding: 30px 20px;
+    }
+
+    .service-card {
+        padding: 30px 25px;
+    }
+
+    .modal {
+        width: 95%;
+        padding: 30px;
+    }
+
+    .credibility-grid {
+        padding: 0 20px;
+    }
+
+    .detection-flow {
+        padding: 0 20px;
+    }
+
+    .features-grid {
+        padding: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-container {
+        padding: 12px 15px;
+    }
+
+    .hero-text h1 {
+        font-size: 28px;
+    }
+
+    .hero-text h2 {
+        font-size: 18px;
+    }
+
+    .hero-text p {
+        font-size: 16px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+
+    .section-title h2 {
+        font-size: 24px;
+    }
+
+    .section-title p {
+        font-size: 14px;
+    }
+
+    .feature-card h3 {
+        font-size: 18px;
+    }
+
+    .service-card {
+        padding: 25px 20px;
+    }
+
+    .about-text h2 {
+        font-size: 28px;
+    }
+
+    .about-box h3 {
+        font-size: 22px;
     }
 
     .cta h2 {
         font-size: 22px;
+    }
+
+    .stats {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.text-center {
+    text-align: center;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+
+.mb-30 {
+    margin-bottom: 30px;
+}
+
+.mt-30 {
+    margin-top: 30px;
+}
+
+.mt-40 {
+    margin-top: 40px;
+}
+
+.flex {
+    display: flex;
+}
+
+.gap-20 {
+    gap: 20px;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+/* ============================================================================
+   RESPONSIVE COMPARISON TABLE
+   ============================================================================ */
+
+.comparison-table-responsive {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-cell {
+    padding: 15px 20px;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    word-break: break-word;
+}
+
+/* Header Row Styling */
+.table-header {
+    background: var(--primary-blue);
+    font-weight: bold;
+    font-size: 16px;
+    color: var(--white);
+}
+
+.table-header .table-cell {
+    color: var(--white);
+    padding: 18px 20px;
+}
+
+/* Alternating Row Colors */
+.table-row.alt {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Highlight SkyGuardian Column */
+.table-cell.highlight {
+    background: linear-gradient(135deg, rgba(0, 114, 206, 0.3), rgba(0, 114, 206, 0.1));
+    font-weight: 600;
+    color: var(--white);
+}
+
+.table-row.alt .table-cell.highlight {
+    background: linear-gradient(135deg, rgba(0, 114, 206, 0.4), rgba(0, 114, 206, 0.2));
+}
+
+/* ============================================================================
+   TABLET RESPONSIVE (768px and below)
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .table-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+
+    .table-cell {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+
+    .table-header .table-cell {
+        padding: 15px;
+    }
+
+    /* Hide "Radar" column header on tablet */
+    .table-header .table-cell:nth-child(2) {
+        display: none;
+    }
+
+    /* Hide "Radar" column cells on tablet */
+    .table-row:not(.table-header) .table-cell:nth-child(2) {
+        display: none;
+    }
+
+    /* Adjust grid for 2 columns */
+    .table-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .table-header {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ============================================================================
+   MOBILE RESPONSIVE (480px and below)
+   ============================================================================ */
+
+@media (max-width: 480px) {
+    .comparison-table-responsive {
+        gap: 8px;
+        border: none;
+        border-radius: 0;
+    }
+
+    .table-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 8px;
+    }
+
+    .table-row:last-child {
+        margin-bottom: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .table-header {
+        display: none;
+    }
+
+    .table-cell {
+        padding: 10px 12px;
+        font-size: 13px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .table-cell:last-child {
+        border-bottom: none;
+    }
+
+    /* Feature name styling on mobile */
+    .table-row:not(.table-header) .table-cell:first-child {
+        background: rgba(255, 255, 255, 0.08);
+        font-weight: 600;
+        padding: 12px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Radar value */
+    .table-row:not(.table-header) .table-cell:nth-child(2) {
+        padding: 10px 12px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* SkyGuardian value */
+    .table-row:not(.table-header) .table-cell:nth-child(3) {
+        background: rgba(0, 114, 206, 0.25);
+        font-weight: 600;
+        color: var(--white);
+        padding: 12px 12px;
+    }
+
+    /* Remove alternating backgrounds on mobile */
+    .table-row.alt {
+        background: transparent;
+    }
+
+    .table-row.alt .table-cell:first-child {
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .table-row.alt .table-cell.highlight {
+        background: rgba(0, 114, 206, 0.25);
+    }
+
+    /* Mobile header look */
+    .about-box h3 {
         margin-bottom: 20px;
     }
+}
+
+/* ============================================================================
+   SMALL MOBILE (under 400px)
+   ============================================================================ */
+
+@media (max-width: 400px) {
+    .table-cell {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .table-row:not(.table-header) .table-cell:first-child {
+        padding: 10px 10px;
+        font-size: 12px;
+    }
+
+    .about-box {
+        padding: 30px 20px;
+    }
+
+    .about-box h3 {
+        font-size: 20px;
+    }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+    .comparison-table-responsive {
+        page-break-inside: avoid;
+    }
+
+    .table-row {
+        page-break-inside: avoid;
+    }
+}
+.check-mark {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+.detection-flow-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    gap: 30px;
+}
+
+.detection-flow-flex1 {
+    flex: 1;
+}
+
+.detection-flow-row-div {
+    flex: 0 0 100px;
+    text-align: center;
+}
+.detection-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto;
+}
+.detection-arrow-down {
+    text-align: center;
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: 30px;
 }
